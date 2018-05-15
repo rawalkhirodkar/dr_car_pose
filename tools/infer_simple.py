@@ -98,6 +98,38 @@ def main():
     elif args.dataset.startswith("keypoints_coco"):
         dataset = datasets.get_coco_dataset()
         cfg.MODEL.NUM_CLASSES = 2
+    # -----------------------------------------------
+    elif args.dataset.startswith("virat1"):
+        dataset = datasets.get_virat1_dataset()
+        cfg.MODEL.NUM_CLASSES = 3+1+1 #background and person included
+        cfg.MODEL.COLOR_NUM_CLASSES = 7+1
+        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        
+        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+        cfg.MODEL.DEPTH_HEIGHT = 192        
+        cfg.MODEL.DEPTH_NUM_CLASSES = 64
+
+        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+        cfg.MODEL.NORMAL_HEIGHT = 192        
+        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+    # ------------------------------------------------
+    elif args.dataset.startswith("virat2"):
+        dataset = datasets.get_virat2_dataset()
+        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included
+        cfg.MODEL.COLOR_NUM_CLASSES = 7+1
+        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        
+        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+        cfg.MODEL.DEPTH_HEIGHT = 192        
+        cfg.MODEL.DEPTH_NUM_CLASSES = 64
+        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+        cfg.MODEL.NORMAL_HEIGHT = 192        
+        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+    # -----------------------------------------------
     else:
         raise ValueError('Unexpected dataset name: {}'.format(args.dataset))
 
@@ -146,7 +178,7 @@ def main():
 
         timers = defaultdict(Timer)
 
-        cls_boxes, cls_segms, cls_keyps = im_detect_all(maskRCNN, im, timers=timers)
+        cls_boxes, cls_segms, cls_keyps, return_dict = im_detect_all(maskRCNN, im, timers=timers)
 
         im_name, _ = os.path.splitext(os.path.basename(imglist[i]))
         vis_utils.vis_one_image(
@@ -159,18 +191,41 @@ def main():
             dataset=dataset,
             box_alpha=0.3,
             show_class=True,
-            thresh=0.7,
-            kp_thresh=2
+            thresh=cfg.TEST.VISUALIZE_THRESH,
+            kp_thresh=2,
+            depth_map=return_dict['depth_map'],
+            normal_map=return_dict['normal_map']
         )
 
+    rgb_dir = os.path.join(args.output_dir, 'rgb')
+    depth_dir = os.path.join(args.output_dir, 'depth')
+    normal_dir = os.path.join(args.output_dir, 'normal')
+
+
     if args.merge_pdfs and num_images > 1:
-        merge_out_path = '{}/results.pdf'.format(args.output_dir)
+        merge_out_path = '{}/rgb_results.pdf'.format(args.output_dir)
         if os.path.exists(merge_out_path):
             os.remove(merge_out_path)
-        command = "pdfunite {}/*.pdf {}".format(args.output_dir,
+        command = "pdfunite {}/*.pdf {}".format(rgb_dir,
                                                 merge_out_path)
         subprocess.call(command, shell=True)
 
+        # ---------------------------------
+        merge_out_path = '{}/depth_results.pdf'.format(args.output_dir)
+        if os.path.exists(merge_out_path):
+            os.remove(merge_out_path)
+        command = "pdfunite {}/*.pdf {}".format(depth_dir,
+                                                merge_out_path)
+        subprocess.call(command, shell=True)
+        # ---------------------------------
+        merge_out_path = '{}/normal_results.pdf'.format(args.output_dir)
+        if os.path.exists(merge_out_path):
+            os.remove(merge_out_path)
+        command = "pdfunite {}/*.pdf {}".format(normal_dir,
+                                                merge_out_path)
+        subprocess.call(command, shell=True)
+
+# ------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     main()

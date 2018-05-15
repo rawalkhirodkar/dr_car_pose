@@ -94,9 +94,11 @@ class TrainingStats(object):
 
         model_out['total_loss'] = total_loss  # Add the total loss for back propagation
         self.smoothed_total_loss.AddValue(total_loss.data[0])
-        if cfg.FPN.FPN_ON:
+        # ---------------------------------------------------------------------------------
+        if cfg.FPN.FPN_ON and (not cfg.MODEL.ONLY_DEPTH and not cfg.MODEL.ONLY_NORMAL):
             self.smoothed_losses['loss_rpn_cls'].AddValue(loss_rpn_cls_data)
             self.smoothed_losses['loss_rpn_bbox'].AddValue(loss_rpn_bbox_data)
+        # ---------------------------------------------------------------------------------
 
         for k, metric in model_out['metrics'].items():
             metric = metric.mean(dim=0, keepdim=True)

@@ -216,5 +216,21 @@ DATASETS = {
             _DATA_DIR + '/VOC2012/annotations/voc_2012_trainval.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
+    'virat1_train': {
+        IM_DIR:
+            _DATA_DIR + '/virat1/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/virat1/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
+    'virat2_train': {
+        IM_DIR:
+            _DATA_DIR + '/virat2/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/virat2/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
     }
 }

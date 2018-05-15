@@ -17,7 +17,8 @@ import modeling.keypoint_rcnn_heads as keypoint_rcnn_heads
 import utils.blob as blob_utils
 import utils.net as net_utils
 import utils.resnet_weights_helper as resnet_utils
-
+import modeling.depth_heads as depth_heads
+import modeling.normal_heads as normal_heads
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +58,15 @@ class Generalized_RCNN(nn.Module):
         if cfg.RPN.RPN_ON:
             self.RPN = rpn_heads.generic_rpn_outputs(
                 self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
+        # ------------------------------------------------------------------------------------
+        #Depth prediction Network
+        if cfg.MODEL.DEPTH_ON:
+            self.DepthNet = depth_heads.depth_outputs(self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
+
+        #Normal prediction Network
+        if cfg.MODEL.NORMAL_ON:
+            self.NormalNet = normal_heads.normal_outputs(self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
+        # ------------------------------------------------------------------------------------
 
         if cfg.FPN.FPN_ON:
             # Only supports case when RPN and ROI min levels are the same
@@ -110,6 +120,15 @@ class Generalized_RCNN(nn.Module):
             for p in self.Conv_Body.parameters():
                 p.requires_grad = False
 
+    def prep_return_dict(self, return_dict):
+        if(self.training):
+            # pytorch0.4 bug on gathering scalar(0-dim) tensors
+            for k, v in return_dict['losses'].items():
+                return_dict['losses'][k] = v.unsqueeze(0)
+            for k, v in return_dict['metrics'].items():
+                return_dict['metrics'][k] = v.unsqueeze(0)
+        return return_dict
+
     def forward(self, data, im_info, roidb=None, **rpn_kwargs):
         if cfg.PYTORCH_VERSION_LESS_THAN_040:
             return self._forward(data, im_info, roidb, **rpn_kwargs)
@@ -127,7 +146,50 @@ class Generalized_RCNN(nn.Module):
         return_dict = {}  # A dict to collect return variables
 
         blob_conv = self.Conv_Body(im_data)
+        # ------------------------------------------------------------------------------------------------------------------
+        # DEPTH Branch
+        if cfg.MODEL.DEPTH_ON:
+            depth_ret = self.DepthNet(blob_conv, im_info, roidb)
 
+        #Loss computation for Depth
+        if self.training and cfg.MODEL.DEPTH_ON:
+            return_dict['losses'] = {}
+            return_dict['metrics'] = {}
+
+            # ---------------------------------------------------
+            if cfg.MODEL.DEPTH_SOFT_LABEL_ON:
+                depth_loss_cls, depth_cls_preds, depth_accuracy_cls = depth_heads.soft_depth_losses(depth_ret['depth_cls_logits'], roidb)
+            else:
+                depth_loss_cls, depth_cls_preds, depth_accuracy_cls = depth_heads.depth_losses(depth_ret['depth_cls_logits'], roidb)
+            return_dict['losses']['depth_loss_cls'] = depth_loss_cls
+            return_dict['metrics']['depth_accuracy_cls'] = depth_accuracy_cls
+
+        #-----only DEPTH--------------------
+        if cfg.MODEL.ONLY_DEPTH:
+            return self.prep_return_dict(return_dict)
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # NORMAL Branch
+        if cfg.MODEL.NORMAL_ON:
+            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
+
+        #Loss computation for Normal
+        if self.training and cfg.MODEL.NORMAL_ON:
+            if cfg.MODEL.NORMAL_SOFT_LABEL_ON:
+                normal_loss_cls, normal_cls_preds, normal_accuracy_cls = normal_heads.soft_normal_losses(normal_ret['normal_cls_logits'], roidb)
+            else:
+                normal_loss_cls, normal_cls_preds, normal_accuracy_cls = normal_heads.normal_losses(normal_ret['normal_cls_logits'], roidb)
+            return_dict['losses']['normal_loss_cls'] = normal_loss_cls
+            return_dict['metrics']['normal_accuracy_cls'] = normal_accuracy_cls
+
+        #-----only NORMAL--------------------
+        if cfg.MODEL.ONLY_NORMAL:
+            return self.prep_return_dict(return_dict)
+
+        # ------------------------------------------------------------------------------------------------------------------
+        if cfg.MODEL.ONLY_DEPTH_NORMAL:
+            return self.prep_return_dict(return_dict)
+        # ------------------------------------------------------------------------------------------------------------------
         rpn_ret = self.RPN(blob_conv, im_info, roidb)
 
         # if self.training:
@@ -147,14 +209,16 @@ class Generalized_RCNN(nn.Module):
                 box_feat, res5_feat = self.Box_Head(blob_conv, rpn_ret)
             else:
                 box_feat = self.Box_Head(blob_conv, rpn_ret)
-            cls_score, bbox_pred = self.Box_Outs(box_feat)
+            # -----------------------------------------------------------------
+            cls_score, bbox_pred, \
+            color_cls_score, rotation_cls_score, \
+            x_cls_score, y_cls_score = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)        
+            # -----------------------------------------------------------------
         else:
             # TODO: complete the returns for RPN only situation
             pass
 
         if self.training:
-            return_dict['losses'] = {}
-            return_dict['metrics'] = {}
             # rpn loss
             rpn_kwargs.update(dict(
                 (k, rpn_ret[k]) for k in rpn_ret.keys()
@@ -169,13 +233,34 @@ class Generalized_RCNN(nn.Module):
                 return_dict['losses']['loss_rpn_cls'] = loss_rpn_cls
                 return_dict['losses']['loss_rpn_bbox'] = loss_rpn_bbox
 
+            # --------------------------------------------------------------------------
             # bbox loss
-            loss_cls, loss_bbox, accuracy_cls = fast_rcnn_heads.fast_rcnn_losses(
+            loss_cls, loss_bbox, accuracy_cls,\
+            color_loss_cls, color_accuracy_cls,\
+            rotation_loss_cls, rotation_accuracy_cls,\
+            x_loss_cls, x_accuracy_cls,\
+            y_loss_cls, y_accuracy_cls = fast_rcnn_heads.fast_rcnn_losses(
                 cls_score, bbox_pred, rpn_ret['labels_int32'], rpn_ret['bbox_targets'],
-                rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'])
+                rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'],
+                color_cls_score, rotation_cls_score, 
+                x_cls_score, y_cls_score,
+                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
+                rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
+
             return_dict['losses']['loss_cls'] = loss_cls
             return_dict['losses']['loss_bbox'] = loss_bbox
             return_dict['metrics']['accuracy_cls'] = accuracy_cls
+
+            return_dict['losses']['color_loss_cls'] = color_loss_cls
+            return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
+            return_dict['losses']['x_loss_cls'] = x_loss_cls
+            return_dict['losses']['y_loss_cls'] = y_loss_cls
+            
+            return_dict['metrics']['color_accuracy_cls'] = color_accuracy_cls
+            return_dict['metrics']['rotation_accuracy_cls'] = rotation_accuracy_cls
+            return_dict['metrics']['x_accuracy_cls'] = x_accuracy_cls
+            return_dict['metrics']['y_accuracy_cls'] = y_accuracy_cls
+            # --------------------------------------------------------------------------
 
             if cfg.MODEL.MASK_ON:
                 if getattr(self.Mask_Head, 'SHARE_RES5', False):
@@ -187,41 +272,31 @@ class Generalized_RCNN(nn.Module):
                 # return_dict['mask_pred'] = mask_pred
                 # mask loss
                 loss_mask = mask_rcnn_heads.mask_rcnn_losses(mask_pred, rpn_ret['masks_int32'])
+                # handle nan loss
+                is_nan = int(loss_mask != loss_mask) #1 if nan
+                if(is_nan == 1):
+                    print("Mask NaN logged!")
+                    loss_mask = loss_mask*0
                 return_dict['losses']['loss_mask'] = loss_mask
-
-            if cfg.MODEL.KEYPOINTS_ON:
-                if getattr(self.Keypoint_Head, 'SHARE_RES5', False):
-                    # No corresponding keypoint head implemented yet (Neither in Detectron)
-                    # Also, rpn need to generate the label 'roi_has_keypoints_int32'
-                    kps_feat = self.Keypoint_Head(res5_feat, rpn_ret,
-                                                  roi_has_keypoints_int32=rpn_ret['roi_has_keypoint_int32'])
-                else:
-                    kps_feat = self.Keypoint_Head(blob_conv, rpn_ret)
-                kps_pred = self.Keypoint_Outs(kps_feat)
-                # return_dict['keypoints_pred'] = kps_pred
-                # keypoints loss
-                if cfg.KRCNN.NORMALIZE_BY_VISIBLE_KEYPOINTS:
-                    loss_keypoints = keypoint_rcnn_heads.keypoint_losses(
-                        kps_pred, rpn_ret['keypoint_locations_int32'], rpn_ret['keypoint_weights'])
-                else:
-                    loss_keypoints = keypoint_rcnn_heads.keypoint_losses(
-                        kps_pred, rpn_ret['keypoint_locations_int32'], rpn_ret['keypoint_weights'],
-                        rpn_ret['keypoint_loss_normalizer'])
-                return_dict['losses']['loss_kps'] = loss_keypoints
-
-            # pytorch0.4 bug on gathering scalar(0-dim) tensors
-            for k, v in return_dict['losses'].items():
-                return_dict['losses'][k] = v.unsqueeze(0)
-            for k, v in return_dict['metrics'].items():
-                return_dict['metrics'][k] = v.unsqueeze(0)
-
         else:
-            # Testing
+            # Testing (all after softmax!)
             return_dict['rois'] = rpn_ret['rois']
             return_dict['cls_score'] = cls_score
             return_dict['bbox_pred'] = bbox_pred
+            # -------------------------------------------------------
+            return_dict['color_cls_score'] = color_cls_score
+            return_dict['rotation_cls_score'] = rotation_cls_score
+            return_dict['x_cls_score'] = x_cls_score
+            return_dict['y_cls_score'] = y_cls_score
 
-        return return_dict
+            if cfg.MODEL.DEPTH_ON:
+                return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax
+
+            if cfg.MODEL.NORMAL_ON:
+                return_dict['normal_cls_score'] = normal_ret['normal_cls_probs'] #this will be after softmax
+            # -------------------------------------------------------
+
+        return self.prep_return_dict(return_dict)
 
     def roi_feature_transform(self, blobs_in, rpn_ret, blob_rois='rois', method='RoIPoolF',
                               resolution=7, spatial_scale=1. / 16., sampling_ratio=0):

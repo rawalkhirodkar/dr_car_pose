@@ -239,6 +239,11 @@ __C.TEST.FORCE_JSON_DATASET_EVAL = False
 # Not set for 1-stage models and 2-stage models with RPN subnetwork enabled
 __C.TEST.PRECOMPUTED_PROPOSALS = True
 
+# -----------------------------------------------------------------
+
+__C.TEST.VISUALIZE_THRESH = 0.7
+
+# -----------------------------------------------------------------
 
 # ---------------------------------------------------------------------------- #
 # Test-time augmentations for bounding box detection
@@ -400,6 +405,31 @@ __C.MODEL.CONV_BODY = ''
 # Number of classes in the dataset; must be set
 # E.g., 81 for COCO (80 foreground + 1 background)
 __C.MODEL.NUM_CLASSES = -1
+# ------------------------------------------------------
+__C.MODEL.COLOR_NUM_CLASSES = -1
+__C.MODEL.ROTATION_NUM_CLASSES = -1
+__C.MODEL.X_NUM_CLASSES = -1
+__C.MODEL.Y_NUM_CLASSES = -1
+
+__C.MODEL.DEPTH_WIDTH = -1
+__C.MODEL.DEPTH_HEIGHT = -1
+__C.MODEL.DEPTH_NUM_CLASSES = -1
+__C.MODEL.DEPTH_ON = False
+__C.MODEL.WEIGHT_LOSS_DEPTH = 0.5
+__C.MODEL.ONLY_DEPTH = False
+__C.MODEL.DEPTH_SOFT_LABEL_ON = False
+
+__C.MODEL.NORMAL_WIDTH = -1
+__C.MODEL.NORMAL_HEIGHT = -1
+__C.MODEL.NORMAL_NUM_CLASSES = -1
+__C.MODEL.NORMAL_ON = False
+__C.MODEL.WEIGHT_LOSS_NORMAL = 0.5
+__C.MODEL.ONLY_NORMAL = False
+__C.MODEL.NORMAL_SOFT_LABEL_ON = False
+
+__C.MODEL.ONLY_DEPTH_NORMAL = False
+
+# ------------------------------------------------------
 
 # Use a class agnostic bounding box regressor instead of the default per-class
 # regressor

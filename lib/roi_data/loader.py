@@ -42,7 +42,10 @@ class RoiDataLoader(data.Dataset):
             valid_inds = np.nonzero(~ invalid)[0]
             if len(valid_inds) < len(boxes):
                 for key in ['boxes', 'gt_classes', 'seg_areas', 'gt_overlaps', 'is_crowd',
-                            'box_to_gt_ind_map', 'gt_keypoints']:
+                            'box_to_gt_ind_map', 'gt_keypoints',
+                            # -----------------------------------------------------------
+                            'gt_colors', 'gt_rotations', 'gt_x', 'gt_y']:
+                            # -----------------------------------------------------------
                     if key in entry:
                         entry[key] = entry[key][valid_inds]
                 entry['segms'] = [entry['segms'][ind] for ind in valid_inds]

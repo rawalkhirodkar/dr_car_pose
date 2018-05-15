@@ -30,6 +30,7 @@ import utils.segms as segm_utils
 import utils.blob as blob_utils
 from core.config import cfg
 from .json_dataset import JsonDataset
+from .custom_json_dataset import CustomJsonDataset
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,10 @@ def combined_roidb_for_training(dataset_names, proposal_files):
     which involves caching certain types of metadata for each roidb entry.
     """
     def get_roidb(dataset_name, proposal_file):
-        ds = JsonDataset(dataset_name)
+        if(dataset_name.startswith("virat")):
+            ds = CustomJsonDataset(dataset_name)
+        else:
+            ds = JsonDataset(dataset_name)
         roidb = ds.get_roidb(
             gt=True,
             proposal_file=proposal_file,

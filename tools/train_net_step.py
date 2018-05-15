@@ -15,6 +15,7 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import cv2
+import sys
 cv2.setNumThreads(0)  # pytorch issue 1355: possible deadlock in dataloader
 
 import _init_paths  # pylint: disable=unused-import
@@ -156,6 +157,40 @@ def main():
     elif args.dataset == "keypoints_coco2017":
         cfg.TRAIN.DATASETS = ('keypoints_coco_2017_train',)
         cfg.MODEL.NUM_CLASSES = 2
+    # -----------------------------------------------
+    elif args.dataset == "virat1":
+        cfg.TRAIN.DATASETS = ('virat1_train',)
+        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
+        cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
+        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        
+        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+        cfg.MODEL.DEPTH_HEIGHT = 192        
+        cfg.MODEL.DEPTH_NUM_CLASSES = 64
+
+        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+        cfg.MODEL.NORMAL_HEIGHT = 192        
+        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+
+        #other classes num set in the custom_json_dataset file
+    elif args.dataset == "virat2":
+        cfg.TRAIN.DATASETS = ('virat2_train',)
+        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included
+        cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
+        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
+        
+        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+        cfg.MODEL.DEPTH_HEIGHT = 192        
+        cfg.MODEL.DEPTH_NUM_CLASSES = 64
+
+        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+        cfg.MODEL.NORMAL_HEIGHT = 192        
+        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+    # ------------------------------------------------
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))
 
@@ -403,10 +438,18 @@ def main():
                     if key != 'roidb': # roidb is a list of ndarrays with inconsistent length
                         input_data[key] = list(map(Variable, input_data[key]))
 
-                net_outputs = maskRCNN(**input_data)
-                training_stats.UpdateIterStats(net_outputs, inner_iter)
-                loss = net_outputs['total_loss']
-                loss.backward()
+                try:
+                    net_outputs = maskRCNN(**input_data)
+                    training_stats.UpdateIterStats(net_outputs, inner_iter)
+                    loss = net_outputs['total_loss']
+                    loss.backward()
+                except:
+                    _, _, tb = sys.exc_info()
+                    traceback.print_tb(tb) # Fixed format
+                    tb_info = traceback.extract_tb(tb)
+                    filename, line, func, text = tb_info[-1]
+                    print('An error occurred on line {} in statement {}'.format(line, text))
+                    continue
             optimizer.step()
             training_stats.IterToc()
 

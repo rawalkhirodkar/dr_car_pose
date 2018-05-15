@@ -66,9 +66,32 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
         raise NotImplementedError
         # scores, boxes, im_scale, blob_conv = im_detect_bbox_aug(model, im, box_proposals)
     else:
-        scores, boxes, im_scale, blob_conv = im_detect_bbox(
+        scores, boxes, im_scale, blob_conv, return_dict = im_detect_bbox(
             model, im, cfg.TEST.SCALE, cfg.TEST.MAX_SIZE, box_proposals)
     timers['im_detect_bbox'].toc()
+
+    extra_return_dict = {}
+    extra_return_dict['depth_map'] = None
+    extra_return_dict['normal_map'] = None
+
+    if cfg.MODEL.DEPTH_ON:
+        depth_cls_score = return_dict['depth_cls_score']
+        depth_cls_preds = depth_cls_score.max(dim=1)[1]
+        extra_return_dict['depth_map'] =  depth_cls_preds.data.cpu().numpy().squeeze()
+
+    if cfg.MODEL.NORMAL_ON:
+        normal_cls_score = return_dict['normal_cls_score']
+        normal_cls_preds = normal_cls_score.max(dim=1)[1]
+        normal_map = normal_cls_preds.data.cpu().numpy().squeeze()
+        per_component_class = round((cfg.MODEL.NORMAL_NUM_CLASSES)**(1./3)) #should be 4
+        assert(per_component_class**3 == cfg.MODEL.NORMAL_NUM_CLASSES)
+        visualise_normal_map = np.zeros((normal_map.shape[0], normal_map.shape[1], 3)) #float type
+        visualise_normal_map[:,:,0] = np.floor(normal_map/(per_component_class**2))
+        visualise_normal_map[:,:,1] = np.floor(normal_map/(per_component_class**1)) - per_component_class*visualise_normal_map[:,:,0]
+        visualise_normal_map[:,:,2] = normal_map%(per_component_class)
+        visualise_normal_map = visualise_normal_map/(per_component_class-1)
+        visualise_normal_map = visualise_normal_map*255
+        extra_return_dict['normal_map'] = visualise_normal_map.astype(np.uint8)
 
     # score and boxes are from the whole image after score thresholding and nms
     # (they are not separated by class) (numpy.ndarray)
@@ -108,7 +131,7 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     else:
         cls_keyps = None
 
-    return cls_boxes, cls_segms, cls_keyps
+    return cls_boxes, cls_segms, cls_keyps, extra_return_dict
 
 
 def im_detect_bbox(model, im, target_scale, target_max_size, boxes=None):
@@ -173,7 +196,7 @@ def im_detect_bbox(model, im, target_scale, target_max_size, boxes=None):
         scores = scores[inv_index, :]
         pred_boxes = pred_boxes[inv_index, :]
 
-    return scores, pred_boxes, im_scale, return_dict['blob_conv']
+    return scores, pred_boxes, im_scale, return_dict['blob_conv'], return_dict
 
 
 def im_detect_mask(model, im_scale, boxes, blob_conv):

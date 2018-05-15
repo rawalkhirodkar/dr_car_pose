@@ -43,6 +43,12 @@ def get_fast_rcnn_blob_names(is_training=True):
         # labels_int32 blob: R categorical labels in [0, ..., K] for K
         # foreground classes plus background
         blob_names += ['labels_int32']
+        # ------------------------------------------
+        blob_names += ['color_labels_int32']
+        blob_names += ['rotation_labels_int32']
+        blob_names += ['x_labels_int32']
+        blob_names += ['y_labels_int32']
+        # ------------------------------------------
     if is_training:
         # bbox_targets blob: R bounding-box regression targets with 4
         # targets per class
@@ -162,6 +168,22 @@ def _sample_rois(roidb, im_scale, batch_idx):
     sampled_labels = roidb['max_classes'][keep_inds]
     sampled_labels[fg_rois_per_this_image:] = 0  # Label bg RoIs with class 0
     sampled_boxes = roidb['boxes'][keep_inds]
+    # -----------------------------------------------------------
+    #TO DO: need to deal with the max class assignment for other instances!
+    # just ignore it. backpropagate only on the true labels with overlap == 1
+    # for rest, the sampled label for other attributes will be -1
+    sampled_color_labels = roidb['gt_colors'][keep_inds]
+    sampled_color_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
+
+    sampled_rotation_labels = roidb['gt_rotations'][keep_inds]
+    sampled_rotation_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
+
+    sampled_x_labels = roidb['gt_x'][keep_inds]
+    sampled_x_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
+
+    sampled_y_labels = roidb['gt_y'][keep_inds]
+    sampled_y_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
+    # -----------------------------------------------------------
 
     if 'bbox_targets' not in roidb:
         gt_inds = np.where(roidb['gt_classes'] > 0)[0]
@@ -182,13 +204,27 @@ def _sample_rois(roidb, im_scale, batch_idx):
     repeated_batch_idx = batch_idx * blob_utils.ones((sampled_rois.shape[0], 1))
     sampled_rois = np.hstack((repeated_batch_idx, sampled_rois))
 
-    # Base Fast R-CNN blobs
+    # -----------------------------------------------------------------
+    # # Base Fast R-CNN blobs
+    # blob_dict = dict(
+    #     labels_int32=sampled_labels.astype(np.int32, copy=False),
+    #     rois=sampled_rois,
+    #     bbox_targets=bbox_targets,
+    #     bbox_inside_weights=bbox_inside_weights,
+    #     bbox_outside_weights=bbox_outside_weights)
+
     blob_dict = dict(
         labels_int32=sampled_labels.astype(np.int32, copy=False),
         rois=sampled_rois,
         bbox_targets=bbox_targets,
         bbox_inside_weights=bbox_inside_weights,
-        bbox_outside_weights=bbox_outside_weights)
+        bbox_outside_weights=bbox_outside_weights,
+        color_labels_int32=sampled_color_labels.astype(np.int32, copy=False),
+        rotation_labels_int32=sampled_rotation_labels.astype(np.int32, copy=False),
+        x_labels_int32=sampled_x_labels.astype(np.int32, copy=False),
+        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False)
+        )
+    # -----------------------------------------------------------------
 
     # Optionally add Mask R-CNN blobs
     if cfg.MODEL.MASK_ON:

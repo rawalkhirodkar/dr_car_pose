@@ -45,3 +45,28 @@ def get_coco_dataset():
     ]
     ds.classes = {i: name for i, name in enumerate(classes)}
     return ds
+# ------------------------------------------------------------------------------
+def get_virat1_dataset():
+    """A dummy COCO dataset that includes only the 'classes' field."""
+    ds = AttrDict()
+    # classes = [
+    #     '__background__', 'sedan', 'suv', 'truck', 'person'
+    # ]
+    classes = [
+        '__background__', 'sedan', 'suv', 'sedan', 'person'
+    ]
+    ds.classes = {i: name for i, name in enumerate(classes)}
+    return ds
+# ------------------------------------------------------------------------------
+
+
+
+def get_virat2_dataset():
+    """A dummy COCO dataset that includes only the 'classes' field."""
+    ds = AttrDict()
+    classes = [
+        '__background__', 'sedan', 'suv', 'truck', 'person'
+    ]
+    ds.classes = {i: name for i, name in enumerate(classes)}
+    return ds
+# ------------------------------------------------------------------------------
