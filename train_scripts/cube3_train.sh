@@ -83,12 +83,12 @@
 # 						--bs 6 \
 # 						--nw 20
 
-cd ..
-CUDA_VISIBLE_DEVICES=0,2,3 python tools/train_net_step.py --dataset virat2 \
-						--cfg configs/scene2/rcnn/scene2_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 18 \
-						--nw 20
+# cd ..
+# CUDA_VISIBLE_DEVICES=0,2,3 python tools/train_net_step.py --dataset virat2 \
+# 						--cfg configs/scene2/rcnn/scene2_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 18 \
+# 						--nw 20
 
 ##--------------------Train MaskRCNN--------------------------
 
@@ -115,12 +115,12 @@ CUDA_VISIBLE_DEVICES=0,2,3 python tools/train_net_step.py --dataset virat2 \
 # 						--bs 6 \
 # 						--nw 20
 
-# cd ..
-# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2 \
-# 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 18 \
-# 						--nw 20 
+cd ..
+CUDA_VISIBLE_DEVICES=0,2,3 python tools/train_net_step.py --dataset virat2 \
+						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+						--use_tfboard \
+						--bs 18 \
+						--nw 20 
 
 
 # ##--------------------Train only Normal--------------------------

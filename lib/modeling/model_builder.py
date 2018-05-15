@@ -144,6 +144,9 @@ class Generalized_RCNN(nn.Module):
         device_id = im_data.get_device()
 
         return_dict = {}  # A dict to collect return variables
+        if self.training:
+            return_dict['losses'] = {}
+            return_dict['metrics'] = {}
 
         blob_conv = self.Conv_Body(im_data)
         # ------------------------------------------------------------------------------------------------------------------
@@ -153,10 +156,6 @@ class Generalized_RCNN(nn.Module):
 
         #Loss computation for Depth
         if self.training and cfg.MODEL.DEPTH_ON:
-            return_dict['losses'] = {}
-            return_dict['metrics'] = {}
-
-            # ---------------------------------------------------
             if cfg.MODEL.DEPTH_SOFT_LABEL_ON:
                 depth_loss_cls, depth_cls_preds, depth_accuracy_cls = depth_heads.soft_depth_losses(depth_ret['depth_cls_logits'], roidb)
             else:
@@ -191,7 +190,6 @@ class Generalized_RCNN(nn.Module):
             return self.prep_return_dict(return_dict)
         # ------------------------------------------------------------------------------------------------------------------
         rpn_ret = self.RPN(blob_conv, im_info, roidb)
-
         # if self.training:
         #     # can be used to infer fg/bg ratio
         #     return_dict['rois_label'] = rpn_ret['labels_int32']
