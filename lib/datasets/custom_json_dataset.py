@@ -234,7 +234,7 @@ class CustomJsonDataset(object):
         #add new attributes to the end
         keys = ['boxes', 'segms', 'gt_classes', 'seg_areas', 'gt_overlaps',
                 'is_crowd', 'box_to_gt_ind_map', 'gt_colors', 'gt_rotations',
-                'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg']
+                'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg', 'gt_is_real']
         if self.keypoints is not None:
             keys += ['gt_keypoints', 'has_visible_keypoints']
         return keys
@@ -266,9 +266,6 @@ class CustomJsonDataset(object):
 
         # eg: entry = {'file_name': '000439.JPEG', 'coco_url': '', 'width': 1440, 'id': 1, 'date_captured': '2018-05-05 04:04:18.098860', 'flickr_url': '', 'license': 1, 'height': 810}
         for i, entry in enumerate(roidb):
-            sys.stdout.write("Preparing roidb: %d%%   \r" % ((i+1)*100/len(roidb)) )
-            sys.stdout.flush()
-            
             self._prep_roidb_entry(entry)
         if gt:
             # Include ground-truth object annotations
@@ -283,6 +280,8 @@ class CustomJsonDataset(object):
             else:
                 self.debug_timer.tic()
                 for entry in roidb:
+                    sys.stdout.write("Creating roidb: %d%%   \r" % ((i+1)*100/len(roidb)) )
+                    sys.stdout.flush()
                     self._add_gt_annotations(entry)
                 logger.debug(
                     '_add_gt_annotations took {:.3f}s'.
@@ -333,6 +332,8 @@ class CustomJsonDataset(object):
         entry['gt_depth'] = np.empty((0), dtype=np.int32)
         entry['gt_normal'] = np.empty((0), dtype=np.int32)
         entry['gt_seg'] = np.empty((0), dtype=np.int32)
+        
+        entry['gt_is_real'] = np.empty((0), dtype=np.int32) #0 or 1
         # ------------------------------------------------------        
         entry['seg_areas'] = np.empty((0), dtype=np.float32)
         entry['gt_overlaps'] = scipy.sparse.csr_matrix(
@@ -350,6 +351,7 @@ class CustomJsonDataset(object):
         for k in ['date_captured', 'url', 'license', 'file_name']:
             if k in entry:
                 del entry[k]
+        return
 
     def _add_gt_annotations(self, entry):
         """Add ground truth annotation metadata to an roidb entry."""
@@ -362,9 +364,12 @@ class CustomJsonDataset(object):
         width = entry['width']
         height = entry['height']
 
+        gt_is_real = None
         #obj has all the information from the json
-
         for obj in objs:
+            # ---------------------------------
+            gt_is_real = obj['is_real']
+            # ---------------------------------
             # crowd regions are RLE encoded and stored as dicts
             if isinstance(obj['segmentation'], list):
                 # Valid polygons have >= 3 points, so require >= 6 coordinates
@@ -386,6 +391,7 @@ class CustomJsonDataset(object):
                 valid_objs.append(obj)
                 valid_segms.append(obj['segmentation'])
 
+        
         num_valid_objs = len(valid_objs)
 
         boxes = np.zeros((num_valid_objs, 4), dtype=entry['boxes'].dtype)
@@ -396,9 +402,14 @@ class CustomJsonDataset(object):
         gt_x = np.zeros((num_valid_objs), dtype=entry['gt_x'].dtype)
         gt_y = np.zeros((num_valid_objs), dtype=entry['gt_y'].dtype)
 
-        gt_depth = self.virat_class_info.get_depth(entry['image'].replace("images", "depths")) #path to the depth file
-        gt_normal = self.virat_class_info.get_normal(entry['image'].replace("images", "normals")) #path to the normal file
-        gt_seg = self.virat_class_info.get_normal(entry['image'].replace("images", "segs")) #path to the normal file
+        if(gt_is_real):
+            gt_depth = None
+            gt_normal = None
+            gt_seg = None
+        else:
+            gt_depth = self.virat_class_info.get_depth(entry['image'].replace("images", "depths")) #path to the depth file
+            gt_normal = self.virat_class_info.get_normal(entry['image'].replace("images", "normals")) #path to the normal file
+            gt_seg = self.virat_class_info.get_normal(entry['image'].replace("images", "segs")) #path to the normal file
 
         # ------------------------------------------------------------------------
         gt_overlaps = np.zeros(
@@ -418,6 +429,10 @@ class CustomJsonDataset(object):
 
         im_has_visible_keypoints = False
         for ix, obj in enumerate(valid_objs):
+            # --------some hack-------------
+            if(obj['is_real'] and obj['category_id'] == 5):
+                obj['category_id'] = 4
+            # -------------------------------            
             cls = self.json_category_id_to_contiguous_id[obj['category_id']]
             boxes[ix, :] = obj['clean_bbox']
             gt_classes[ix] = cls
@@ -426,7 +441,6 @@ class CustomJsonDataset(object):
             gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation'])
             gt_x[ix] = self.virat_class_info.get_x_id(obj['x'])
             gt_y[ix] = self.virat_class_info.get_y_id(obj['y'])
-
             # --------------------------------------------------------
             seg_areas[ix] = obj['area']
             is_crowd[ix] = obj['iscrowd']
@@ -456,6 +470,7 @@ class CustomJsonDataset(object):
         entry['gt_depth'] = gt_depth
         entry['gt_normal'] = gt_normal
         entry['gt_seg'] = gt_seg
+        entry['gt_is_real'] = gt_is_real
         # --------------------------------------------------------------
         entry['seg_areas'] = np.append(entry['seg_areas'], seg_areas)
         entry['gt_overlaps'] = np.append(
@@ -472,6 +487,7 @@ class CustomJsonDataset(object):
             )
             entry['has_visible_keypoints'] = im_has_visible_keypoints
 
+        return
     def _add_gt_from_cache(self, roidb, cache_filepath):
         """Add ground truth annotation metadata from cached file."""
         logger.info('Loading cached gt_roidb from %s', cache_filepath)
@@ -480,21 +496,27 @@ class CustomJsonDataset(object):
 
         assert len(roidb) == len(cached_roidb)
 
+        real_images = 0
         for entry, cached_entry in zip(roidb, cached_roidb):
 
-            # valid_cached_keys = ['boxes', 'segms', 'gt_classes', 'seg_areas', 'gt_overlaps',
+            # # valid_cached_keys = keys = ['boxes', 'segms', 'gt_classes', 'seg_areas', 'gt_overlaps',
             #     'is_crowd', 'box_to_gt_ind_map', 'gt_colors', 'gt_rotations',
-            #     'gt_x', 'gt_y']
+            #     'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg', 'gt_is_real']
             # ----------------------------------------------------------------
             values = [cached_entry[key] for key in self.valid_cached_keys] #note the order of the keys matter
             boxes, segms, gt_classes, seg_areas, \
             gt_overlaps, is_crowd, box_to_gt_ind_map, \
-            gt_colors, gt_rotations, gt_x, gt_y, gt_depth, gt_normal, gt_seg = values[:7+4+2+1]
+            gt_colors, gt_rotations, gt_x, gt_y, gt_depth, gt_normal, gt_seg, gt_is_real = values[:7+4+2+1+1]
 
-            gt_depth = cv2.resize(gt_depth.astype(np.uint8), (cfg.MODEL.DEPTH_WIDTH, cfg.MODEL.DEPTH_HEIGHT))
-            gt_normal = cv2.resize(gt_normal.astype(np.uint8), (cfg.MODEL.NORMAL_WIDTH, cfg.MODEL.NORMAL_HEIGHT))
-            gt_seg = cv2.resize(gt_seg.astype(np.uint8), (cfg.MODEL.DEPTH_WIDTH, cfg.MODEL.DEPTH_HEIGHT))
-
+            if(gt_is_real):
+                real_images += 1
+                gt_depth = None
+                gt_normal = None
+                gt_seg = None
+            else:
+                gt_depth = cv2.resize(gt_depth.astype(np.uint8), (cfg.MODEL.DEPTH_WIDTH, cfg.MODEL.DEPTH_HEIGHT))
+                gt_normal = cv2.resize(gt_normal.astype(np.uint8), (cfg.MODEL.NORMAL_WIDTH, cfg.MODEL.NORMAL_HEIGHT))
+                gt_seg = cv2.resize(gt_seg.astype(np.uint8), (cfg.MODEL.DEPTH_WIDTH, cfg.MODEL.DEPTH_HEIGHT))
             # ----------------------------------------------------------------
 
             if self.keypoints is not None:
@@ -520,6 +542,7 @@ class CustomJsonDataset(object):
             entry['gt_depth'] = gt_depth
             entry['gt_normal'] = gt_normal
             entry['gt_seg'] = gt_seg
+            entry['gt_is_real'] = gt_is_real
 
             # ----------------------------------------------------------------
 
@@ -529,6 +552,8 @@ class CustomJsonDataset(object):
                 )
                 entry['has_visible_keypoints'] = has_visible_keypoints
 
+        print("Loaded {} real images...".format(real_images))
+        return
     def _add_proposals_from_file(
         self, roidb, proposal_file, min_proposal_size, top_k, crowd_thresh
     ):
@@ -696,7 +721,6 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
             entry['gt_y'],
             np.zeros((num_boxes), dtype=entry['gt_y'].dtype) - 1
         )
-
         # --------------------------------------------------------
 
         entry['seg_areas'] = np.append(

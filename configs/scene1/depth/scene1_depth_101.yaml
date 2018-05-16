@@ -6,13 +6,11 @@ MODEL:
   # -------------------------------------
   DEPTH_ON: True
   WEIGHT_LOSS_DEPTH: 1.0 #has to be a float
-  ONLY_DEPTH: True
   DEPTH_SOFT_LABEL_ON: True
   # -------------------------------------
-  NORMAL_ON: True
+  NORMAL_ON: False
   WEIGHT_LOSS_NORMAL: 1.0 #has to be a float
-  ONLY_NORMAL: False
-  NORMAL_SOFT_LABEL_ON: True
+  NORMAL_SOFT_LABEL_ON: False
 RESNETS:
   IMAGENET_PRETRAINED_WEIGHTS: 'data/pretrained_model/resnet101_caffe.pth'
 NUM_GPUS: 8

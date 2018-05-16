@@ -342,7 +342,10 @@ def main():
             # There is a bug in optimizer.load_state_dict on Pytorch 0.3.1.
             # However it's fixed on master.
             # optimizer.load_state_dict(checkpoint['optimizer'])
-            misc_utils.load_optimizer_state_dict(optimizer, checkpoint['optimizer'])
+            
+            ##cannot figure why this is wrong!
+            # misc_utils.load_optimizer_state_dict(optimizer, checkpoint['optimizer'])
+            optimizer.param_groups[0]['lr'] = cfg.SOLVER.BASE_LR
         del checkpoint
         torch.cuda.empty_cache()
 

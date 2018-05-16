@@ -7,12 +7,10 @@ MODEL:
   # -------------------------------------
   DEPTH_ON: True
   WEIGHT_LOSS_DEPTH: 1.0 #has to be a float
-  ONLY_DEPTH: False
   DEPTH_SOFT_LABEL_ON: True
   # -------------------------------------
   NORMAL_ON: False
   WEIGHT_LOSS_NORMAL: 1.0 #has to be a float
-  ONLY_NORMAL: False
   NORMAL_SOFT_LABEL_ON: False
   # ---------------------------------------
 RESNETS:

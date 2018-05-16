@@ -143,17 +143,22 @@ class Generalized_RCNN(nn.Module):
 
         device_id = im_data.get_device()
 
-        return_dict = {}  # A dict to collect return variables
-        if self.training:
-            return_dict['losses'] = {}
-            return_dict['metrics'] = {}
-
+        import pdb; pdb.set_trace()
         blob_conv = self.Conv_Body(im_data)
         # ------------------------------------------------------------------------------------------------------------------
         # DEPTH Branch
         if cfg.MODEL.DEPTH_ON:
             depth_ret = self.DepthNet(blob_conv, im_info, roidb)
 
+        # NORMAL Branch
+        if cfg.MODEL.NORMAL_ON:
+            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
+        # -----------------------------------------------------------------------------------------------------------------        
+
+        return_dict = {}  # A dict to collect return variables
+        if self.training:
+            return_dict['losses'] = {}
+            return_dict['metrics'] = {}
         #Loss computation for Depth
         if self.training and cfg.MODEL.DEPTH_ON:
             if cfg.MODEL.DEPTH_SOFT_LABEL_ON:
@@ -163,15 +168,6 @@ class Generalized_RCNN(nn.Module):
             return_dict['losses']['depth_loss_cls'] = depth_loss_cls
             return_dict['metrics']['depth_accuracy_cls'] = depth_accuracy_cls
 
-        #-----only DEPTH--------------------
-        if cfg.MODEL.ONLY_DEPTH:
-            return self.prep_return_dict(return_dict)
-
-        # -----------------------------------------------------------------------------------------------------------------
-        # NORMAL Branch
-        if cfg.MODEL.NORMAL_ON:
-            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
-
         #Loss computation for Normal
         if self.training and cfg.MODEL.NORMAL_ON:
             if cfg.MODEL.NORMAL_SOFT_LABEL_ON:
@@ -180,14 +176,6 @@ class Generalized_RCNN(nn.Module):
                 normal_loss_cls, normal_cls_preds, normal_accuracy_cls = normal_heads.normal_losses(normal_ret['normal_cls_logits'], roidb)
             return_dict['losses']['normal_loss_cls'] = normal_loss_cls
             return_dict['metrics']['normal_accuracy_cls'] = normal_accuracy_cls
-
-        #-----only NORMAL--------------------
-        if cfg.MODEL.ONLY_NORMAL:
-            return self.prep_return_dict(return_dict)
-
-        # ------------------------------------------------------------------------------------------------------------------
-        if cfg.MODEL.ONLY_DEPTH_NORMAL:
-            return self.prep_return_dict(return_dict)
         # ------------------------------------------------------------------------------------------------------------------
         rpn_ret = self.RPN(blob_conv, im_info, roidb)
         # if self.training:
