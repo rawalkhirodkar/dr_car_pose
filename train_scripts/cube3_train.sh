@@ -120,7 +120,7 @@ CUDA_VISIBLE_DEVICES=0,2,3 python tools/train_net_step.py --dataset virat2 \
 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
 						--use_tfboard \
 						--bs 18 \
-						--nw 20 
+						--nw 10 
 
 
 # ##--------------------Train only Normal--------------------------
