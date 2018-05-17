@@ -139,7 +139,7 @@ def depth_losses(depth_cls_score, roidb):
     depth_cls_preds = depth_cls_score.max(dim=1)[1].type_as(depth_label)
     depth_accuracy_cls = (depth_cls_preds.eq(depth_label).float().mean(dim=0)).mean(dim=0)
 
-    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_cls_preds, depth_accuracy_cls
+    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_accuracy_cls
 
 # ---------------------------------------------------------------------------------------------
 def gaussian(x, mu, sig):
@@ -209,6 +209,5 @@ def soft_depth_losses(depth_cls_score, roidb):
     depth_cls_preds = depth_cls_score.max(dim=2)[1].type_as(depth_label) #batch_size x num_pixels
     depth_accuracy_cls = (depth_cls_preds.eq(depth_label).float().mean(dim=0)).mean(dim=0)
 
-    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_cls_preds, depth_accuracy_cls
-
+    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_accuracy_cls
 

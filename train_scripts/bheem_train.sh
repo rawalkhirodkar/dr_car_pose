@@ -108,12 +108,12 @@
 
 ##--------------------Train MaskRCNN + Depth--------------------------
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2 \
-						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 6 \
-						--nw 0
+# cd ..
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2 \
+# 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 6 \
+# 						--nw 0
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2 \
@@ -122,6 +122,24 @@ CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2 \
 # 						--bs 18 \
 # 						--nw 20 
 
+# # ### resume training
+# cd ..
+# CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat2 \
+# 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+# 						--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May15-19-43-52_cube3_step/ckpt/model_step2663.pth \
+# 						--resume \
+# 						--use_tfboard \
+# 						--bs 2 \
+# 						--nw 10 
+
+cd ..
+CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2 \
+						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+						--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May15-19-43-52_cube3_step/ckpt/model_step2663.pth \
+						--resume \
+						--use_tfboard \
+						--bs 18 \
+						--nw 10 
 
 ###################################################Resume Training#######################################################################################3
 

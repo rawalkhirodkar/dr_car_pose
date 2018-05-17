@@ -446,7 +446,8 @@ def main():
                     training_stats.UpdateIterStats(net_outputs, inner_iter)
                     loss = net_outputs['total_loss']
                     loss.backward()
-                except:
+                except Exception as e:
+                    print(e)
                     _, _, tb = sys.exc_info()
                     traceback.print_tb(tb) # Fixed format
                     tb_info = traceback.extract_tb(tb)

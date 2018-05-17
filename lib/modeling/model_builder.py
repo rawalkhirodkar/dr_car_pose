@@ -1,5 +1,6 @@
 import importlib
 import logging
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -138,13 +139,23 @@ class Generalized_RCNN(nn.Module):
 
     def _forward(self, data, im_info, roidb=None, **rpn_kwargs):
         im_data = data
+        device_id = im_data.get_device()
         if self.training:
             roidb = list(map(lambda x: blob_utils.deserialize(x)[0], roidb))
+        # -------------------------------------------------------------------------------------------------------------------
+        # In case the batch contains any real images
+        if self.training:
+            real_batch_size = 0
+            
+            for idx, entry in enumerate(roidb):
+                if(entry['gt_is_real'] == 1):
+                    real_batch_size += 1
 
-        device_id = im_data.get_device()
-
-        import pdb; pdb.set_trace()
-        blob_conv = self.Conv_Body(im_data)
+            # Only RPN loss if the batch contains real images
+            if(real_batch_size > 0):
+                return self.real_forward(data, im_info, roidb, **rpn_kwargs)
+        # -------------------------------------------------------------------------------------------------------------------
+        blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
         # ------------------------------------------------------------------------------------------------------------------
         # DEPTH Branch
         if cfg.MODEL.DEPTH_ON:
@@ -159,25 +170,27 @@ class Generalized_RCNN(nn.Module):
         if self.training:
             return_dict['losses'] = {}
             return_dict['metrics'] = {}
+
+        # -----------------------------------------------------------------------------------------------------------------        
         #Loss computation for Depth
         if self.training and cfg.MODEL.DEPTH_ON:
             if cfg.MODEL.DEPTH_SOFT_LABEL_ON:
-                depth_loss_cls, depth_cls_preds, depth_accuracy_cls = depth_heads.soft_depth_losses(depth_ret['depth_cls_logits'], roidb)
+                depth_loss_cls, depth_accuracy_cls = depth_heads.soft_depth_losses(depth_ret['depth_cls_logits'], roidb)
             else:
-                depth_loss_cls, depth_cls_preds, depth_accuracy_cls = depth_heads.depth_losses(depth_ret['depth_cls_logits'], roidb)
+                depth_loss_cls, depth_accuracy_cls = depth_heads.depth_losses(depth_ret['depth_cls_logits'], roidb)
             return_dict['losses']['depth_loss_cls'] = depth_loss_cls
             return_dict['metrics']['depth_accuracy_cls'] = depth_accuracy_cls
 
         #Loss computation for Normal
         if self.training and cfg.MODEL.NORMAL_ON:
             if cfg.MODEL.NORMAL_SOFT_LABEL_ON:
-                normal_loss_cls, normal_cls_preds, normal_accuracy_cls = normal_heads.soft_normal_losses(normal_ret['normal_cls_logits'], roidb)
+                normal_loss_cls, normal_accuracy_cls = normal_heads.soft_normal_losses(normal_ret['normal_cls_logits'], roidb)
             else:
-                normal_loss_cls, normal_cls_preds, normal_accuracy_cls = normal_heads.normal_losses(normal_ret['normal_cls_logits'], roidb)
+                normal_loss_cls, normal_accuracy_cls = normal_heads.normal_losses(normal_ret['normal_cls_logits'], roidb)
             return_dict['losses']['normal_loss_cls'] = normal_loss_cls
             return_dict['metrics']['normal_accuracy_cls'] = normal_accuracy_cls
         # ------------------------------------------------------------------------------------------------------------------
-        rpn_ret = self.RPN(blob_conv, im_info, roidb)
+        rpn_ret = self.RPN(blob_conv, im_info, roidb) # can ignore here
         # if self.training:
         #     # can be used to infer fg/bg ratio
         #     return_dict['rois_label'] = rpn_ret['labels_int32']
@@ -283,6 +296,68 @@ class Generalized_RCNN(nn.Module):
             # -------------------------------------------------------
 
         return self.prep_return_dict(return_dict)
+
+# ---------------------------------------------------------------------------------------------
+#Only called while training
+    def real_forward(self, data, im_info, roidb=None, **rpn_kwargs):
+        print("------------")
+        im_data = data
+        device_id = im_data.get_device()
+
+        return_dict = {}  # A dict to collect return variables
+        return_dict['losses'] = {}
+        return_dict['metrics'] = {}
+
+        # # ------------------------------------------------------------
+        #fake losses        
+        if cfg.MODEL.DEPTH_ON:
+            return_dict['losses']['depth_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+            return_dict['metrics']['depth_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+
+        if cfg.MODEL.NORMAL_ON:
+            return_dict['losses']['normal_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+            return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        
+        if cfg.MODEL.MASK_ON:
+            return_dict['losses']['loss_mask'] = torch.tensor(0.0).cuda(device_id)
+
+        return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['loss_bbox'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+
+        return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['x_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['y_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        
+        return_dict['metrics']['color_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['rotation_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['x_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['y_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        # # ------------------------------------------------------------
+
+        blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
+        rpn_ret = self.RPN(blob_conv, im_info, roidb) # can ignore here
+
+        if cfg.FPN.FPN_ON:
+            blob_conv = blob_conv[-self.num_roi_levels:]
+
+        # rpn loss
+        rpn_kwargs.update(dict(
+            (k, rpn_ret[k]) for k in rpn_ret.keys()
+            if (k.startswith('rpn_cls_logits') or k.startswith('rpn_bbox_pred'))
+        ))
+        loss_rpn_cls, loss_rpn_bbox = rpn_heads.generic_rpn_losses(**rpn_kwargs)
+        if cfg.FPN.FPN_ON:
+            for i, lvl in enumerate(range(cfg.FPN.RPN_MIN_LEVEL, cfg.FPN.RPN_MAX_LEVEL + 1)):
+                return_dict['losses']['loss_rpn_cls_fpn%d' % lvl] = loss_rpn_cls[i]
+                return_dict['losses']['loss_rpn_bbox_fpn%d' % lvl] = loss_rpn_bbox[i]
+        else:
+            return_dict['losses']['loss_rpn_cls'] = loss_rpn_cls
+            return_dict['losses']['loss_rpn_bbox'] = loss_rpn_bbox
+
+        return self.prep_return_dict(return_dict)
+# ---------------------------------------------------------------------------------------------
 
     def roi_feature_transform(self, blobs_in, rpn_ret, blob_rois='rois', method='RoIPoolF',
                               resolution=7, spatial_scale=1. / 16., sampling_ratio=0):

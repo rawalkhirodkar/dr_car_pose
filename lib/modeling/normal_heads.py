@@ -140,7 +140,7 @@ def normal_losses(normal_cls_score, roidb):
     normal_cls_preds = normal_cls_score.max(dim=1)[1].type_as(normal_label)
     normal_accuracy_cls = (normal_cls_preds.eq(normal_label).float().mean(dim=0)).mean(dim=0)
 
-    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_cls_preds, normal_accuracy_cls
+    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_accuracy_cls
 
 # ---------------------------------------------------------------------------------------------
 def gaussian(x, mu, sig):
@@ -210,6 +210,5 @@ def soft_normal_losses(normal_cls_score, roidb):
     normal_cls_preds = normal_cls_score.max(dim=2)[1].type_as(normal_label) #batch_size x num_pixels
     normal_accuracy_cls = (normal_cls_preds.eq(normal_label).float().mean(dim=0)).mean(dim=0)
 
-    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_cls_preds, normal_accuracy_cls
-
+    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_accuracy_cls
 

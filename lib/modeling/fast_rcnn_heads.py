@@ -164,8 +164,7 @@ def fast_rcnn_losses(cls_score, bbox_pred, label_int32, bbox_targets,
                      color_cls_score, rotation_cls_score,
                      x_cls_score, y_cls_score,
                      color_label_int32, rotation_label_int32,
-                     x_label_int32, y_label_int32
-                     ):
+                     x_label_int32, y_label_int32):
     device_id = cls_score.get_device()
     rois_label = Variable(torch.from_numpy(label_int32.astype('int64'))).cuda(device_id)
     loss_cls = F.cross_entropy(cls_score, rois_label)
@@ -173,13 +172,11 @@ def fast_rcnn_losses(cls_score, bbox_pred, label_int32, bbox_targets,
     bbox_targets = Variable(torch.from_numpy(bbox_targets)).cuda(device_id)
     bbox_inside_weights = Variable(torch.from_numpy(bbox_inside_weights)).cuda(device_id)
     bbox_outside_weights = Variable(torch.from_numpy(bbox_outside_weights)).cuda(device_id)
-    loss_bbox = net_utils.smooth_l1_loss(
-        bbox_pred, bbox_targets, bbox_inside_weights, bbox_outside_weights)
+    loss_bbox = net_utils.smooth_l1_loss(bbox_pred, bbox_targets, bbox_inside_weights, bbox_outside_weights)
 
     # class accuracy
     cls_preds = cls_score.max(dim=1)[1].type_as(rois_label)
     accuracy_cls = cls_preds.eq(rois_label).float().mean(dim=0)
-
     # --------------------------------------------
     valid_inds = (color_label_int32 >= 0)
     assert(np.all(valid_inds == (rotation_label_int32 >= 0)) == True)
@@ -232,7 +229,6 @@ def fast_rcnn_losses(cls_score, bbox_pred, label_int32, bbox_targets,
             x_loss_cls, x_accuracy_cls,\
             y_loss_cls, y_accuracy_cls
 
-# -----------------------------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------- #
 # Box heads

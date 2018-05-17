@@ -7,12 +7,10 @@ MODEL:
   # -------------------------------------
   DEPTH_ON: True
   WEIGHT_LOSS_DEPTH: 1.0 #has to be a float
-  ONLY_DEPTH: False
   DEPTH_SOFT_LABEL_ON: True
   # -------------------------------------
   NORMAL_ON: False
   WEIGHT_LOSS_NORMAL: 1.0 #has to be a float
-  ONLY_NORMAL: False
   NORMAL_SOFT_LABEL_ON: False
   # ---------------------------------------
 RESNETS:
@@ -53,7 +51,7 @@ TRAIN:
   RPN_PRE_NMS_TOP_N: 2000  # Per FPN level
   USE_FLIPPED: False
   SNAPSHOT_ITERS: 1000
-  GT_MIN_AREA: 300 #min area of BB
+  GT_MIN_AREA: 300
 TEST:
   SCALE: 800
   # MAX_SIZE: 1333

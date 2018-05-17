@@ -43,52 +43,40 @@
 # # ----Synthetic Visualise------
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat1\
-# 							--cfg configs/mask_rcnn/mask_rcnn_101.yaml\
-# 							--load_ckpt Outputs/mask_rcnn_101/May14-13-47-00_klab-server1_step/ckpt/model_step1676.pth\
-# 							--image_dir data/test/virat1/\
+# 							--cfg configs/scene1/depth_mask_rcnn/scene1_depth_mask_rcnn_101.yaml\
+# 							--load_ckpt Outputs/scene1_depth_mask_rcnn_101/May15-01-12-58_bheem_step/ckpt/model_step10397.pth \
+# 							--image_dir data/test/syn/virat1/\
 # 							--output_dir results/depth_mask_rcnn_syn_virat1\
 
 # # ----Real Visualise------
-cd ..
-CUDA_VISIBLE_DEVICES=2 python tools/infer_simple.py --dataset virat1\
-							--cfg configs/scene1/depth_mask_rcnn/scene1_depth_mask_rcnn_101.yaml\
-							--load_ckpt Outputs/scene1_depth_mask_rcnn_101/May15-01-12-58_bheem_step/ckpt/model_step10397.pth \
-							--image_dir data/test/real/virat1\
-							--output_dir results/depth_mask_rcnn_real_virat1\
+# cd ..
+# CUDA_VISIBLE_DEVICES=2 python tools/infer_simple.py --dataset virat1\
+# 							--cfg configs/scene1/depth_mask_rcnn/scene1_depth_mask_rcnn_101.yaml\
+# 							--load_ckpt Outputs/scene1_depth_mask_rcnn_101/May15-01-12-58_bheem_step/ckpt/model_step10397.pth \
+# 							--image_dir data/test/real/virat1\
+# 							--output_dir results/depth_mask_rcnn_real_virat1\
 
 
 
 ##########################SCENE2#########################################
 
-#-----------------1. Depth Only-------------------
-# # ------resnet50-------
-# CUDA_VISIBLE_DEVICES=0 python ../tools/train_net_step.py --dataset virat2 \
-# 						--cfg ../configs/depth/resnet50.yaml \
-# 						--use_tfboard \
-# 						--bs 6 \
-# 						--nw 20
+##--------------------Test MaskRCNN + Depth--------------------------
 
-# # ------resnet101-------
-# CUDA_VISIBLE_DEVICES=0,1,2,4 python ../tools/train_net_step.py --dataset virat2 \
-# 						--cfg ../configs/depth/resnet101.yaml \
-# 						--use_tfboard \
-# 						--bs 24 \
-# 						--nw 20
+# # ----Synthetic Visualise------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2\
+# 							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
+# 							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May15-19-43-52_cube3_step/ckpt/model_step2663.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/depth_mask_rcnn_syn_virat2\
 
-#-----------------2. Normal Only-------------------
-# # ------resnet50-------
-# CUDA_VISIBLE_DEVICES=0 python ../tools/train_net_step.py --dataset virat2 \
-# 						--cfg ../configs/normal/resnet50.yaml \
-# 						--use_tfboard \
-# 						--bs 6 \
-# 						--nw 20
-
-# # ------resnet101-------
-# CUDA_VISIBLE_DEVICES=0,1,2,4 python ../tools/train_net_step.py --dataset virat2 \
-# 						--cfg ../configs/normal/resnet101.yaml \
-# 						--use_tfboard \
-# 						--bs 18 \
-# 						--nw 20
+# ----Real Visualise------
+cd ..
+CUDA_VISIBLE_DEVICES=2 python tools/infer_simple.py --dataset virat2\
+							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
+							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May15-19-43-52_cube3_step/ckpt/model_step2663.pth \
+							--image_dir data/test/real/virat2\
+							--output_dir results/depth_mask_rcnn_real_virat2\
 
 
 
