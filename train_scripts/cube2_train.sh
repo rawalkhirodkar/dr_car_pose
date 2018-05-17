@@ -51,7 +51,7 @@
 
 cd ..
 CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train_net_step.py --dataset virat1 \
-						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+						--cfg configs/scene1/depth_mask_rcnn/scene1_depth_mask_rcnn_101.yaml \
 						--load_ckpt Outputs/scene1_depth_mask_rcnn_101/May15-01-12-58_bheem_step/ckpt/model_step10397.pth \
 						--resume \
 						--use_tfboard \
