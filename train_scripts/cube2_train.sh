@@ -1,6 +1,6 @@
 ##########################SCENE1#########################################
 ##--------------------Train RCNN--------------------------
-# 13 images per GPU about 9GB memory!
+# Cube 2 cannot use more than 2 gpus
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat1 \
@@ -50,12 +50,12 @@
 
 
 cd ..
-CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/train_net_step.py --dataset virat1 \
+CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset virat1 \
 						--cfg configs/scene1/depth_mask_rcnn/scene1_depth_mask_rcnn_101.yaml \
 						--load_ckpt Outputs/scene1_depth_mask_rcnn_101/May15-01-12-58_bheem_step/ckpt/model_step10397.pth \
 						--resume \
 						--use_tfboard \
-						--bs 20 \
+						--bs 10 \
 						--nw 10 
 
 
