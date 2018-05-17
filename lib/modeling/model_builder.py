@@ -300,7 +300,6 @@ class Generalized_RCNN(nn.Module):
 # ---------------------------------------------------------------------------------------------
 #Only called while training
     def real_forward(self, data, im_info, roidb=None, **rpn_kwargs):
-        print("------------")
         im_data = data
         device_id = im_data.get_device()
 
