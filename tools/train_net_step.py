@@ -135,6 +135,24 @@ def save_ckpt(output_dir, args, step, train_size, model, optimizer):
         'optimizer': optimizer.state_dict()}, save_name)
     logger.info('save model: %s', save_name)
 
+# ----------------------------------------------------------------------
+def set_virat_configs():
+	cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
+	cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
+	cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+	cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+	cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
+
+	cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+	cfg.MODEL.DEPTH_HEIGHT = 192        
+	cfg.MODEL.DEPTH_NUM_CLASSES = 64
+
+	cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+	cfg.MODEL.NORMAL_HEIGHT = 192        
+	cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+
+	return
+# ----------------------------------------------------------------------
 
 def main():
     """Main function"""
@@ -158,38 +176,22 @@ def main():
         cfg.TRAIN.DATASETS = ('keypoints_coco_2017_train',)
         cfg.MODEL.NUM_CLASSES = 2
     # -----------------------------------------------
-    elif args.dataset == "virat1":
-        cfg.TRAIN.DATASETS = ('virat1_train',)
-        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
-        cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
-        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
-        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        
-        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
-        cfg.MODEL.DEPTH_HEIGHT = 192        
-        cfg.MODEL.DEPTH_NUM_CLASSES = 64
+    elif args.dataset == "virat1_syn":
+        cfg.TRAIN.DATASETS = ('virat1_syn_train',)
+        set_virat_configs()
 
-        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
-        cfg.MODEL.NORMAL_HEIGHT = 192        
-        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
-
+    elif args.dataset == "virat1_real":
+        cfg.TRAIN.DATASETS = ('virat1_real_train',)
+        set_virat_configs()
+    
+    elif args.dataset == "virat2_syn":
+        cfg.TRAIN.DATASETS = ('virat2_syn_train',)
+        set_virat_configs()
         #other classes num set in the custom_json_dataset file
-    elif args.dataset == "virat2":
-        cfg.TRAIN.DATASETS = ('virat2_train',)
-        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included
-        cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
-        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
-        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        
-        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
-        cfg.MODEL.DEPTH_HEIGHT = 192        
-        cfg.MODEL.DEPTH_NUM_CLASSES = 64
 
-        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
-        cfg.MODEL.NORMAL_HEIGHT = 192        
-        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+    elif args.dataset == "virat2_real":
+        cfg.TRAIN.DATASETS = ('virat2_real_train',)
+        set_virat_configs()
     # ------------------------------------------------
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))
