@@ -87,7 +87,6 @@ class ViratClassInfo():
         self.y_range = MAX_VAL - MIN_VAL
         
         # ----------------------------
-
         assert(len(self.colors) == cfg.MODEL.COLOR_NUM_CLASSES)
         assert(len(self.rotations) == cfg.MODEL.ROTATION_NUM_CLASSES)
         assert(len(self.x) == cfg.MODEL.X_NUM_CLASSES)

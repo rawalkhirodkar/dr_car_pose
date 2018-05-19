@@ -23,7 +23,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from utils.collections import AttrDict
-
+from datasets.custom_json_dataset import ViratClassInfo
 
 def get_coco_dataset():
     """A dummy COCO dataset that includes only the 'classes' field."""
@@ -49,13 +49,25 @@ def get_coco_dataset():
 def get_virat1_dataset():
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
+
+    virat_data_info = ViratClassInfo()
+
     # classes = [
     #     '__background__', 'sedan', 'suv', 'truck', 'person'
     # ]
     classes = [
         '__background__', 'sedan', 'suv', 'sedan', 'person'
     ]
+    
+    rotation_classes = virat_data_info.rotations
+    x_classes = virat_data_info.x
+    y_classes = virat_data_info.y
+
     ds.classes = {i: name for i, name in enumerate(classes)}
+    ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
+    ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
+    ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
+    
     return ds
 # ------------------------------------------------------------------------------
 
@@ -64,9 +76,24 @@ def get_virat1_dataset():
 def get_virat2_dataset():
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
+
+    virat_data_info = ViratClassInfo()
+
+    # classes = [
+    #     '__background__', 'sedan', 'suv', 'truck', 'person'
+    # ]
     classes = [
         '__background__', 'sedan', 'suv', 'truck', 'person'
     ]
+    
+    rotation_classes = virat_data_info.rotations
+    x_classes = virat_data_info.x
+    y_classes = virat_data_info.y
+
     ds.classes = {i: name for i, name in enumerate(classes)}
+    ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
+    ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
+    ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
+
     return ds
 # ------------------------------------------------------------------------------
