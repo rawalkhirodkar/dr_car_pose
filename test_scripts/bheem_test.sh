@@ -64,7 +64,7 @@
 cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_real\
 							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_real/rcnn_101/May19-17-24-49_bheem_step/ckpt/model_step140.pth \
+							--load_ckpt Outputs/virat2_real/rcnn_101/May20-21-23-58_bheem_step/ckpt/model_step774.pth \
 							--image_dir data/test/real/small_virat2/\
 							--output_dir results/rcnn_real_virat2\
 
