@@ -60,15 +60,33 @@
 
 ##########################SCENE2#########################################
 
+##--------------------Test RCNN Real--------------------------
+cd ..
+CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_real\
+							--cfg configs/virat/rcnn/rcnn_101.yaml\
+							--load_ckpt Outputs/virat2_real/rcnn_101/May19-17-24-49_bheem_step/ckpt/model_step140.pth \
+							--image_dir data/test/real/small_virat2/\
+							--output_dir results/rcnn_real_virat2\
+
+
+# ##--------------------Test RCNN Syn--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_real\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_syn/rcnn_101/May19-16-14-58_bheem_step/ckpt/model_step311.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/rcnn_syn_virat2\
+
+
 ##--------------------Test MaskRCNN + Depth--------------------------
 
-# ----Synthetic Visualise------
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2\
-							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
-							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May16-21-08-47_bheem_step/ckpt/model_step5009.pth \
-							--image_dir data/test/syn/virat2/\
-							--output_dir results/depth_mask_rcnn_syn_virat2\
+# # ----Synthetic Visualise------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2\
+# 							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
+# 							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May16-21-08-47_bheem_step/ckpt/model_step5009.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/depth_mask_rcnn_syn_virat2\
 
 # ----Real Visualise------
 # cd ..

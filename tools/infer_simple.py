@@ -78,7 +78,24 @@ def parse_args():
 
     return args
 
+# ----------------------------------------------------------------------
+def set_virat_configs():
+    cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
+    cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)
+    cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
+    cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
+    cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
 
+    cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
+    cfg.MODEL.DEPTH_HEIGHT = 192        
+    cfg.MODEL.DEPTH_NUM_CLASSES = 64
+
+    cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
+    cfg.MODEL.NORMAL_HEIGHT = 192        
+    cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
+
+    return
+# ----------------------------------------------------------------------
 def main():
     """main function"""
 
@@ -100,35 +117,12 @@ def main():
         cfg.MODEL.NUM_CLASSES = 2
     # -----------------------------------------------
     elif args.dataset.startswith("virat1"):
+        set_virat_configs()
         dataset = datasets.get_virat1_dataset()
-        cfg.MODEL.NUM_CLASSES = 3+1+1 #background and person included
-        cfg.MODEL.COLOR_NUM_CLASSES = 7+1
-        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
-        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        
-        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
-        cfg.MODEL.DEPTH_HEIGHT = 192        
-        cfg.MODEL.DEPTH_NUM_CLASSES = 64
-
-        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
-        cfg.MODEL.NORMAL_HEIGHT = 192        
-        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
     # ------------------------------------------------
     elif args.dataset.startswith("virat2"):
+        set_virat_configs()
         dataset = datasets.get_virat2_dataset()
-        cfg.MODEL.NUM_CLASSES = 3+1+1 #background included
-        cfg.MODEL.COLOR_NUM_CLASSES = 7+1
-        cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
-        cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
-        
-        cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
-        cfg.MODEL.DEPTH_HEIGHT = 192        
-        cfg.MODEL.DEPTH_NUM_CLASSES = 64
-        cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
-        cfg.MODEL.NORMAL_HEIGHT = 192        
-        cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
     # -----------------------------------------------
     else:
         raise ValueError('Unexpected dataset name: {}'.format(args.dataset))

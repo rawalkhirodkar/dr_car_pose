@@ -18,9 +18,13 @@ import modeling.keypoint_rcnn_heads as keypoint_rcnn_heads
 import utils.blob as blob_utils
 import utils.net as net_utils
 import utils.resnet_weights_helper as resnet_utils
+
+import modeling.attribute_heads as attribute_heads
 import modeling.depth_heads as depth_heads
 import modeling.normal_heads as normal_heads
+
 logger = logging.getLogger(__name__)
+
 
 
 def get_func(func_name):
@@ -89,6 +93,11 @@ class Generalized_RCNN(nn.Module):
                 self.RPN.dim_out, self.roi_feature_transform, self.Conv_Body.spatial_scale)
             self.Box_Outs = fast_rcnn_heads.fast_rcnn_outputs(
                 self.Box_Head.dim_out)
+
+        # -----------------------------------------------------------------------------
+        # Attribute Branch
+        self.AttributeNet = attribute_heads.attribute_outputs(self.Box_Head.dim_out)
+        # -----------------------------------------------------------------------------
 
         # Mask Branch
         if cfg.MODEL.MASK_ON:
@@ -209,9 +218,10 @@ class Generalized_RCNN(nn.Module):
             else:
                 box_feat = self.Box_Head(blob_conv, rpn_ret)
             # -----------------------------------------------------------------
-            cls_score, bbox_pred, \
+            cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
+
             color_cls_score, rotation_cls_score, \
-            x_cls_score, y_cls_score = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)        
+            x_cls_score, y_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)                    
             # -----------------------------------------------------------------
         else:
             # TODO: complete the returns for RPN only situation
@@ -234,21 +244,23 @@ class Generalized_RCNN(nn.Module):
 
             # --------------------------------------------------------------------------
             # bbox loss
-            loss_cls, loss_bbox, accuracy_cls,\
-            color_loss_cls, color_accuracy_cls,\
-            rotation_loss_cls, rotation_accuracy_cls,\
-            x_loss_cls, x_accuracy_cls,\
-            y_loss_cls, y_accuracy_cls = fast_rcnn_heads.fast_rcnn_losses(
+            loss_cls, loss_bbox, accuracy_cls = fast_rcnn_heads.fast_rcnn_losses(
                 cls_score, bbox_pred, rpn_ret['labels_int32'], rpn_ret['bbox_targets'],
-                rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'],
-                color_cls_score, rotation_cls_score, 
-                x_cls_score, y_cls_score,
-                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
-                rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
+                rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'])
 
             return_dict['losses']['loss_cls'] = loss_cls
             return_dict['losses']['loss_bbox'] = loss_bbox
             return_dict['metrics']['accuracy_cls'] = accuracy_cls
+
+            # attribute loss
+            color_loss_cls, color_accuracy_cls,\
+            rotation_loss_cls, rotation_accuracy_cls,\
+            x_loss_cls, x_accuracy_cls,\
+            y_loss_cls, y_accuracy_cls = attribute_heads.attribute_losses(
+                color_cls_score, rotation_cls_score, 
+                x_cls_score, y_cls_score,
+                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
+                rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
 
             return_dict['losses']['color_loss_cls'] = color_loss_cls
             return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
@@ -307,40 +319,17 @@ class Generalized_RCNN(nn.Module):
         return_dict['losses'] = {}
         return_dict['metrics'] = {}
 
-        # # ------------------------------------------------------------
-        #fake losses        
-        if cfg.MODEL.DEPTH_ON:
-            return_dict['losses']['depth_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['metrics']['depth_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-
-        if cfg.MODEL.NORMAL_ON:
-            return_dict['losses']['normal_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-        
-        if cfg.MODEL.MASK_ON:
-            return_dict['losses']['loss_mask'] = torch.tensor(0.0).cuda(device_id)
-
-        return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['losses']['loss_bbox'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-
-        return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['losses']['x_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['losses']['y_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        
-        return_dict['metrics']['color_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['metrics']['rotation_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['metrics']['x_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['metrics']['y_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-        # # ------------------------------------------------------------
-
+        # --------------------------------------------------------------------------------------------------
         blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
-        rpn_ret = self.RPN(blob_conv, im_info, roidb) # can ignore here
+        rpn_ret = self.RPN(blob_conv, im_info, roidb) 
 
         if cfg.FPN.FPN_ON:
             blob_conv = blob_conv[-self.num_roi_levels:]
 
+        box_feat = self.Box_Head(blob_conv, rpn_ret)
+        cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)  
+
+        # --------------------------------------------------------------------------------------------
         # rpn loss
         rpn_kwargs.update(dict(
             (k, rpn_ret[k]) for k in rpn_ret.keys()
@@ -354,6 +343,41 @@ class Generalized_RCNN(nn.Module):
         else:
             return_dict['losses']['loss_rpn_cls'] = loss_rpn_cls
             return_dict['losses']['loss_rpn_bbox'] = loss_rpn_bbox
+
+        # bbox loss
+        loss_cls, loss_bbox, accuracy_cls = fast_rcnn_heads.fast_rcnn_losses(
+            cls_score, bbox_pred, rpn_ret['labels_int32'], rpn_ret['bbox_targets'],
+            rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'])
+
+        return_dict['losses']['loss_cls'] = loss_cls
+        return_dict['losses']['loss_bbox'] = loss_bbox
+        return_dict['metrics']['accuracy_cls'] = accuracy_cls
+
+        # --------------------------------------------------------------------------------------------------
+
+        # # ------------------------------------------------------------
+        #fake losses        
+        if cfg.MODEL.DEPTH_ON:
+            return_dict['losses']['depth_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+            return_dict['metrics']['depth_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+
+        if cfg.MODEL.NORMAL_ON:
+            return_dict['losses']['normal_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+            return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        
+        if cfg.MODEL.MASK_ON:
+            return_dict['losses']['loss_mask'] = torch.tensor(0.0).cuda(device_id)
+
+        return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['x_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['losses']['y_loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        
+        return_dict['metrics']['color_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['rotation_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['x_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['y_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        # # ------------------------------------------------------------
 
         return self.prep_return_dict(return_dict)
 # ---------------------------------------------------------------------------------------------

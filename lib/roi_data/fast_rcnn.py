@@ -248,6 +248,11 @@ def _compute_targets(ex_rois, gt_rois, labels):
 
     targets = box_utils.bbox_transform_inv(ex_rois, gt_rois,
                                            cfg.MODEL.BBOX_REG_WEIGHTS)
+    
+    # Use class "1" for all fg boxes if using class_agnostic_bbox_reg
+    if cfg.MODEL.CLS_AGNOSTIC_BBOX_REG:
+        labels.clip(max=1, out=labels)
+
     return np.hstack((labels[:, np.newaxis], targets)).astype(
         np.float32, copy=False)
 
@@ -264,6 +269,7 @@ def _expand_bbox_targets(bbox_target_data):
         bbox_target_data (ndarray): N x 4K blob of regression targets
         bbox_inside_weights (ndarray): N x 4K blob of loss weights
     """
+
     num_bbox_reg_classes = cfg.MODEL.NUM_CLASSES
     if cfg.MODEL.CLS_AGNOSTIC_BBOX_REG:
         num_bbox_reg_classes = 2  # bg and fg

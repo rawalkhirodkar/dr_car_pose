@@ -17,12 +17,12 @@
 # 						--nw 20
 
 
-cd ..
-CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat1_real \
-						--cfg configs/virat/rcnn/scene1_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 30 \
-						--nw 10
+# cd ..
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat1_real \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 30 \
+# 						--nw 10
 
 ##--------------------Train MaskRCNN--------------------------
 
@@ -97,6 +97,30 @@ CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat1_real 
 # 						--use_tfboard \
 # 						--bs 39 \
 # 						--nw 20
+
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 24 \
+# 						--nw 10
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_real \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 30 \
+# 						--nw 10
+
+cd ..
+CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat2_real \
+						--cfg configs/virat/rcnn/rcnn_101.yaml \
+						--use_tfboard \
+						--bs 8 \
+						--nw 0
+
+# python tools/train_net_step.py --dataset coco2017 --cfg configs/e2e_mask_rcnn_R-50-FPN_1x.yaml --use_tfboard --bs 9
 
 ##--------------------Train MaskRCNN--------------------------
 

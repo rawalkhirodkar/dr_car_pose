@@ -428,13 +428,10 @@ class CustomJsonDataset(object):
 
         im_has_visible_keypoints = False
         for ix, obj in enumerate(valid_objs):
-            # --------some hack-------------
-            if(obj['is_real'] and obj['category_id'] == 5):
-                obj['category_id'] = 4
-            # -------------------------------            
+            # --------some hack------------- 
             cls = self.json_category_id_to_contiguous_id[obj['category_id']]
             boxes[ix, :] = obj['clean_bbox']
-            gt_classes[ix] = cls
+            gt_classes[ix] = cls #will be sedan or person
             # --------------------------------------------------------
             gt_colors[ix] = self.virat_class_info.get_color_id(obj['color'])
             gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation'])
