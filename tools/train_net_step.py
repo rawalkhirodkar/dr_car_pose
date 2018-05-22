@@ -194,6 +194,10 @@ def main():
     elif args.dataset == "virat2_real":
         cfg.TRAIN.DATASETS = ('virat2_real_train',)
         set_virat_configs()
+
+    elif args.dataset == "virat2_mix":
+        cfg.TRAIN.DATASETS = ('virat2_mix_train',)
+        set_virat_configs()
     # ------------------------------------------------
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))

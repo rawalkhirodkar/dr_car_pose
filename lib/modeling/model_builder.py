@@ -349,14 +349,20 @@ class Generalized_RCNN(nn.Module):
             cls_score, bbox_pred, rpn_ret['labels_int32'], rpn_ret['bbox_targets'],
             rpn_ret['bbox_inside_weights'], rpn_ret['bbox_outside_weights'])
 
-        return_dict['losses']['loss_cls'] = loss_cls
+        # return_dict['losses']['loss_cls'] = loss_cls
         return_dict['losses']['loss_bbox'] = loss_bbox
-        return_dict['metrics']['accuracy_cls'] = accuracy_cls
+        # return_dict['metrics']['accuracy_cls'] = accuracy_cls
 
         # --------------------------------------------------------------------------------------------------
 
         # # ------------------------------------------------------------
         #fake losses        
+
+        # -----------------------------------
+        return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        # -----------------------------------
+
         if cfg.MODEL.DEPTH_ON:
             return_dict['losses']['depth_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['depth_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
