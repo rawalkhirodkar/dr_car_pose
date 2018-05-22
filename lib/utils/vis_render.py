@@ -56,7 +56,7 @@ def render_scene2(render_parameters, render_img_name="test.png", render_dir="ren
 #     pdb.set_trace()
     render_string = '#'.join(render_string)
     call(('python2', 'lib/render/test_unreal_scene2.py',
-        '--port', str(9002),
+        '--port', str(9000),
         '--render_parameters', render_string, 
         '--render_dir', render_dir,
         '--render_img_name', render_img_name))

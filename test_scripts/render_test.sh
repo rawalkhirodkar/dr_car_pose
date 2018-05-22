@@ -70,13 +70,22 @@
 # 							--image_dir data/test/syn/render_virat2/\
 # 							--output_dir results/depth_mask_rcnn_syn_virat2\
 
-###----Render Real Visualise------
+# ###----Render Real Visualise------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2\
+# 							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
+# 							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May16-21-08-47_bheem_step/ckpt/model_step5009.pth \
+# 							--image_dir data/test/real/render_virat2\
+# 							--output_dir results/depth_mask_rcnn_real_virat2\
+
+
+#--------------------Test RCNN Mix on Real--------------------------
 cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2\
-							--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml\
-							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May16-21-08-47_bheem_step/ckpt/model_step5009.pth \
-							--image_dir data/test/real/render_virat2\
-							--output_dir results/depth_mask_rcnn_real_virat2\
+CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+							--cfg configs/virat/rcnn/rcnn_101.yaml\
+							--load_ckpt Outputs/virat2_mix/rcnn_101/May21-20-37-37_bheem_step/ckpt/model_step2752.pth \
+							--image_dir data/test/real/small_virat2/\
+							--output_dir results/rcnn_real_virat2\
 
 # # ----Real Visualise------
 # cd ..
