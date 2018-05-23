@@ -150,8 +150,8 @@ def vis_one_image(
     color_list = colormap(rgb=True) / 255
 
     fig = plt.figure(frameon=False)
-    fig.set_size_inches(im.shape[1] / dpi, im.shape[0] / dpi)
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    fig.set_size_inches(2*im.shape[1] / dpi, 2*im.shape[0] / dpi)
+    ax = plt.Axes(fig, [0., 0., 0.5, 1])
     ax.axis('off')
     fig.add_axes(ax)
     ax.imshow(im)
@@ -230,7 +230,7 @@ def vis_one_image(
         im2show = cv2.cvtColor(im2show, cv2.COLOR_BGR2RGB)
 
         result_path = os.path.join(render_output_dir, 'target', im_name + "_det.jpg")
-        fig.savefig(result_path, dpi=dpi)
+        cv2.imwrite(result_path, im2show)
 
         result_path = os.path.join(render_output_dir, 'view1', im_name + "_v1.jpg")
         cv2.imwrite(result_path, view1_img)
@@ -240,6 +240,11 @@ def vis_one_image(
 
         result_path = os.path.join(render_output_dir, 'view3', im_name + "_v3.jpg")
         cv2.imwrite(result_path, view3_img)
+
+        ax = plt.Axes(fig, [0.5, 0, 0.5, 1])
+        ax.axis('off')
+        fig.add_axes(ax)
+        ax.imshow(cv2.cvtColor(view1_img, cv2.COLOR_BGR2RGB))
 
     # --------------------------------------------------------------------------
     output_name = os.path.basename(im_name) + '.' + ext

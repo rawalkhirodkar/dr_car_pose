@@ -98,7 +98,7 @@
 cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
 							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_mix/rcnn_101/May22-01-03-45_bheem_step/ckpt/model_step11654.pth \
+							--load_ckpt Outputs/virat2_mix/rcnn_101/May23-13-45-46_bheem_step/ckpt/model_step6992.pth \
 							--image_dir data/test/syn/render_virat2/\
 							--output_dir results/rcnn_syn_virat2\
 
