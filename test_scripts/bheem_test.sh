@@ -60,13 +60,46 @@
 
 ##########################SCENE2#########################################
 
-##--------------------Test RCNN Real--------------------------
+# ##--------------------Test RCNN Real--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_real\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_real/rcnn_101/May20-22-11-49_bheem_step/ckpt/model_step469.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/rcnn_real_virat2\
+
+##--------------------Test RCNN Mix on Real--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May21-20-37-37_bheem_step/ckpt/model_step2752.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/rcnn_real_virat2\
+
 cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_real\
+CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_real/rcnn_101/May20-22-11-49_bheem_step/ckpt/model_step469.pth \
+							--load_ckpt Outputs/virat2_mix/rcnn_101/May22-01-03-45_bheem_step/ckpt/model_step11654.pth \
 							--image_dir data/test/real/small_virat2/\
 							--output_dir results/rcnn_real_virat2\
+
+# #--------------------Test RCNN Mix on Syn--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May21-20-37-37_bheem_step/ckpt/model_step998.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/rcnn_syn_virat2\
+
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May22-01-03-45_bheem_step/ckpt/model_step11654.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/rcnn_syn_virat2\
+
+
 
 
 # ##--------------------Test RCNN Syn--------------------------
