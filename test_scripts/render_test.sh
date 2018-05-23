@@ -79,13 +79,29 @@
 # 							--output_dir results/depth_mask_rcnn_real_virat2\
 
 
-#--------------------Test RCNN Mix on Real--------------------------
+# #--------------------Test RCNN Mix on Real--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May21-20-37-37_bheem_step/ckpt/model_step2752.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/rcnn_real_virat2\
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May22-01-03-45_bheem_step/ckpt/model_step11654.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/rcnn_real_virat2\
+
+# #--------------------Test RCNN Mix on Syn--------------------------
 cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
 							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_mix/rcnn_101/May21-20-37-37_bheem_step/ckpt/model_step2752.pth \
-							--image_dir data/test/real/small_virat2/\
-							--output_dir results/rcnn_real_virat2\
+							--load_ckpt Outputs/virat2_mix/rcnn_101/May22-01-03-45_bheem_step/ckpt/model_step11654.pth \
+							--image_dir data/test/syn/render_virat2/\
+							--output_dir results/rcnn_syn_virat2\
+
 
 # # ----Real Visualise------
 # cd ..

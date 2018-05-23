@@ -60,18 +60,18 @@ def get_virat1_dataset():
     ]
     
     rotation_classes = virat_data_info.rotations
+    color_classes = virat_data_info.colors
     x_classes = virat_data_info.x
     y_classes = virat_data_info.y
 
     ds.classes = {i: name for i, name in enumerate(classes)}
+    ds.color_classes = {i: name for i, name in enumerate(color_classes)}
     ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
     ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
     ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
     
     return ds
 # ------------------------------------------------------------------------------
-
-
 
 def get_virat2_dataset():
     """A dummy COCO dataset that includes only the 'classes' field."""
@@ -87,10 +87,12 @@ def get_virat2_dataset():
     ]
     
     rotation_classes = virat_data_info.rotations
+    color_classes = virat_data_info.colors
     x_classes = virat_data_info.x
     y_classes = virat_data_info.y
 
     ds.classes = {i: name for i, name in enumerate(classes)}
+    ds.color_classes = {i: name for i, name in enumerate(color_classes)}
     ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
     ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
     ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}

@@ -62,7 +62,7 @@ class ViratClassInfo():
         # ----------------------------
         MAX_VAL = 360.0; MIN_VAL = 0.0; STEP = 10.0
         temp = list(np.arange(MIN_VAL, MAX_VAL, STEP) + STEP/2)
-        self.rotations = [str(x) for x in temp] #20 classes
+        self.rotations = [str(round(x,1)) for x in temp] #20 classes
         self.rotations_to_ind = dict(zip(self.rotations, range(len(self.rotations))))
         self.rotation_max_val = MAX_VAL
         self.rotation_min_val = MIN_VAL
@@ -71,7 +71,7 @@ class ViratClassInfo():
         # ----------------------------
         MAX_VAL = 1.0; MIN_VAL = -1.0; STEP = 0.1
         temp = list(np.arange(MIN_VAL, MAX_VAL, STEP) + STEP/2)
-        self.x = [str(x) for x in temp] #20 classes
+        self.x = [str(round(x,1)) for x in temp] #20 classes
         self.x_to_ind = dict(zip(self.x, range(len(self.x))))
         self.x_max_val = MAX_VAL
         self.x_min_val = MIN_VAL
@@ -80,7 +80,7 @@ class ViratClassInfo():
         # ----------------------------
         MAX_VAL = 1.0; MIN_VAL = -1.0; STEP = 0.1
         temp = list(np.arange(MIN_VAL, MAX_VAL, STEP) + STEP/2)
-        self.y = [str(x) for x in temp] #20 classes
+        self.y = [str(round(x,1)) for x in temp] #20 classes
         self.y_to_ind = dict(zip(self.y, range(len(self.y))))
         self.y_max_val = MAX_VAL
         self.y_min_val = MIN_VAL

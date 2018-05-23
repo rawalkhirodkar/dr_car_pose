@@ -81,7 +81,8 @@ def parse_args():
 
 # ----------------------------------------------------------------------
 def set_virat_configs():
-    cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
+    # cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
+    cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False
 
     cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
     cfg.MODEL.COLOR_NUM_CLASSES = 7+1 #(yellow for person)

@@ -38,8 +38,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from subprocess import call
 
-plt.rcParams['pdf.fonttype'] = 42  # For editing in Adobe Illustrator
+import logging
 
+plt.rcParams['pdf.fonttype'] = 42  # For editing in Adobe Illustrator
 
 _GRAY = (218, 227, 218)
 _GREEN = (18, 127, 15)
@@ -168,7 +169,7 @@ def vis_one_image(
             continue
 
         class_label = classes[i] - 1 #remove the background
-        color_label = attributes[i][0]
+        color_label = attributes[i][0]; color = dataset.color_classes[attributes[i][0]]
         rotation = dataset.rotation_classes[attributes[i][1]]
         x = dataset.x_classes[attributes[i][2]]
         y = dataset.y_classes[attributes[i][3]]
@@ -176,7 +177,7 @@ def vis_one_image(
         object_render_parameters = [class_label, color_label, x, y, rotation]
         render_parameters.append(np.asarray(object_render_parameters))
         
-        print(dataset.classes[classes[i]], score)
+        print(dataset.classes[classes[i]], score, 'color:{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
         # show box (off by default, box_alpha=0.0)
         ax.add_patch(
             plt.Rectangle((bbox[0], bbox[1]),
@@ -219,7 +220,7 @@ def vis_one_image(
                     alpha=0.5)
                 ax.add_patch(polygon)
 
-    #----------------------------------------------------------------
+    #------------------------for loop ends----------------------------------------
     #write the rendering results
     num_objects = len(render_parameters)
     if(num_objects > 0):
@@ -229,7 +230,7 @@ def vis_one_image(
         im2show = cv2.cvtColor(im2show, cv2.COLOR_BGR2RGB)
 
         result_path = os.path.join(render_output_dir, 'target', im_name + "_det.jpg")
-        cv2.imwrite(result_path, im2show)
+        fig.savefig(result_path, dpi=dpi)
 
         result_path = os.path.join(render_output_dir, 'view1', im_name + "_v1.jpg")
         cv2.imwrite(result_path, view1_img)
@@ -240,7 +241,7 @@ def vis_one_image(
         result_path = os.path.join(render_output_dir, 'view3', im_name + "_v3.jpg")
         cv2.imwrite(result_path, view3_img)
 
-    # --------------------for loop ends------------------------------
+    # --------------------------------------------------------------------------
     output_name = os.path.basename(im_name) + '.' + ext
     fig.savefig(os.path.join(rgb_output_dir, '{}'.format(output_name)), dpi=dpi)
     plt.close('all')
