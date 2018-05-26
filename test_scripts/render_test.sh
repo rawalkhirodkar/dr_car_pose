@@ -94,11 +94,19 @@
 # 							--image_dir data/test/real/small_virat2/\
 # 							--output_dir results/rcnn_real_virat2\
 
-# #--------------------Test RCNN Mix on Syn--------------------------
+# # #--------------------Test RCNN Mix on Syn--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_mix/rcnn_101/May23-13-45-46_bheem_step/ckpt/model_step6992.pth \
+# 							--image_dir data/test/syn/render_virat2/\
+# 							--output_dir results/rcnn_syn_virat2\
+
+# #--------------------Test RCNN Syn on Syn--------------------------
 cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_syn\
 							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_mix/rcnn_101/May23-13-45-46_bheem_step/ckpt/model_step6992.pth \
+							--load_ckpt Outputs/virat2_syn/rcnn_101/May25-19-41-48_bheem_step/ckpt/model_step665.pth \
 							--image_dir data/test/syn/render_virat2/\
 							--output_dir results/rcnn_syn_virat2\
 

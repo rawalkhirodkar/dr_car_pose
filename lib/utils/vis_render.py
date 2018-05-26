@@ -177,7 +177,7 @@ def vis_one_image(
         object_render_parameters = [class_label, color_label, x, y, rotation]
         render_parameters.append(np.asarray(object_render_parameters))
         
-        print(dataset.classes[classes[i]], score, 'color:{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
+        print(dataset.classes[classes[i]], score, '{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
         # show box (off by default, box_alpha=0.0)
         ax.add_patch(
             plt.Rectangle((bbox[0], bbox[1]),
@@ -189,7 +189,7 @@ def vis_one_image(
         if show_class:
             ax.text(
                 bbox[0], bbox[1] - 2,
-                get_class_string(classes[i], score, dataset),
+                get_class_string(classes[i], score, dataset) + '{} x:{} y:{} rot:{}'.format(color, x, y, rotation),
                 fontsize=3,
                 family='serif',
                 bbox=dict(

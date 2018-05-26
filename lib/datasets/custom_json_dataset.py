@@ -126,7 +126,7 @@ class ViratClassInfo():
         if(raw_y == self.y_max_val):
             raw_y = self.y_min_val
 
-        val_per_class = self.y_range/len(self.y) #should be equal to 10
+        val_per_class = self.y_range/len(self.y) #should be equal to 0.1
         
         raw_y = raw_y - self.y_min_val
         y_id = int(raw_y/val_per_class) #take floor, 0 to 35
