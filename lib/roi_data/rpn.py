@@ -117,7 +117,7 @@ def add_rpn_blobs(blobs, im_scales, roidb):
         'has_visible_keypoints', 'boxes', 'segms', 'seg_areas', 'gt_classes',
         'gt_overlaps', 'is_crowd', 'box_to_gt_ind_map', 'gt_keypoints',
         'gt_colors', 'gt_rotations', 'gt_x', 'gt_y', 'gt_depth', 'gt_normal',
-        'gt_is_real'
+        'gt_is_real', 'image'
     ]
     # -------------------------------------------------------------------------
     minimal_roidb = [{} for _ in range(len(roidb))]
