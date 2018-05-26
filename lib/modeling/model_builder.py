@@ -152,6 +152,7 @@ class Generalized_RCNN(nn.Module):
         if self.training:
             roidb = list(map(lambda x: blob_utils.deserialize(x)[0], roidb))
         # -------------------------------------------------------------------------------------------------------------------
+        # import pdb; pdb.set_trace()
         # In case the batch contains any real images
         if self.training:
             real_batch_size = 0
@@ -259,6 +260,7 @@ class Generalized_RCNN(nn.Module):
             y_loss_cls, y_accuracy_cls = attribute_heads.attribute_losses(
                 color_cls_score, rotation_cls_score, 
                 x_cls_score, y_cls_score,
+                rpn_ret['labels_int32'],
                 rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
                 rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
 

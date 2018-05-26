@@ -56,7 +56,8 @@ class ViratClassInfo():
 
     def __init__(self):
         # self.colors = ('black', 'red', 'blue', 'white')
-        self.colors = ('white', 'black', 'red', 'blue', 'brown', 'silver', 'cyan', 'yellow')
+        # self.colors = ('white', 'black', 'red', 'blue', 'brown', 'silver', 'cyan', 'yellow')
+        self.colors = ('silver', 'black', 'red', 'blue', 'brown', 'cyan')
         self.colors_to_ind = dict(zip(self.colors, range(len(self.colors)))) #class ind: 0, 1, 2, 3
 
         # ----------------------------
@@ -698,25 +699,31 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
         )
         # --------------------------------------------------------
         #initialize as -1 for background classes
+        # this is poor signal, initialise as 0!
+        
+        # initial_val = -1
+        initial_val = 0
+
         entry['gt_colors'] = np.append(
             entry['gt_colors'],
-            np.zeros((num_boxes), dtype=entry['gt_colors'].dtype) - 1
+            np.zeros((num_boxes), dtype=entry['gt_colors'].dtype) + initial_val
         )
 
         entry['gt_rotations'] = np.append(
             entry['gt_rotations'],
-            np.zeros((num_boxes), dtype=entry['gt_rotations'].dtype) - 1
+            np.zeros((num_boxes), dtype=entry['gt_rotations'].dtype) + initial_val
         )
 
         entry['gt_x'] = np.append(
             entry['gt_x'],
-            np.zeros((num_boxes), dtype=entry['gt_x'].dtype) - 1
+            np.zeros((num_boxes), dtype=entry['gt_x'].dtype) + initial_val
         )
 
         entry['gt_y'] = np.append(
             entry['gt_y'],
-            np.zeros((num_boxes), dtype=entry['gt_y'].dtype) - 1
+            np.zeros((num_boxes), dtype=entry['gt_y'].dtype) + initial_val
         )
+
         # --------------------------------------------------------
 
         entry['seg_areas'] = np.append(

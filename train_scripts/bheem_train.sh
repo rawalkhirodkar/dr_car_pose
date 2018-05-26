@@ -113,12 +113,12 @@
 # 						--bs 9 \
 # 						--nw 10
 
-# cd ..
-# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
-# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 9 \
-# 						--nw 10
+cd ..
+CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
+						--cfg configs/virat/rcnn/rcnn_101.yaml \
+						--use_tfboard \
+						--bs 9 \
+						--nw 10
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
@@ -224,11 +224,11 @@
 # 						--bs 9 \
 # 						--nw 10
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
-						--cfg configs/virat/rcnn/rcnn_101.yaml \
-						--load_ckpt Outputs/virat2_syn/rcnn_101/May25-19-41-48_bheem_step/ckpt/model_step998.pth \
-						--resume \
-						--use_tfboard \
-						--bs 3 \
-						--nw 0
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--load_ckpt Outputs/virat2_syn/rcnn_101/May25-19-41-48_bheem_step/ckpt/model_step998.pth \
+# 						--resume \
+# 						--use_tfboard \
+# 						--bs 3 \
+# 						--nw 0
