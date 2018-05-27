@@ -99,12 +99,12 @@
 # 							--image_dir data/test/syn/virat2/\
 # 							--output_dir results/rcnn_syn_virat2\
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
-							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_syn/rcnn_101/May26-00-23-58_bheem_step/ckpt/model_step1167.pth \
-							--image_dir data/test/syn/virat2/\
-							--output_dir results/rcnn_syn_virat2\
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
+# 							--cfg configs/virat/rcnn/rcnn_101.yaml\
+# 							--load_ckpt Outputs/virat2_syn/rcnn_101/May27-14-32-17_bheem_step/ckpt/model_step665.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/rcnn_syn_virat2\
 
 
 # ##--------------------Test RCNN Syn--------------------------
@@ -114,6 +114,16 @@ CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
 # 							--load_ckpt Outputs/virat2_syn/rcnn_101/May19-16-14-58_bheem_step/ckpt/model_step311.pth \
 # 							--image_dir data/test/syn/virat2/\
 # 							--output_dir results/rcnn_syn_virat2\
+
+
+# ##--------------------Test Mask RCNN Syn--------------------------
+
+cd ..
+CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
+							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+							--load_ckpt Outputs/virat2_syn/mask_rcnn_101/May27-17-30-16_bheem_step/ckpt/model_step492.pth \
+							--image_dir data/test/syn/virat2/\
+							--output_dir results/maskrcnn_syn_virat2\
 
 
 ##--------------------Test MaskRCNN + Depth--------------------------

@@ -96,7 +96,9 @@ class Generalized_RCNN(nn.Module):
 
         # -----------------------------------------------------------------------------
         # Attribute Branch
-        self.AttributeNet = attribute_heads.attribute_outputs(self.Box_Head.dim_out)
+        #Depth prediction Network
+        if cfg.MODEL.ATTRIBUTE_ON:
+            self.AttributeNet = attribute_heads.attribute_outputs(self.Box_Head.dim_out)
         # -----------------------------------------------------------------------------
 
         # Mask Branch
@@ -221,8 +223,9 @@ class Generalized_RCNN(nn.Module):
             # -----------------------------------------------------------------
             cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
-            color_cls_score, rotation_cls_score, \
-            x_cls_score, y_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)                    
+            if cfg.MODEL.ATTRIBUTE_ON:
+                color_cls_score, rotation_cls_score, \
+                x_cls_score, y_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)                    
             # -----------------------------------------------------------------
         else:
             # TODO: complete the returns for RPN only situation
@@ -253,26 +256,28 @@ class Generalized_RCNN(nn.Module):
             return_dict['losses']['loss_bbox'] = loss_bbox
             return_dict['metrics']['accuracy_cls'] = accuracy_cls
 
-            # attribute loss
-            color_loss_cls, color_accuracy_cls,\
-            rotation_loss_cls, rotation_accuracy_cls,\
-            x_loss_cls, x_accuracy_cls,\
-            y_loss_cls, y_accuracy_cls = attribute_heads.attribute_losses(
-                color_cls_score, rotation_cls_score, 
-                x_cls_score, y_cls_score,
-                rpn_ret['labels_int32'],
-                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
-                rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
+            if cfg.MODEL.ATTRIBUTE_ON:
+                # attribute loss
+                color_loss_cls, color_accuracy_cls,\
+                rotation_loss_cls, rotation_accuracy_cls,\
+                x_loss_cls, x_accuracy_cls,\
+                y_loss_cls, y_accuracy_cls = attribute_heads.attribute_losses(
+                    cls_score,
+                    color_cls_score, rotation_cls_score, 
+                    x_cls_score, y_cls_score,
+                    rpn_ret['labels_int32'],
+                    rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
+                    rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
 
-            return_dict['losses']['color_loss_cls'] = color_loss_cls
-            return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
-            return_dict['losses']['x_loss_cls'] = x_loss_cls
-            return_dict['losses']['y_loss_cls'] = y_loss_cls
-            
-            return_dict['metrics']['color_accuracy_cls'] = color_accuracy_cls
-            return_dict['metrics']['rotation_accuracy_cls'] = rotation_accuracy_cls
-            return_dict['metrics']['x_accuracy_cls'] = x_accuracy_cls
-            return_dict['metrics']['y_accuracy_cls'] = y_accuracy_cls
+                return_dict['losses']['color_loss_cls'] = color_loss_cls
+                return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
+                return_dict['losses']['x_loss_cls'] = x_loss_cls
+                return_dict['losses']['y_loss_cls'] = y_loss_cls
+                
+                return_dict['metrics']['color_accuracy_cls'] = color_accuracy_cls
+                return_dict['metrics']['rotation_accuracy_cls'] = rotation_accuracy_cls
+                return_dict['metrics']['x_accuracy_cls'] = x_accuracy_cls
+                return_dict['metrics']['y_accuracy_cls'] = y_accuracy_cls
             # --------------------------------------------------------------------------
 
             if cfg.MODEL.MASK_ON:
@@ -297,10 +302,11 @@ class Generalized_RCNN(nn.Module):
             return_dict['cls_score'] = cls_score
             return_dict['bbox_pred'] = bbox_pred
             # -------------------------------------------------------
-            return_dict['color_cls_score'] = color_cls_score
-            return_dict['rotation_cls_score'] = rotation_cls_score
-            return_dict['x_cls_score'] = x_cls_score
-            return_dict['y_cls_score'] = y_cls_score
+            if cfg.MODEL.ATTRIBUTE_ON:
+                return_dict['color_cls_score'] = color_cls_score
+                return_dict['rotation_cls_score'] = rotation_cls_score
+                return_dict['x_cls_score'] = x_cls_score
+                return_dict['y_cls_score'] = y_cls_score
 
             if cfg.MODEL.DEPTH_ON:
                 return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax

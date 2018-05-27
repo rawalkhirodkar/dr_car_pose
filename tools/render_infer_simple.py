@@ -35,6 +35,8 @@ import utils.vis_render as render_vis_utils
 from utils.detectron_weight_helper import load_detectron_weight
 from utils.timer import Timer
 
+from virat_config import set_virat_configs
+
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
 # thread safe and causes unwanted GPU memory allocations.
 cv2.ocl.setUseOpenCL(False)
@@ -79,26 +81,6 @@ def parse_args():
 
     return args
 
-# ----------------------------------------------------------------------
-def set_virat_configs():
-    # cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
-    cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False
-
-    cfg.MODEL.NUM_CLASSES = 3+1+1 #background included and person
-    cfg.MODEL.COLOR_NUM_CLASSES = 6 #(yellow for person)
-    cfg.MODEL.ROTATION_NUM_CLASSES = int( (360-0)/10 )
-    cfg.MODEL.X_NUM_CLASSES = int( (1 - (-1))/0.1 )
-    cfg.MODEL.Y_NUM_CLASSES = int( (1 - (-1))/0.1 )
-
-    cfg.MODEL.DEPTH_WIDTH = 320 #has to be int
-    cfg.MODEL.DEPTH_HEIGHT = 192        
-    cfg.MODEL.DEPTH_NUM_CLASSES = 64
-
-    cfg.MODEL.NORMAL_WIDTH = 320 #has to be int
-    cfg.MODEL.NORMAL_HEIGHT = 192        
-    cfg.MODEL.NORMAL_NUM_CLASSES = 10**3
-
-    return
 # ----------------------------------------------------------------------
 
 def main():

@@ -406,6 +406,7 @@ __C.MODEL.CONV_BODY = ''
 # E.g., 81 for COCO (80 foreground + 1 background)
 __C.MODEL.NUM_CLASSES = -1
 # ------------------------------------------------------
+__C.MODEL.ATTRIBUTE_ON = False
 __C.MODEL.COLOR_NUM_CLASSES = -1
 __C.MODEL.ROTATION_NUM_CLASSES = -1
 __C.MODEL.X_NUM_CLASSES = -1

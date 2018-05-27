@@ -113,12 +113,12 @@
 # 						--bs 9 \
 # 						--nw 10
 
-cd ..
-CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
-						--cfg configs/virat/rcnn/rcnn_101.yaml \
-						--use_tfboard \
-						--bs 9 \
-						--nw 10
+# cd ..
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 9 \
+# 						--nw 4
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
@@ -161,12 +161,13 @@ CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
 # 						--bs 6 \
 # 						--nw 10
 
-# cd ..
-# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2 \
-# 						--cfg configs/scene2/mask_rcnn/scene2_mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 12 \
-# 						--nw 10 
+cd ..
+CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+						--use_tfboard \
+						--bs 9 \
+						--nw 4
+
 
 ##--------------------Train MaskRCNN + Depth--------------------------
 
@@ -231,4 +232,14 @@ CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_syn \
 # 						--resume \
 # 						--use_tfboard \
 # 						--bs 3 \
+# 						--nw 0
+
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--load_ckpt Outputs/virat2_syn/rcnn_101/May27-14-32-17_bheem_step/ckpt/model_step665.pth \
+# 						--resume \
+# 						--use_tfboard \
+# 						--bs 1 \
 # 						--nw 0

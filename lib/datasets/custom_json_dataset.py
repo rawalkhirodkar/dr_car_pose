@@ -210,12 +210,7 @@ class CustomJsonDataset(object):
         }
         self._init_keypoints()
 
-        # # Set cfg.MODEL.NUM_CLASSES
-        # if cfg.MODEL.NUM_CLASSES != -1:
-        #     assert cfg.MODEL.NUM_CLASSES == 2 if cfg.MODEL.KEYPOINTS_ON else self.num_classes, \
-        #         "number of classes should equal when using multiple datasets"
-        # else:
-        #     cfg.MODEL.NUM_CLASSES = 2 if cfg.MODEL.KEYPOINTS_ON else self.num_classes
+        return
 
     @property
     def cache_path(self):
@@ -701,8 +696,8 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
         #initialize as -1 for background classes
         # this is poor signal, initialise as 0!
         
-        # initial_val = -1
-        initial_val = 0
+        initial_val = -1
+        # initial_val = 0
 
         entry['gt_colors'] = np.append(
             entry['gt_colors'],

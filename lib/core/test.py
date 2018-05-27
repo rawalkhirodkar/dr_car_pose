@@ -66,13 +66,36 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
         raise NotImplementedError
         # scores, boxes, im_scale, blob_conv = im_detect_bbox_aug(model, im, box_proposals)
     else:
-        scores, boxes, im_scale, blob_conv, return_dict = im_detect_bbox(
+        scores, boxes, im_scale, return_dict = im_detect_bbox(
             model, im, cfg.TEST.SCALE, cfg.TEST.MAX_SIZE, box_proposals)
-    timers['im_detect_bbox'].toc()
+        blob_conv = return_dict['blob_conv']
 
+    # --------------------------------------------------------
+    attributes_dict = None
+
+    if cfg.MODEL.ATTRIBUTE_ON:
+        color_scores = return_dict['color_cls_score']
+        rotation_scores = return_dict['rotation_cls_score']
+        x_scores = return_dict['x_cls_score']
+        y_scores = return_dict['y_cls_score']
+
+        color_probs, color_labels = color_scores.max(1)
+        rotation_probs, rotation_labels = rotation_scores.max(1)
+        x_probs, x_labels = x_scores.max(1)
+        y_probs, y_labels = y_scores.max(1)
+
+        attributes_dict = {}
+        attributes_dict['color_labels'] = color_labels.data.cpu().numpy()
+        attributes_dict['rotation_labels'] = rotation_labels.data.cpu().numpy()
+        attributes_dict['x_labels'] = x_labels.data.cpu().numpy()
+        attributes_dict['y_labels'] = y_labels.data.cpu().numpy()
+
+    timers['im_detect_bbox'].toc()
+    # --------------------------------------------------------
     extra_return_dict = {}
     extra_return_dict['depth_map'] = None
     extra_return_dict['normal_map'] = None
+
 
     if cfg.MODEL.DEPTH_ON:
         depth_cls_score = return_dict['depth_cls_score']
@@ -83,14 +106,18 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
         normal_cls_score = return_dict['normal_cls_score']
         normal_cls_preds = normal_cls_score.max(dim=1)[1]
         normal_map = normal_cls_preds.data.cpu().numpy().squeeze()
+        
         per_component_class = round((cfg.MODEL.NORMAL_NUM_CLASSES)**(1./3)) #should be 4
         assert(per_component_class**3 == cfg.MODEL.NORMAL_NUM_CLASSES)
+        
         visualise_normal_map = np.zeros((normal_map.shape[0], normal_map.shape[1], 3)) #float type
         visualise_normal_map[:,:,0] = np.floor(normal_map/(per_component_class**2))
         visualise_normal_map[:,:,1] = np.floor(normal_map/(per_component_class**1)) - per_component_class*visualise_normal_map[:,:,0]
         visualise_normal_map[:,:,2] = normal_map%(per_component_class)
+
         visualise_normal_map = visualise_normal_map/(per_component_class-1)
         visualise_normal_map = visualise_normal_map*255
+
         extra_return_dict['normal_map'] = visualise_normal_map.astype(np.uint8)
 
     # score and boxes are from the whole image after score thresholding and nms
@@ -98,7 +125,9 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     # cls_boxes boxes and scores are separated by class and in the format used
     # for evaluating results
     timers['misc_bbox'].tic()
-    scores, boxes, cls_boxes = box_results_with_nms_and_limit(scores, boxes)
+    # ----------------------------------------------------------------------------------------------------
+    scores, boxes, cls_boxes, cls_attributes = box_results_with_nms_and_limit(scores, boxes, attributes_dict)
+    # ----------------------------------------------------------------------------------------------------
     timers['misc_bbox'].toc()
 
     if cfg.MODEL.MASK_ON and boxes.shape[0] > 0:
@@ -131,7 +160,7 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     else:
         cls_keyps = None
 
-    return cls_boxes, cls_segms, cls_keyps, extra_return_dict
+    return cls_boxes, cls_attributes, cls_segms, cls_keyps, extra_return_dict
 
 
 def im_detect_bbox(model, im, target_scale, target_max_size, boxes=None):
@@ -196,7 +225,7 @@ def im_detect_bbox(model, im, target_scale, target_max_size, boxes=None):
         scores = scores[inv_index, :]
         pred_boxes = pred_boxes[inv_index, :]
 
-    return scores, pred_boxes, im_scale, return_dict['blob_conv'], return_dict
+    return scores, pred_boxes, im_scale, return_dict
 
 
 def im_detect_mask(model, im_scale, boxes, blob_conv):
@@ -276,7 +305,7 @@ def im_detect_keypoints(model, im_scale, boxes, blob_conv):
     return pred_heatmaps
 
 
-def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
+def box_results_with_nms_and_limit(scores, boxes, attributes_dict):  # NOTE: support single-batch
     """Returns bounding-box detection results by thresholding on scores and
     applying non-maximum suppression (NMS).
 
@@ -290,14 +319,30 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
     dataset (including the background class). `scores[i, j]`` corresponds to the
     box at `boxes[i, j * 4:(j + 1) * 4]`.
     """
+
     num_classes = cfg.MODEL.NUM_CLASSES
     cls_boxes = [[] for _ in range(num_classes)]
+
+    cls_attributes = None
+
+    if cfg.MODEL.ATTRIBUTE_ON:
+        attributes_labels = np.zeros((scores.shape[0], 4)).astype(np.uint8, copy=False) #315 x 4
+        attributes_labels[:, 0] = attributes_dict['color_labels']
+        attributes_labels[:, 1] = attributes_dict['rotation_labels']
+        attributes_labels[:, 2] = attributes_dict['x_labels']
+        attributes_labels[:, 3] = attributes_dict['y_labels']
+        cls_attributes = [[] for _ in range(num_classes)]
+
     # Apply threshold on detection probabilities and apply NMS
     # Skip j = 0, because it's the background class
     for j in range(1, num_classes):
         inds = np.where(scores[:, j] > cfg.TEST.SCORE_THRESH)[0]
         scores_j = scores[inds, j]
         boxes_j = boxes[inds, j * 4:(j + 1) * 4]
+        # -------------------------------------------------------------------
+        if cfg.MODEL.ATTRIBUTE_ON:
+            attributes_labels_j = attributes_labels[inds] #this will be class independent
+        # -------------------------------------------------------------------
         dets_j = np.hstack((boxes_j, scores_j[:, np.newaxis])).astype(np.float32, copy=False)
         if cfg.TEST.SOFT_NMS.ENABLED:
             nms_dets, _ = box_utils.soft_nms(
@@ -310,6 +355,11 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
         else:
             keep = box_utils.nms(dets_j, cfg.TEST.NMS)
             nms_dets = dets_j[keep, :]
+            # ----------------------------------------------------------
+            if cfg.MODEL.ATTRIBUTE_ON:
+                nms_attributes = attributes_labels_j[keep, :]
+            # ----------------------------------------------------------
+
         # Refine the post-NMS boxes using bounding-box voting
         if cfg.TEST.BBOX_VOTE.ENABLED:
             nms_dets = box_utils.box_voting(
@@ -319,6 +369,10 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
                 scoring_method=cfg.TEST.BBOX_VOTE.SCORING_METHOD
             )
         cls_boxes[j] = nms_dets
+        # -------------------------------------------------------------
+        if cfg.MODEL.ATTRIBUTE_ON:
+            cls_attributes[j] = nms_attributes 
+        # -------------------------------------------------------------
 
     # Limit to max_per_image detections **over all classes**
     if cfg.TEST.DETECTIONS_PER_IM > 0:
@@ -334,7 +388,8 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
     im_results = np.vstack([cls_boxes[j] for j in range(1, num_classes)])
     boxes = im_results[:, :-1]
     scores = im_results[:, -1]
-    return scores, boxes, cls_boxes
+
+    return scores, boxes, cls_boxes, cls_attributes
 
 
 def segm_results(cls_boxes, masks, ref_boxes, im_h, im_w):

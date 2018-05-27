@@ -103,13 +103,20 @@ class attribute_outputs(nn.Module):
 
 # -----------------------------------------------------------------------------------------------------------
 
-def attribute_losses(color_cls_score, rotation_cls_score,
+def attribute_losses(cls_score,
+                     color_cls_score, rotation_cls_score,
                      x_cls_score, y_cls_score,
                      labels_int32,
                      color_label_int32, rotation_label_int32,
                      x_label_int32, y_label_int32):
     # --------------------------------------------
-    valid_inds = (labels_int32 > 0)
+
+    valid_inds = (color_label_int32 >= 0)
+    assert(np.all(valid_inds == (rotation_label_int32 >= 0)) == True)
+    assert(np.all(valid_inds == (x_label_int32 >= 0)) == True)
+    assert(np.all(valid_inds == (y_label_int32 >= 0)) == True)
+
+    # valid_inds = (labels_int32 > 0)
     
     #chop off negative ROIs
     color_label_int32 = color_label_int32[valid_inds]
