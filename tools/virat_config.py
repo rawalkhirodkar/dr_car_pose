@@ -2,6 +2,8 @@ from core.config import cfg
 
 # ----------------------------------------------------------------------
 def set_virat_configs():
+    cfg.MODEL.CLIP_GRADIENT = True
+
     cfg.MODEL.ATTRIBUTE_ON = True
     # cfg.MODEL.ATTRIBUTE_ON = False
 

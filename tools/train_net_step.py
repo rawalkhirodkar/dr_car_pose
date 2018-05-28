@@ -443,6 +443,10 @@ def main():
                     filename, line, func, text = tb_info[-1]
                     print('An error occurred on line {} in statement {}'.format(line, text))
                     continue
+            # ---------------------------------------------------------
+            if cfg.MODEL.CLIP_GRADIENT:
+                net_utils.clip_gradient(maskRCNN, clip_norm=10)
+            # ---------------------------------------------------------            
             optimizer.step()
             training_stats.IterToc()
 

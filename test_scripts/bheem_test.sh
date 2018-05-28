@@ -121,9 +121,9 @@
 cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_syn\
 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-							--load_ckpt Outputs/virat2_syn/mask_rcnn_101/May27-17-30-16_bheem_step/ckpt/model_step492.pth \
+							--load_ckpt Outputs/virat2_syn/mask_rcnn_101/baseline/ckpt/model_step517.pth \
 							--image_dir data/test/syn/virat2/\
-							--output_dir results/maskrcnn_syn_virat2\
+							--output_dir results/mask_rcnn_syn_virat2\
 
 
 ##--------------------Test MaskRCNN + Depth--------------------------
