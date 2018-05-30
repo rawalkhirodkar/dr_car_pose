@@ -1,6 +1,6 @@
 MODEL:
   TYPE: generalized_rcnn
-  CONV_BODY: FPN.fpn_ResNet101_conv5_body
+  CONV_BODY: FPN.fpn_ResNet50_conv5_body
   FASTER_RCNN: True
   # -------------------------------------
   MASK_ON: True
@@ -14,18 +14,18 @@ MODEL:
   NORMAL_SOFT_LABEL_ON: False
   # ---------------------------------------
 RESNETS:
-  IMAGENET_PRETRAINED_WEIGHTS: 'data/pretrained_model/resnet101_caffe.pth'
+  IMAGENET_PRETRAINED_WEIGHTS: 'data/pretrained_model/resnet50_caffe.pth'
 NUM_GPUS: 8
 SOLVER:
   WEIGHT_DECAY: 0.0001
   LR_POLICY: steps_with_decay
   # BASE_LR: 0.05
-  # BASE_LR: 0.02
-  BASE_LR: 0.005
+  BASE_LR: 0.02
+  # BASE_LR: 0.005
   # BASE_LR: 0.01
   GAMMA: 0.1
-  MAX_ITER: 180000
-  STEPS: [0, 120000, 160000]
+  MAX_ITER: 90000
+  STEPS: [0, 60000, 80000]
 FPN:
   FPN_ON: True
   MULTILEVEL_ROIS: True
@@ -50,15 +50,14 @@ TRAIN:
   BATCH_SIZE_PER_IM: 512
   RPN_PRE_NMS_TOP_N: 2000  # Per FPN level
   USE_FLIPPED: False
-  SNAPSHOT_ITERS: 1000 #saving frequency
-  GT_MIN_AREA: 300 #min BB area
+  SNAPSHOT_ITERS: 1000
+  GT_MIN_AREA: 300
 TEST:
   SCALE: 800
   # MAX_SIZE: 1333
   MAX_SIZE: 640
-  NMS: 0.3
+  NMS: 0.5
   RPN_NMS_THRESH: 0.4
   RPN_PRE_NMS_TOP_N: 1000  # Per FPN level
   RPN_POST_NMS_TOP_N: 1000
   VISUALIZE_THRESH: 0.5
-
