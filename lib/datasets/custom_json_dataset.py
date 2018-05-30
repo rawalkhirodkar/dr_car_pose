@@ -98,6 +98,8 @@ class ViratClassInfo():
 
     def get_color_id(self, raw_color):
         raw_color = raw_color.lower().strip()
+        if(raw_color == 'white'):
+            raw_color = 'silver'
         color_id = self.colors_to_ind[raw_color]
         return color_id
 

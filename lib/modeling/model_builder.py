@@ -367,8 +367,8 @@ class Generalized_RCNN(nn.Module):
         #fake losses        
 
         # -----------------------------------
-        return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
-        return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
+        # return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
+        # return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         # -----------------------------------
 
         if cfg.MODEL.DEPTH_ON:
