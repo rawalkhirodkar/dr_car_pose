@@ -83,12 +83,12 @@
 # 							--image_dir data/test/real/small_virat2/\
 # 							--output_dir results/rcnn_real_virat2\
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
-							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May28-18-55-16_bheem_step/ckpt/model_step12291.pth \
-							--image_dir data/test/real/small_virat2/\
-							--output_dir results/mask_rcnn_real_virat2\
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May31-23-47-32_bheem_step/ckpt/model_step12320.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/mask_rcnn_real_virat2\
 
 # #--------------------Test RCNN Mix on Syn--------------------------
 # cd ..
@@ -138,6 +138,14 @@ CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 # 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May28-18-55-16_bheem_step/ckpt/model_step12291.pth \
 # 							--image_dir data/test/syn/virat2/\
 # 							--output_dir results/mask_rcnn_mix_virat2\
+
+
+cd ..
+CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May31-23-47-32_bheem_step/ckpt/model_step12320.pth \
+							--image_dir data/test/syn/virat2/\
+							--output_dir results/mask_rcnn_syn_virat2\
 
 ##--------------------Test MaskRCNN + Depth--------------------------
 

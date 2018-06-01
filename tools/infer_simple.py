@@ -192,19 +192,21 @@ def main():
         subprocess.call(command, shell=True)
 
         # ---------------------------------
-        merge_out_path = '{}/depth_results.pdf'.format(args.output_dir)
-        if os.path.exists(merge_out_path):
-            os.remove(merge_out_path)
-        command = "pdfunite {}/*.pdf {}".format(depth_dir,
-                                                merge_out_path)
-        subprocess.call(command, shell=True)
+        if cfg.MODEL.DEPTH_ON:
+            merge_out_path = '{}/depth_results.pdf'.format(args.output_dir)
+            if os.path.exists(merge_out_path):
+                os.remove(merge_out_path)
+            command = "pdfunite {}/*.pdf {}".format(depth_dir,
+                                                    merge_out_path)
+            subprocess.call(command, shell=True)
         # ---------------------------------
-        merge_out_path = '{}/normal_results.pdf'.format(args.output_dir)
-        if os.path.exists(merge_out_path):
-            os.remove(merge_out_path)
-        command = "pdfunite {}/*.pdf {}".format(normal_dir,
-                                                merge_out_path)
-        subprocess.call(command, shell=True)
+        if cfg.MODEL.NORMAL_ON:
+            merge_out_path = '{}/normal_results.pdf'.format(args.output_dir)
+            if os.path.exists(merge_out_path):
+                os.remove(merge_out_path)
+            command = "pdfunite {}/*.pdf {}".format(normal_dir,
+                                                    merge_out_path)
+            subprocess.call(command, shell=True)
 
 # ------------------------------------------------------------------------------------------
 
