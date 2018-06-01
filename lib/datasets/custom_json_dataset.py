@@ -231,7 +231,8 @@ class CustomJsonDataset(object):
         #add new attributes to the end
         keys = ['boxes', 'segms', 'gt_classes', 'seg_areas', 'gt_overlaps',
                 'is_crowd', 'box_to_gt_ind_map', 'gt_colors', 'gt_rotations',
-                'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg', 'gt_is_real']
+                'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg', 'gt_is_real',
+                'image']
         if self.keypoints is not None:
             keys += ['gt_keypoints', 'has_visible_keypoints']
         return keys
@@ -652,7 +653,6 @@ def add_proposals(roidb, rois, scales, crowd_thresh):
 def _merge_proposal_boxes_into_roidb(roidb, box_list):
     """Add proposal boxes to each roidb entry."""
     assert len(box_list) == len(roidb)
-
     for i, entry in enumerate(roidb):
         boxes = box_list[i]
         num_boxes = boxes.shape[0]
@@ -697,7 +697,12 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
         # --------------------------------------------------------
         #initialize as -1 for background classes
         # this is poor signal, initialise as 0!
-        
+        num_gt_boxes = entry['gt_colors'].shape[0]
+        if(entry['gt_is_real'] == False):
+            entry['gt_box_is_real'] = np.zeros((num_gt_boxes), dtype=entry['gt_y'].dtype) # 0 = False
+        else:
+            entry['gt_box_is_real'] = np.ones((num_gt_boxes), dtype=entry['gt_y'].dtype) # 1 = True
+
         initial_val = -1
         # initial_val = 0
 
@@ -721,6 +726,10 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
             np.zeros((num_boxes), dtype=entry['gt_y'].dtype) + initial_val
         )
 
+        entry['gt_box_is_real'] = np.append(
+            entry['gt_box_is_real'],
+            np.zeros((num_boxes), dtype=entry['gt_box_is_real'].dtype) + initial_val
+        ) #for proposals set as -1
         # --------------------------------------------------------
 
         entry['seg_areas'] = np.append(

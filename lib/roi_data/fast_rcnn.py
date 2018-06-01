@@ -48,6 +48,7 @@ def get_fast_rcnn_blob_names(is_training=True):
         blob_names += ['rotation_labels_int32']
         blob_names += ['x_labels_int32']
         blob_names += ['y_labels_int32']
+        blob_names += ['is_real_labels_int32']
         # ------------------------------------------
     if is_training:
         # bbox_targets blob: R bounding-box regression targets with 4
@@ -183,6 +184,9 @@ def _sample_rois(roidb, im_scale, batch_idx):
 
     sampled_y_labels = roidb['gt_y'][keep_inds]
     sampled_y_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
+
+    sampled_is_real_labels = roidb['gt_box_is_real'][keep_inds]
+    sampled_is_real_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
     # -----------------------------------------------------------
 
     if 'bbox_targets' not in roidb:
@@ -222,7 +226,8 @@ def _sample_rois(roidb, im_scale, batch_idx):
         color_labels_int32=sampled_color_labels.astype(np.int32, copy=False),
         rotation_labels_int32=sampled_rotation_labels.astype(np.int32, copy=False),
         x_labels_int32=sampled_x_labels.astype(np.int32, copy=False),
-        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False)
+        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False),
+        is_real_labels_int32=sampled_is_real_labels.astype(np.int32, copy=False)
         )
     # -----------------------------------------------------------------
 
