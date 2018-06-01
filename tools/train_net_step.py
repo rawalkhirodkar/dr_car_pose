@@ -441,7 +441,7 @@ def main():
                     traceback.print_tb(tb) # Fixed format
                     tb_info = traceback.extract_tb(tb)
                     filename, line, func, text = tb_info[-1]
-                    print('An error occurred on line {} in statement {}'.format(line, text))
+                    print('Error: line {}, statement {}, file {}'.format(line, text, filename))
                     continue
             # ---------------------------------------------------------
             if cfg.MODEL.CLIP_GRADIENT:
