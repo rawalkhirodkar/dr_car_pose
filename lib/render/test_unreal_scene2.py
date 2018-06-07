@@ -27,7 +27,8 @@ DEFAULT_PARAM = '1.0;3.0;-0.11959371261162599;0.7107625177548988;97.820417352741
 def parse_object_parameters(s):
 
 	object_class_dict = {0: 'sedan', 1: 'suv', 2: 'truck', 3: 'person'}
-	color_class_dict = {0: 'white', 1: 'black', 2: 'red', 3: 'blue', 4: 'brown', 5: 'silver', 6: 'cyan', 7: 'yellow'}
+	# color_class_dict = {0: 'white', 1: 'black', 2: 'red', 3: 'blue', 4: 'brown', 5: 'silver', 6: 'cyan', 7: 'yellow'}
+	color_class_dict = {0: 'silver', 1: 'black', 2: 'red', 3: 'blue', 4: 'brown', 5: 'cyan'}
 
 	s = s.split(';')
 	object_name = int(float(s[0]))

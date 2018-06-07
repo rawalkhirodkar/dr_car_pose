@@ -102,13 +102,20 @@
 # 							--image_dir data/test/syn/render_virat2/\
 # 							--output_dir results/rcnn_syn_virat2\
 
-# #--------------------Test RCNN Syn on Syn--------------------------
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_syn\
-							--cfg configs/virat/rcnn/rcnn_101.yaml\
-							--load_ckpt Outputs/virat2_syn/rcnn_101/May27-14-32-17_bheem_step/ckpt/model_step665.pth \
-							--image_dir data/test/syn/render_virat2/\
-							--output_dir results/rcnn_syn_virat2\
+# # #--------------------Test RCNN Syn on Syn--------------------------
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_syn\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_syn/mask_rcnn_101/baseline_attributes/ckpt/model_step491.pth \
+# 							--image_dir data/test/syn/render_virat2/\
+# 							--output_dir results/mask_rcnn_syn_virat2\
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_syn\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/baseline_attributes/ckpt/model_step9999.pth \
+# 							--image_dir data/test/syn/render_virat2/\
+# 							--output_dir results/mask_rcnn_syn_virat2\
 
 
 # # ----Real Visualise------
@@ -118,6 +125,21 @@ CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_syn\
 # 							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May16-21-08-47_bheem_step/ckpt/model_step5009.pth \
 # 							--image_dir data/test/real/small_virat2\
 # 							--output_dir results/depth_mask_rcnn_real_virat2\
+
+cd ..
+CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/baseline_attributes/ckpt/model_step18999.pth \
+							--image_dir data/test/real/render_virat2/\
+							--output_dir results/mask_rcnn_real_virat2\
+
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/baseline_attributes/ckpt/model_step8499.pth \
+# 							--image_dir data/test/real/render_virat2/\
+# 							--output_dir results/mask_rcnn_real_virat2\
 
 
 ###################################################################
