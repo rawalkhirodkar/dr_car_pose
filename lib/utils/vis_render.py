@@ -69,7 +69,24 @@ def render_scene2(render_parameters, render_img_name="test.png", render_dir="ren
 
     return view1_img, view2_img, view3_img
 # -----------------------------------------------------------------------------------
-
+def find_x_y_3d(x_2d, y_2d, lookup_table):
+    min_dist = 100000
+    x_3d = 1000; y_3d = 1000
+    
+    for key, value in lookup_table.items():
+        (val_x_2d, val_y_2d) = value
+        dist = abs(val_x_2d - x_2d) + abs(val_y_2d - y_2d)
+        if(dist < min_dist):
+            min_dist = dist
+            (x_3d, y_3d) = key
+    
+    x_3d -= 0.15
+    y_3d -= 0.05
+    
+    x_3d = round(x_3d, 2)
+    y_3d = round(y_3d, 2)
+    return x_3d, y_3d
+# ----------------------------------------------------------
 
 
 def convert_from_cls_format(cls_boxes, cls_segms, cls_attributes, cls_keyps):
@@ -165,14 +182,23 @@ def vis_one_image(
     for i in sorted_inds:
         bbox = boxes[i, :4]
         score = boxes[i, -1]
+
+        area = (bbox[2] - bbox[0])*(bbox[3] - bbox[1])
+        if area < 5000:
+            continue
+
         if score < thresh:
             continue
 
         class_label = classes[i] - 1 #remove the background
         color_label = attributes[i][0]; color = dataset.color_classes[attributes[i][0]]
         rotation = dataset.rotation_classes[attributes[i][1]]
-        x = dataset.x_classes[attributes[i][2]]
-        y = dataset.y_classes[attributes[i][3]]
+        center_x = ((bbox[0] + bbox[2])/2.0)
+        center_y = ((bbox[1] + bbox[3])/2.0)
+        center_x = center_x/im.shape[1] #normalize in 0 to 1
+        center_y = center_y/im.shape[0] #normalize in 0 to 1
+
+        x, y = find_x_y_3d(center_x, center_y, dataset.lookup_table)
 
         object_render_parameters = [class_label, color_label, x, y, rotation]
         render_parameters.append(np.asarray(object_render_parameters))

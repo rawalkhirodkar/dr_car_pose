@@ -25,7 +25,7 @@ from torch.autograd import Variable
 import _init_paths
 import nn as mynn
 from core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
-from core.test_render import render_im_detect_all
+from core.test import im_detect_all
 from modeling.model_builder import Generalized_RCNN
 import datasets.dummy_datasets as datasets
 import utils.misc as misc_utils
@@ -105,11 +105,11 @@ def main():
     # -----------------------------------------------
     elif args.dataset.startswith("virat1"):
         set_virat_configs()
-        dataset = datasets.get_virat1_dataset()
+        dataset = datasets.get_virat1_dataset(name=args.dataset)
     # ------------------------------------------------
     elif args.dataset.startswith("virat2"):
         set_virat_configs()
-        dataset = datasets.get_virat2_dataset()
+        dataset = datasets.get_virat2_dataset(name=args.dataset)
 
     # -----------------------------------------------
     else:
@@ -160,7 +160,7 @@ def main():
 
         timers = defaultdict(Timer)
 
-        cls_boxes, cls_attributes, cls_segms, cls_keyps, return_dict = render_im_detect_all(maskRCNN, im, timers=timers) #render function
+        cls_boxes, cls_attributes, cls_segms, cls_keyps, return_dict = im_detect_all(maskRCNN, im, timers=timers) #render function
 
         im_name, _ = os.path.splitext(os.path.basename(imglist[i]))
         render_vis_utils.vis_one_image(
