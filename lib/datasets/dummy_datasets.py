@@ -25,6 +25,11 @@ from __future__ import unicode_literals
 from utils.collections import AttrDict
 from datasets.custom_json_dataset import ViratClassInfo
 
+import os
+import pickle
+from datasets.dataset_catalog import DATASETS
+from datasets.dataset_catalog import IM_DIR
+
 def get_coco_dataset():
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
@@ -46,7 +51,7 @@ def get_coco_dataset():
     ds.classes = {i: name for i, name in enumerate(classes)}
     return ds
 # ------------------------------------------------------------------------------
-def get_virat1_dataset():
+def get_virat1_dataset(name='virat1_mix'):
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
 
@@ -73,12 +78,11 @@ def get_virat1_dataset():
     return ds
 # ------------------------------------------------------------------------------
 
-def get_virat2_dataset():
+def get_virat2_dataset(name='virat2_mix'):
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
 
     virat_data_info = ViratClassInfo()
-
     # classes = [
     #     '__background__', 'sedan', 'suv', 'truck', 'person'
     # ]
@@ -96,6 +100,14 @@ def get_virat2_dataset():
     ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
     ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
     ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
+
+    lookup_table_dir = DATASETS[name+'_train'][IM_DIR].replace('images', 'lookuptables')
+
+    assert os.path.exists(lookup_table_dir), \
+            'LookupTable directory \'{}\' not found'.format(lookup_table_dir)
+
+    with open(os.path.join(lookup_table_dir, 'sedan.p'), "rb") as f:
+        ds.lookup_table = pickle.load(f)
 
     return ds
 # ------------------------------------------------------------------------------

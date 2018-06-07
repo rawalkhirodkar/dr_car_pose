@@ -184,12 +184,12 @@
 # 						--bs 4 \
 # 						--nw 4
 
-cd ..
-CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
-						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 6 \
-						--nw 4
+# cd ..
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 6 \
+# 						--nw 4
 
 
 
@@ -269,11 +269,11 @@ CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--nw 0
 
 
-# cd ..
-# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-# 						--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May30-12-18-44_bheem_step/ckpt/model_step3995.pth \
-# 						--resume \
-# 						--use_tfboard \
-# 						--bs 4 \
-# 						--nw 4
+cd ..
+CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+						--load_ckpt Outputs/virat2_mix/mask_rcnn_101/Jun07-15-28-06_bheem_step/ckpt/model_step1999.pth \
+						--resume \
+						--use_tfboard \
+						--bs 4 \
+						--nw 4

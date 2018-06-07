@@ -424,8 +424,7 @@ class Generalized_RCNN(nn.Module):
 
         # -----------------------------------
         if cfg.MODEL.ATTRIBUTE_ON:
-            color_cls_score, rotation_cls_score, \
-            x_cls_score, y_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
+            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
         # --------------------------------
         # make the return dict, all after softmax is applied
         # mask branch is taken care of separately
@@ -438,8 +437,6 @@ class Generalized_RCNN(nn.Module):
         if cfg.MODEL.ATTRIBUTE_ON:
             return_dict['color_cls_score'] = color_cls_score
             return_dict['rotation_cls_score'] = rotation_cls_score
-            return_dict['x_cls_score'] = x_cls_score
-            return_dict['y_cls_score'] = y_cls_score
 
         if cfg.MODEL.DEPTH_ON:
             return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax

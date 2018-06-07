@@ -44,6 +44,23 @@ _GRAY = (218, 227, 218)
 _GREEN = (18, 127, 15)
 _WHITE = (255, 255, 255)
 
+# ----------------------------------------------------------
+def find_x_y_3d(x_2d, y_2d, lookup_table):
+    min_dist = 100000
+    x_3d = 1000; y_3d = 1000
+    
+    for key, value in lookup_table.items():
+        (val_x_2d, val_y_2d) = value
+        dist = abs(val_x_2d - x_2d) + abs(val_y_2d - y_2d)
+        if(dist < min_dist):
+            min_dist = dist
+            (x_3d, y_3d) = key
+    
+    x_3d = round(x_3d, 2)
+    y_3d = round(y_3d, 2)
+
+    return x_3d, y_3d
+# ----------------------------------------------------------
 
 def kp_connections(keypoints):
     kp_lines = [
@@ -166,8 +183,13 @@ def vis_one_image(
             class_label = classes[i] - 1 #remove the background
             color_label = attributes[i][0]; color = dataset.color_classes[attributes[i][0]]
             rotation = dataset.rotation_classes[attributes[i][1]]
-            x = dataset.x_classes[attributes[i][2]]
-            y = dataset.y_classes[attributes[i][3]]
+            
+            center_x = ((bbox[0] + bbox[2])/2.0)
+            center_y = ((bbox[1] + bbox[3])/2.0)
+            center_x = center_x/im.shape[1] #normalize in 0 to 1
+            center_y = center_y/im.shape[0] #normalize in 0 to 1
+
+            x, y = find_x_y_3d(center_x, center_y, dataset.lookup_table)
 
             print('{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
             write_string += ' {} x:{} y:{} rot:{}'.format(color, x, y, rotation)

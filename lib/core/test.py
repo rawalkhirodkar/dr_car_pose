@@ -76,19 +76,13 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     if cfg.MODEL.ATTRIBUTE_ON:
         color_scores = return_dict['color_cls_score']
         rotation_scores = return_dict['rotation_cls_score']
-        x_scores = return_dict['x_cls_score']
-        y_scores = return_dict['y_cls_score']
 
         color_probs, color_labels = color_scores.max(1)
         rotation_probs, rotation_labels = rotation_scores.max(1)
-        x_probs, x_labels = x_scores.max(1)
-        y_probs, y_labels = y_scores.max(1)
 
         attributes_dict = {}
         attributes_dict['color_labels'] = color_labels.data.cpu().numpy()
         attributes_dict['rotation_labels'] = rotation_labels.data.cpu().numpy()
-        attributes_dict['x_labels'] = x_labels.data.cpu().numpy()
-        attributes_dict['y_labels'] = y_labels.data.cpu().numpy()
 
     timers['im_detect_bbox'].toc()
     # --------------------------------------------------------
@@ -329,8 +323,6 @@ def box_results_with_nms_and_limit(scores, boxes, attributes_dict):  # NOTE: sup
         attributes_labels = np.zeros((scores.shape[0], 4)).astype(np.uint8, copy=False) #315 x 4
         attributes_labels[:, 0] = attributes_dict['color_labels']
         attributes_labels[:, 1] = attributes_dict['rotation_labels']
-        attributes_labels[:, 2] = attributes_dict['x_labels']
-        attributes_labels[:, 3] = attributes_dict['y_labels']
         cls_attributes = [[] for _ in range(num_classes)]
 
     # Apply threshold on detection probabilities and apply NMS
