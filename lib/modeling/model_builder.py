@@ -266,8 +266,7 @@ class Generalized_RCNN(nn.Module):
         cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
         if cfg.MODEL.ATTRIBUTE_ON:
-            color_cls_score, rotation_cls_score, \
-            x_cls_score, y_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
+            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
         # ------------------------------------------------------------------------------------------------------------------
         # rpn loss
@@ -297,25 +296,17 @@ class Generalized_RCNN(nn.Module):
         if cfg.MODEL.ATTRIBUTE_ON:
             # attribute loss
             color_loss_cls, color_accuracy_cls,\
-            rotation_loss_cls, rotation_accuracy_cls,\
-            x_loss_cls, x_accuracy_cls,\
-            y_loss_cls, y_accuracy_cls = attribute_heads.attribute_losses(
+            rotation_loss_cls, rotation_accuracy_cls = attribute_heads.attribute_losses(
                 cls_score,
-                color_cls_score, rotation_cls_score, 
-                x_cls_score, y_cls_score,
+                color_cls_score, rotation_cls_score,
                 rpn_ret['labels_int32'],
-                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'],
-                rpn_ret['x_labels_int32'], rpn_ret['y_labels_int32'])
+                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'])
 
             return_dict['losses']['color_loss_cls'] = color_loss_cls
             return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
-            return_dict['losses']['x_loss_cls'] = x_loss_cls
-            return_dict['losses']['y_loss_cls'] = y_loss_cls
             
             return_dict['metrics']['color_accuracy_cls'] = color_accuracy_cls
             return_dict['metrics']['rotation_accuracy_cls'] = rotation_accuracy_cls
-            return_dict['metrics']['x_accuracy_cls'] = x_accuracy_cls
-            return_dict['metrics']['y_accuracy_cls'] = y_accuracy_cls
         # --------------------------------------------------------------------------
 
         if cfg.MODEL.MASK_ON:
@@ -399,13 +390,9 @@ class Generalized_RCNN(nn.Module):
         if cfg.MODEL.ATTRIBUTE_ON:
             return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['losses']['x_loss_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['losses']['y_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             
             return_dict['metrics']['color_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['rotation_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['metrics']['x_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
-            return_dict['metrics']['y_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         # # ------------------------------------------------------------
 
         return return_dict
