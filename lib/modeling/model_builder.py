@@ -222,7 +222,7 @@ class Generalized_RCNN(nn.Module):
 
     # called when training
     def _syn_train_forward(self, im_data, im_info, roidb=None, **rpn_kwargs):
-        device_id = im_data.get_device()        
+        device_id = im_data.get_device()
         blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
         # DEPTH Branch
         if cfg.MODEL.DEPTH_ON:
