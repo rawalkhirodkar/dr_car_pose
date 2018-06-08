@@ -133,11 +133,6 @@ def vis_one_image(
 
     color_list = colormap(rgb=True) / 255
 
-    dataset_keypoints, _ = keypoint_utils.get_keypoints()
-    kp_lines = kp_connections(dataset_keypoints)
-    cmap = plt.get_cmap('rainbow')
-    colors = [cmap(i) for i in np.linspace(0, 1, len(kp_lines) + 2)]
-
     fig = plt.figure(frameon=False)
     fig.set_size_inches(im.shape[1] / dpi, im.shape[0] / dpi)
     ax = plt.Axes(fig, [0., 0., 1., 1.])

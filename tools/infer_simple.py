@@ -192,7 +192,7 @@ def main():
         subprocess.call(command, shell=True)
 
         # ---------------------------------
-        if cfg.MODEL.DEPTH_ON:
+        if cfg.DEPTH.IS_ON:
             merge_out_path = '{}/depth_results.pdf'.format(args.output_dir)
             if os.path.exists(merge_out_path):
                 os.remove(merge_out_path)
@@ -200,7 +200,7 @@ def main():
                                                     merge_out_path)
             subprocess.call(command, shell=True)
         # ---------------------------------
-        if cfg.MODEL.NORMAL_ON:
+        if cfg.NORMAL.IS_ON:
             merge_out_path = '{}/normal_results.pdf'.format(args.output_dir)
             if os.path.exists(merge_out_path):
                 os.remove(merge_out_path)

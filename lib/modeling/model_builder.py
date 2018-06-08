@@ -402,6 +402,15 @@ class Generalized_RCNN(nn.Module):
         return_dict = {}
         blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
 
+        # -------------------------------------------------------
+        # Note the depth and normal takes the entire FPN
+        if cfg.DEPTH.IS_ON:
+            depth_ret = self.DepthNet(blob_conv, im_info, roidb)
+            return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax
+
+        if cfg.NORMAL.IS_ON:
+            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
+            return_dict['normal_cls_score'] = normal_ret['normal_cls_probs'] #this will be after softmax
         # --------------------------------
         rpn_ret = self.RPN(blob_conv, im_info, roidb) # can ignore here
        
@@ -426,14 +435,7 @@ class Generalized_RCNN(nn.Module):
             return_dict['color_cls_score'] = color_cls_score
             return_dict['rotation_cls_score'] = rotation_cls_score
 
-        if cfg.DEPTH.IS_ON:
-            depth_ret = self.DepthNet(blob_conv, im_info, roidb)
-            return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax
-
-        if cfg.NORMAL.IS_ON:
-            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
-            return_dict['normal_cls_score'] = normal_ret['normal_cls_probs'] #this will be after softmax
-        # -------------------------------------------------------
+        
 
         return return_dict
 

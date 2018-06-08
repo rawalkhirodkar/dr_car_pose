@@ -171,7 +171,7 @@ cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 							--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 							--load_ckpt Outputs/virat2_mix/depth_mask_rcnn_101/Jun08-02-41-12_bheem_step/ckpt/model_step28499.pth \
-							--image_dir data/test/real/virat2\
+							--image_dir data/test/real/small_virat2\
 							--output_dir results/depth_mask_rcnn_real_virat2\
 
 # # ----Real Visualise------
