@@ -83,12 +83,12 @@
 # 							--image_dir data/test/real/small_virat2/\
 # 							--output_dir results/rcnn_real_virat2\
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
-							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/Jun07-16-09-01_bheem_step/ckpt/model_step2499.pth \
-							--image_dir data/test/real/small_virat2/\
-							--output_dir results/mask_rcnn_real_virat2\
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/Jun07-16-09-01_bheem_step/ckpt/model_step2499.pth \
+# 							--image_dir data/test/real/small_virat2/\
+# 							--output_dir results/mask_rcnn_real_virat2\
 
 
 # #--------------------Test RCNN Mix on Syn--------------------------
@@ -141,12 +141,12 @@ CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 # 							--output_dir results/mask_rcnn_mix_virat2\
 
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
-							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May31-23-47-32_bheem_step/ckpt/model_step12320.pth \
-							--image_dir data/test/syn/virat2/\
-							--output_dir results/mask_rcnn_syn_virat2\
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/May31-23-47-32_bheem_step/ckpt/model_step12320.pth \
+# 							--image_dir data/test/syn/virat2/\
+# 							--output_dir results/mask_rcnn_syn_virat2\
 
 ##--------------------Test MaskRCNN + Depth--------------------------
 
@@ -158,6 +158,7 @@ CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 # 							--image_dir data/test/syn/virat2/\
 # 							--output_dir results/depth_mask_rcnn_syn_virat2\
 
+
 # ----Real Visualise------
 # cd ..
 # CUDA_VISIBLE_DEVICES=2 python tools/infer_simple.py --dataset virat2\
@@ -165,6 +166,13 @@ CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
 # 							--load_ckpt Outputs/scene2_depth_mask_rcnn_101/May15-19-43-52_cube3_step/ckpt/model_step2663.pth \
 # 							--image_dir data/test/real/virat2\
 # 							--output_dir results/depth_mask_rcnn_real_virat2\
+
+cd ..
+CUDA_VISIBLE_DEVICES=0 python tools/infer_simple.py --dataset virat2_mix\
+							--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+							--load_ckpt Outputs/virat2_mix/depth_mask_rcnn_101/Jun08-02-41-12_bheem_step/ckpt/model_step28499.pth \
+							--image_dir data/test/real/virat2\
+							--output_dir results/depth_mask_rcnn_real_virat2\
 
 # # ----Real Visualise------
 # cd ..
