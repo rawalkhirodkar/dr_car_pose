@@ -48,7 +48,6 @@ def get_fast_rcnn_blob_names(is_training=True):
         blob_names += ['rotation_labels_int32']
         blob_names += ['x_labels_int32']
         blob_names += ['y_labels_int32']
-        blob_names += ['is_real_labels_int32']
         # ------------------------------------------
     if is_training:
         # bbox_targets blob: R bounding-box regression targets with 4
@@ -170,23 +169,27 @@ def _sample_rois(roidb, im_scale, batch_idx):
     sampled_labels[fg_rois_per_this_image:] = 0  # Label bg RoIs with class 0
     sampled_boxes = roidb['boxes'][keep_inds]
     # -----------------------------------------------------------
-    #TO DO: need to deal with the max class assignment for other instances!
-    # just ignore it. backpropagate only on the true labels with overlap == 1
-    # for rest, the sampled label for other attributes will be -1
-    sampled_color_labels = roidb['gt_colors'][keep_inds]
+    # if significant overlap, copy the label from gt.
+    # background keep as -1
+    gt_inds = np.where(roidb['gt_classes'] > 0)[0]
+    gt_assignments = gt_inds[roidb['box_to_gt_ind_map'][keep_inds]]
+
+    gt_colors = roidb['gt_colors'][gt_inds]
+    gt_rotations = roidb['gt_rotations'][gt_inds]
+    gt_x = roidb['gt_x'][gt_inds]
+    gt_y = roidb['gt_y'][gt_inds]
+
+    sampled_color_labels = gt_colors[gt_assignments]
     sampled_color_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
 
-    sampled_rotation_labels = roidb['gt_rotations'][keep_inds]
+    sampled_rotation_labels = gt_rotations[gt_assignments]
     sampled_rotation_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
 
-    sampled_x_labels = roidb['gt_x'][keep_inds]
+    sampled_x_labels = gt_x[gt_assignments]
     sampled_x_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
 
-    sampled_y_labels = roidb['gt_y'][keep_inds]
+    sampled_y_labels = gt_y[gt_assignments]
     sampled_y_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
-
-    sampled_is_real_labels = roidb['gt_box_is_real'][keep_inds]
-    sampled_is_real_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
     # -----------------------------------------------------------
 
     if 'bbox_targets' not in roidb:
@@ -226,8 +229,7 @@ def _sample_rois(roidb, im_scale, batch_idx):
         color_labels_int32=sampled_color_labels.astype(np.int32, copy=False),
         rotation_labels_int32=sampled_rotation_labels.astype(np.int32, copy=False),
         x_labels_int32=sampled_x_labels.astype(np.int32, copy=False),
-        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False),
-        is_real_labels_int32=sampled_is_real_labels.astype(np.int32, copy=False)
+        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False)
         )
     # -----------------------------------------------------------------
 

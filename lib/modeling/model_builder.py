@@ -65,11 +65,11 @@ class Generalized_RCNN(nn.Module):
                 self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
         # ------------------------------------------------------------------------------------
         #Depth prediction Network
-        if cfg.MODEL.DEPTH_ON:
+        if cfg.DEPTH.IS_ON:
             self.DepthNet = depth_heads.depth_outputs(self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
 
         #Normal prediction Network
-        if cfg.MODEL.NORMAL_ON:
+        if cfg.NORMAL.IS_ON:
             self.NormalNet = normal_heads.normal_outputs(self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
         # ------------------------------------------------------------------------------------
 
@@ -225,11 +225,11 @@ class Generalized_RCNN(nn.Module):
         device_id = im_data.get_device()
         blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
         # DEPTH Branch
-        if cfg.MODEL.DEPTH_ON:
+        if cfg.DEPTH.IS_ON:
             depth_ret = self.DepthNet(blob_conv, im_info, roidb)
 
         # NORMAL Branch
-        if cfg.MODEL.NORMAL_ON:
+        if cfg.NORMAL.IS_ON:
             normal_ret = self.NormalNet(blob_conv, im_info, roidb)
         # -----------------------------------------------------------------------------------------------------------------        
         return_dict = {}  # A dict to collect return variables
@@ -238,8 +238,8 @@ class Generalized_RCNN(nn.Module):
 
         # -----------------------------------------------------------------------------------------------------------------        
         #Loss computation for Depth
-        if cfg.MODEL.DEPTH_ON:
-            if cfg.MODEL.DEPTH_SOFT_LABEL_ON:
+        if cfg.DEPTH.IS_ON:
+            if cfg.DEPTH.SOFT_LABEL_ON:
                 depth_loss_cls, depth_accuracy_cls = depth_heads.soft_depth_losses(depth_ret['depth_cls_logits'], roidb)
             else:
                 depth_loss_cls, depth_accuracy_cls = depth_heads.depth_losses(depth_ret['depth_cls_logits'], roidb)
@@ -247,8 +247,8 @@ class Generalized_RCNN(nn.Module):
             return_dict['metrics']['depth_accuracy_cls'] = depth_accuracy_cls
 
         #Loss computation for Normal
-        if cfg.MODEL.NORMAL_ON:
-            if cfg.MODEL.NORMAL_SOFT_LABEL_ON:
+        if cfg.NORMAL.IS_ON:
+            if cfg.NORMAL.SOFT_LABEL_ON:
                 normal_loss_cls, normal_accuracy_cls = normal_heads.soft_normal_losses(normal_ret['normal_cls_logits'], roidb)
             else:
                 normal_loss_cls, normal_accuracy_cls = normal_heads.normal_losses(normal_ret['normal_cls_logits'], roidb)
@@ -376,11 +376,11 @@ class Generalized_RCNN(nn.Module):
         # # ------------------------------------------------------------
         #fake losses        
         # -----------------------------------
-        if cfg.MODEL.DEPTH_ON:
+        if cfg.DEPTH.IS_ON:
             return_dict['losses']['depth_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['depth_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
 
-        if cfg.MODEL.NORMAL_ON:
+        if cfg.NORMAL.IS_ON:
             return_dict['losses']['normal_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         
@@ -399,17 +399,8 @@ class Generalized_RCNN(nn.Module):
 # ---------------------------------------------------------------------------------------------
     def _inference_forward(self, im_data, im_info, roidb=None, **rpn_kwargs):
         device_id = im_data.get_device()        
+        return_dict = {}
         blob_conv = self.Conv_Body(im_data) #list of len equal to pyramid level, each containing the level data
-
-        # --------------------------------
-        # DEPTH Branch
-        if cfg.MODEL.DEPTH_ON:
-            depth_ret = self.DepthNet(blob_conv, im_info, roidb)
-
-        # --------------------------------
-        # NORMAL Branch
-        if cfg.MODEL.NORMAL_ON:
-            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
 
         # --------------------------------
         rpn_ret = self.RPN(blob_conv, im_info, roidb) # can ignore here
@@ -423,25 +414,24 @@ class Generalized_RCNN(nn.Module):
         cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
         # -----------------------------------
-        if cfg.MODEL.ATTRIBUTE_ON:
-            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
-        # --------------------------------
         # make the return dict, all after softmax is applied
         # mask branch is taken care of separately
-        return_dict = {}
         return_dict['rois'] = rpn_ret['rois']
         return_dict['cls_score'] = cls_score
         return_dict['bbox_pred'] = bbox_pred
         return_dict['blob_conv'] = blob_conv
         # -------------------------------------------------------
         if cfg.MODEL.ATTRIBUTE_ON:
+            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
             return_dict['color_cls_score'] = color_cls_score
             return_dict['rotation_cls_score'] = rotation_cls_score
 
-        if cfg.MODEL.DEPTH_ON:
+        if cfg.DEPTH.IS_ON:
+            depth_ret = self.DepthNet(blob_conv, im_info, roidb)
             return_dict['depth_cls_score'] = depth_ret['depth_cls_probs'] #this will be after softmax
 
-        if cfg.MODEL.NORMAL_ON:
+        if cfg.NORMAL.IS_ON:
+            normal_ret = self.NormalNet(blob_conv, im_info, roidb)
             return_dict['normal_cls_score'] = normal_ret['normal_cls_probs'] #this will be after softmax
         # -------------------------------------------------------
 

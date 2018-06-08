@@ -22,15 +22,6 @@ import numpy as np
 # ---------------------------------------------------------------------------- #
 # Depth Prediction with an FPN backbone
 # ---------------------------------------------------------------------------- #
-#list of len 5: 
-#2x256x192x336
-#2x256x96x168
-#2x256x48x84
-#2x256x24x42
-#2x256x12x21, 
-
-# --------------------------------------------------------
-  
 #entry from model_builder.py
 class depth_outputs(nn.Module):
     """Add Depth on FPN specific outputs."""
@@ -51,7 +42,7 @@ class depth_outputs(nn.Module):
         #store 5 transformations
 
 
-        dim_score = cfg.MODEL.DEPTH_NUM_CLASSES
+        dim_score = cfg.DEPTH.NUM_CLASSES
         self.FPN_depth_conv1 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
         self.FPN_depth_conv2 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
         self.FPN_depth_conv3 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
@@ -88,25 +79,24 @@ class depth_outputs(nn.Module):
         return mapping_to_detectron, []
 
     def forward(self, blobs_in, im_info, roidb=None):
-        
         # ---------------------------------------
-        k_max = cfg.FPN.RPN_MAX_LEVEL  # coarsest level of pyramid
-        k_min = cfg.FPN.RPN_MIN_LEVEL  # finest level of pyramid
+        k_max = cfg.FPN.RPN_MAX_LEVEL  # coarsest level of pyramid = 6
+        k_min = cfg.FPN.RPN_MIN_LEVEL  # finest level of pyramid = 2
         assert len(blobs_in) == k_max - k_min + 1
         return_dict = {}
         feature = 0
 
-        # import pdb; pdb.set_trace()
-
+        target_size = (cfg.DEPTH.HEIGHT, cfg.DEPTH.WIDTH)
+        # bl_in.size() batchsize x 256 x H x W (which doubles with index)
+        # we traverse the list in reverse order, so spatial resolution halves 
         for lvl in range(k_min, k_max + 1):
-            slvl = str(lvl)
             bl_in = blobs_in[k_max - lvl]  # blobs_in is in reversed order
             bl_in = self.FPN_depth_conv2(F.relu(self.FPN_depth_conv1(bl_in), inplace=True))
-            bl_in = F.upsample(bl_in, scale_factor=2**(lvl-k_min), mode='bilinear', align_corners=True) #upsample by 2
+            bl_in = F.upsample(bl_in, size=target_size, mode='bilinear', align_corners=True) #upsample by 2
             feature = bl_in + feature
 
         fpn_depth_conv = F.relu(self.FPN_depth_conv3(feature), inplace=True) #torch.Size([2, 64, 192, 336])
-        fpn_depth_cls_score = F.upsample(self.FPN_depth_cls_score(fpn_depth_conv), scale_factor=2, mode='bilinear', align_corners=True) #B, 64, 384, 672
+        fpn_depth_cls_score = self.FPN_depth_cls_score(fpn_depth_conv) #B, 64, 384, 672
         return_dict['depth_cls_logits'] = fpn_depth_cls_score
 
         if not self.training:
@@ -120,8 +110,8 @@ def depth_losses(depth_cls_score, roidb):
     """Add Depth on FPN specific losses."""
     # ------------------------------------------------------------------------
     batch_size, n_classes, depth_height, depth_width = depth_cls_score.size()
-    assert(depth_height == cfg.MODEL.DEPTH_HEIGHT and depth_width == cfg.MODEL.DEPTH_WIDTH)
-    flat_depth_size = cfg.MODEL.DEPTH_WIDTH * cfg.MODEL.DEPTH_HEIGHT
+    assert(depth_height == cfg.DEPTH.HEIGHT and depth_width == cfg.DEPTH.WIDTH)
+    flat_depth_size = cfg.DEPTH.WIDTH * cfg.DEPTH.HEIGHT
     n_samples = batch_size*flat_depth_size
     
     depths_int32 = blob_utils.zeros((n_samples), int32=True)
@@ -139,7 +129,7 @@ def depth_losses(depth_cls_score, roidb):
     depth_cls_preds = depth_cls_score.max(dim=1)[1].type_as(depth_label)
     depth_accuracy_cls = (depth_cls_preds.eq(depth_label).float().mean(dim=0)).mean(dim=0)
 
-    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_accuracy_cls
+    return depth_loss_cls*cfg.DEPTH.LOSS_WEIGHT, depth_accuracy_cls
 
 # ---------------------------------------------------------------------------------------------
 def gaussian(x, mu, sig):
@@ -184,8 +174,8 @@ def soft_depth_losses(depth_cls_score, roidb):
     # ------------------------------------------------------------------------
     batch_size, n_classes, depth_height, depth_width = depth_cls_score.size()
     
-    assert(depth_height == cfg.MODEL.DEPTH_HEIGHT and depth_width == cfg.MODEL.DEPTH_WIDTH)
-    flat_depth_size = cfg.MODEL.DEPTH_WIDTH * cfg.MODEL.DEPTH_HEIGHT
+    assert(depth_height == cfg.DEPTH.HEIGHT and depth_width == cfg.DEPTH.WIDTH)
+    flat_depth_size = cfg.DEPTH.WIDTH * cfg.DEPTH.HEIGHT
     
     depths_int32 = blob_utils.zeros((batch_size, flat_depth_size), int32=True)
     depths_soft_float32 = np.zeros((batch_size, flat_depth_size, n_classes)) #each pixels is a sample
@@ -209,5 +199,5 @@ def soft_depth_losses(depth_cls_score, roidb):
     depth_cls_preds = depth_cls_score.max(dim=2)[1].type_as(depth_label) #batch_size x num_pixels
     depth_accuracy_cls = (depth_cls_preds.eq(depth_label).float().mean(dim=0)).mean(dim=0)
 
-    return depth_loss_cls*cfg.MODEL.WEIGHT_LOSS_DEPTH, depth_accuracy_cls
+    return depth_loss_cls*cfg.DEPTH.LOSS_WEIGHT, depth_accuracy_cls
 

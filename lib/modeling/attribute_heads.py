@@ -14,10 +14,10 @@ class attribute_outputs(nn.Module):
         super().__init__()
         # -----------------------------------------------------
         self.color_cls_score_fc1 = nn.Linear(dim_in, 100)
-        self.color_cls_score_fc2 = nn.Linear(100, cfg.MODEL.COLOR_NUM_CLASSES)
+        self.color_cls_score_fc2 = nn.Linear(100, cfg.COLOR.NUM_CLASSES)
 
         self.rotation_cls_score_fc1 = nn.Linear(dim_in, 100)
-        self.rotation_cls_score_fc2 = nn.Linear(100, cfg.MODEL.ROTATION_NUM_CLASSES)
+        self.rotation_cls_score_fc2 = nn.Linear(100, cfg.ROTATION.NUM_CLASSES)
         # -----------------------------------------------------
 
         self._init_weights()
@@ -77,7 +77,6 @@ def attribute_losses(cls_score,
 
     valid_inds = (color_label_int32 >= 0)
     assert(np.all(valid_inds == (rotation_label_int32 >= 0)) == True)
-    # valid_inds = (labels_int32 > 0)
     
     #chop off negative ROIs
     color_label_int32 = color_label_int32[valid_inds]

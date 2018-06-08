@@ -24,14 +24,6 @@ import numpy as np
 # ---------------------------------------------------------------------------- #
 # Normal Prediction with an FPN backbone
 # ---------------------------------------------------------------------------- #
-#list of len 5: 
-#2x256x192x336
-#2x256x96x168
-#2x256x48x84
-#2x256x24x42
-#2x256x12x21, 
-# --------------------------------------------------------
-  
 #entry from model_builder.py
 class normal_outputs(nn.Module):
     """Add Depth on FPN specific outputs."""
@@ -52,7 +44,7 @@ class normal_outputs(nn.Module):
         #store 5 transformations
 
 
-        dim_score = cfg.MODEL.NORMAL_NUM_CLASSES
+        dim_score = cfg.NORMAL.NUM_CLASSES
         self.FPN_normal_conv1 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
         self.FPN_normal_conv2 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
         self.FPN_normal_conv3 = nn.Conv2d(self.dim_in, self.dim_in, 3, stride=1, padding=1) #256 in, 256 out
@@ -97,17 +89,19 @@ class normal_outputs(nn.Module):
         return_dict = {}
         feature = 0
 
-        # import pdb; pdb.set_trace()
+        target_size = (cfg.NORMAL.HEIGHT, cfg.NORMAL.WIDTH)
+        # bl_in.size() batchsize x 256 x H x W (which doubles with index)
+        # we traverse the list in reverse order, so spatial resolution halves 
 
         for lvl in range(k_min, k_max + 1):
             slvl = str(lvl)
             bl_in = blobs_in[k_max - lvl]  # blobs_in is in reversed order
             bl_in = self.FPN_normal_conv2(F.relu(self.FPN_normal_conv1(bl_in), inplace=True))
-            bl_in = F.upsample(bl_in, scale_factor=2**(lvl-k_min), mode='bilinear', align_corners=True) #upsample by 2
+            bl_in = F.upsample(bl_in, size=target_size, mode='bilinear', align_corners=True) #upsample by 2
             feature = bl_in + feature
 
         fpn_normal_conv = F.relu(self.FPN_normal_conv3(feature), inplace=True) #torch.Size([2, 64, 192, 336])
-        fpn_normal_cls_score = F.upsample(self.FPN_normal_cls_score(fpn_normal_conv), scale_factor=2, mode='bilinear', align_corners=True) #B, 64, 384, 672
+        fpn_normal_cls_score = self.FPN_normal_cls_score(fpn_normal_conv) #B, 64, 384, 672
         return_dict['normal_cls_logits'] = fpn_normal_cls_score
 
         if not self.training:
@@ -121,8 +115,8 @@ def normal_losses(normal_cls_score, roidb):
     """Add normal on FPN specific losses."""
     # ------------------------------------------------------------------------
     batch_size, n_classes, normal_height, normal_width = normal_cls_score.size()
-    assert(normal_height == cfg.MODEL.NORMAL_HEIGHT and normal_width == cfg.MODEL.NORMAL_WIDTH)
-    flat_normal_size = cfg.MODEL.NORMAL_WIDTH * cfg.MODEL.NORMAL_HEIGHT
+    assert(normal_height == cfg.NORMAL.HEIGHT and normal_width == cfg.NORMAL.WIDTH)
+    flat_normal_size = cfg.NORMAL.WIDTH * cfg.NORMAL.HEIGHT
     n_samples = batch_size*flat_normal_size
     
     normals_int32 = blob_utils.zeros((n_samples), int32=True)
@@ -140,7 +134,7 @@ def normal_losses(normal_cls_score, roidb):
     normal_cls_preds = normal_cls_score.max(dim=1)[1].type_as(normal_label)
     normal_accuracy_cls = (normal_cls_preds.eq(normal_label).float().mean(dim=0)).mean(dim=0)
 
-    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_accuracy_cls
+    return normal_loss_cls*cfg.NORMAL.LOSS_WEIGHT, normal_accuracy_cls
 
 # ---------------------------------------------------------------------------------------------
 def gaussian(x, mu, sig):
@@ -185,8 +179,8 @@ def soft_normal_losses(normal_cls_score, roidb):
     # ------------------------------------------------------------------------
     batch_size, n_classes, normal_height, normal_width = normal_cls_score.size()
     
-    assert(normal_height == cfg.MODEL.NORMAL_HEIGHT and normal_width == cfg.MODEL.NORMAL_WIDTH)
-    flat_normal_size = cfg.MODEL.NORMAL_WIDTH * cfg.MODEL.NORMAL_HEIGHT
+    assert(normal_height == cfg.NORMAL.HEIGHT and normal_width == cfg.NORMAL.WIDTH)
+    flat_normal_size = cfg.NORMAL.WIDTH * cfg.NORMAL.HEIGHT
     
     normals_int32 = blob_utils.zeros((batch_size, flat_normal_size), int32=True)
     normals_soft_float32 = np.zeros((batch_size, flat_normal_size, n_classes)) #each pixels is a sample
@@ -210,5 +204,5 @@ def soft_normal_losses(normal_cls_score, roidb):
     normal_cls_preds = normal_cls_score.max(dim=2)[1].type_as(normal_label) #batch_size x num_pixels
     normal_accuracy_cls = (normal_cls_preds.eq(normal_label).float().mean(dim=0)).mean(dim=0)
 
-    return normal_loss_cls*cfg.MODEL.WEIGHT_LOSS_NORMAL, normal_accuracy_cls
+    return normal_loss_cls*cfg.NORMAL.LOSS_WEIGHT, normal_accuracy_cls
 

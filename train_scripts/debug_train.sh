@@ -82,12 +82,13 @@
 # 						--bs 4 \
 # 						--nw 0
 
-cd ..
-CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_mix \
-						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 4 \
-						--nw 0
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_mix \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+# 						--nw 0
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_mix \
@@ -99,19 +100,50 @@ CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_mix \
 ##--------------------Train MaskRCNN + Depth--------------------------
 
 # cd ..
-# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2 \
-# 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
-# 						--bs 6 \
+# 						--bs 2 \
+# 						--nw 0
+
+cd ..
+CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
+						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+						--use_tfboard \
+						--bs 2 \
+						--nw 0
+
+##--------------------Train MaskRCNN + Normal--------------------------
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/normal_mask_rcnn/normal_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 2 \
 # 						--nw 0
 
 # cd ..
-# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2 \
-# 						--cfg configs/scene2/depth_mask_rcnn/scene2_depth_mask_rcnn_101.yaml \
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
-# 						--bs 18 \
-# 						--nw 20 
+# 						--bs 2 \
+# 						--nw 0
 
+##--------------------Train MaskRCNN + Depth + Normal--------------------------
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/depth_normal_mask_rcnn/depth_normal_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 2 \
+# 						--nw 0
+
+# cd ..
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 2 \
+# 						--nw 0
 ###################################################Resume Training#######################################################################################3
 
 

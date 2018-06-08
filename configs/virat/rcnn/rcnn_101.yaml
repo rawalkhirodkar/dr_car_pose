@@ -2,17 +2,19 @@ MODEL:
   TYPE: generalized_rcnn
   CONV_BODY: FPN.fpn_ResNet101_conv5_body
   FASTER_RCNN: True
-  # -------------------------------------
   MASK_ON: False
-  # -------------------------------------
-  DEPTH_ON: False
-  WEIGHT_LOSS_DEPTH: 1.0 #has to be a float
-  DEPTH_SOFT_LABEL_ON: False
-  # -------------------------------------
-  NORMAL_ON: False
-  WEIGHT_LOSS_NORMAL: 1.0 #has to be a float
-  NORMAL_SOFT_LABEL_ON: False
-  # ---------------------------------------
+  ATTRIBUTE_ON: True
+# -------------------------------------
+DEPTH:
+  IS_ON: False
+  LOSS_WEIGHT: 1.0 #has to be a float
+  SOFT_LABEL_ON: False
+# -------------------------------------
+NORMAL: 
+  IS_ON: False
+  LOSS_WEIGHT: 1.0 #has to be a float
+  SOFT_LABEL_ON: False
+# ---------------------------------------
 RESNETS:
   IMAGENET_PRETRAINED_WEIGHTS: 'data/pretrained_model/resnet101_caffe.pth'
 NUM_GPUS: 8
@@ -45,21 +47,23 @@ MRCNN:
   CONV_INIT: MSRAFill  # default GaussianFill
 TRAIN:
   SCALES: (800,)
-  # SCALES: (320,)
   # MAX_SIZE: 1333
-  MAX_SIZE: 1280 #will give me 720 x 1280, scales do not matter at this max size
+  # MAX_SIZE: 1280 #will give me 720 x 1280, scales do not matter at this max size
+  MAX_SIZE: 960
   # MAX_SIZE: 640
   BATCH_SIZE_PER_IM: 512
   RPN_PRE_NMS_TOP_N: 2000  # Per FPN level
   USE_FLIPPED: False
   SNAPSHOT_ITERS: 1000 #saving frequency
-  # SNAPSHOT_ITERS: 200 #saving frequency
   GT_MIN_AREA: 300 #min area of BB
 TEST:
   SCALE: 800
   # MAX_SIZE: 1333
-  MAX_SIZE: 640
+  # MAX_SIZE: 1280
+  MAX_SIZE: 960
+  # MAX_SIZE: 640
   NMS: 0.5
+  RPN_NMS_THRESH: 0.4
   RPN_PRE_NMS_TOP_N: 1000  # Per FPN level
   RPN_POST_NMS_TOP_N: 1000
   VISUALIZE_THRESH: 0.5
