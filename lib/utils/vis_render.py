@@ -168,7 +168,12 @@ def vis_one_image(
 
     fig = plt.figure(frameon=False)
     fig.set_size_inches(2*im.shape[1] / dpi, 2*im.shape[0] / dpi)
-    ax = plt.Axes(fig, [0., 0., 0.5, 1])
+    ax = plt.Axes(fig, [0., 0.5, 0.5, 0.5]) #left, bottom, width, height
+    ax.axis('off')
+    fig.add_axes(ax)
+    ax.imshow(im)
+
+    ax = plt.Axes(fig, [0.5, 0.5, 0.5, 0.5])
     ax.axis('off')
     fig.add_axes(ax)
     ax.imshow(im)
@@ -267,11 +272,16 @@ def vis_one_image(
         result_path = os.path.join(render_output_dir, 'view3', im_name + "_v3.jpg")
         cv2.imwrite(result_path, view3_img)
 
-        ax = plt.Axes(fig, [0.5, 0, 0.5, 1])
+        ax = plt.Axes(fig, [0, 0, 0.5, 0.5])
         ax.axis('off')
         fig.add_axes(ax)
         ax.imshow(cv2.cvtColor(view1_img, cv2.COLOR_BGR2RGB))
 
+    if depth_map is not None:
+        ax = plt.Axes(fig, [0.5, 0, 0.5, 0.5])
+        ax.axis('off')
+        fig.add_axes(ax)
+        ax.imshow(depth_map, cmap='gray')
     # --------------------------------------------------------------------------
     output_name = os.path.basename(im_name) + '.' + ext
     fig.savefig(os.path.join(rgb_output_dir, '{}'.format(output_name)), dpi=dpi)

@@ -142,12 +142,26 @@
 # 							--output_dir results/mask_rcnn_real_virat2\
 
 
+# cd ..
+# CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
+# 							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/Jun07-16-09-01_bheem_step/ckpt/model_step2499.pth \
+# 							--image_dir data/test/real/render_virat2/\
+# 							--output_dir results/mask_rcnn_real_virat2\
+
+
+
+# # #--------------------Test MaskRCNN + Depth --------------------------
+
+
 cd ..
 CUDA_VISIBLE_DEVICES=0 python tools/render_infer_simple.py --dataset virat2_mix\
-							--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-							--load_ckpt Outputs/virat2_mix/mask_rcnn_101/Jun07-16-09-01_bheem_step/ckpt/model_step2499.pth \
+							--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+							--load_ckpt Outputs/virat2_mix/depth_mask_rcnn_101/Jun08-02-41-12_bheem_step/ckpt/model_step28999.pth \
 							--image_dir data/test/real/render_virat2/\
-							--output_dir results/mask_rcnn_real_virat2\
+							--output_dir results/depth_mask_rcnn_real_virat2\
+
+
 
 
 ###################################################################
