@@ -27,6 +27,7 @@ import cv2
 import numpy as np
 import os
 import pycocotools.mask as mask_util
+import json
 
 from utils.colormap import colormap
 import utils.keypoints as keypoint_utils
@@ -113,6 +114,7 @@ def vis_one_image(
     rgb_output_dir = os.path.join(output_dir, 'rgb')
     depth_output_dir = os.path.join(output_dir, 'depth')
     normal_output_dir = os.path.join(output_dir, 'normal')
+    log_output_dir = os.path.join(output_dir, 'log')
 
     if not os.path.exists(rgb_output_dir):
         os.makedirs(rgb_output_dir)
@@ -120,6 +122,8 @@ def vis_one_image(
         os.makedirs(depth_output_dir)
     if not os.path.exists(normal_output_dir):
         os.makedirs(normal_output_dir)
+    if not os.path.exists(log_output_dir):
+        os.makedirs(log_output_dir)
 
     if isinstance(boxes, list):
         boxes, segms, keypoints, attributes, classes = convert_from_cls_format(
@@ -130,6 +134,10 @@ def vis_one_image(
 
     if segms is not None:
         masks = mask_util.decode(segms)
+
+    log = {}
+    log['image_id'] = im_name
+    log['objects'] = []
 
     color_list = colormap(rgb=True) / 255
 
@@ -168,6 +176,15 @@ def vis_one_image(
 
             print('{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
             write_string += ' {} x:{} y:{} rot:{}'.format(color, x, y, rotation)
+            object_log = {}
+            object_log['class'] = dataset.classes[classes[i]]
+            object_log['color'] = color
+            object_log['3d_x'] = x
+            object_log['3d_y'] = y
+            object_log['rotation'] = rotation
+            object_log['bbox'] =  {'xmin':float(bbox[0]), 'ymin':float(bbox[1]), 'xmax':float(bbox[2]), 'ymax':float(bbox[3])}
+
+            log['objects'].append(object_log)
 
         # show box (off by default, box_alpha=0.0)
         ax.add_patch(
@@ -215,6 +232,10 @@ def vis_one_image(
     output_name = os.path.basename(im_name) + '.' + ext
     fig.savefig(os.path.join(rgb_output_dir, '{}'.format(output_name)), dpi=dpi)
     plt.close('all')
+
+    output_name = os.path.basename(im_name) + '.' + 'json'
+    with open(os.path.join(log_output_dir, '{}'.format(output_name)),"w+") as f:
+        json.dump(log, f, indent=4)
 
     if depth_map is not None:
         fig = plt.figure(frameon=False)

@@ -94,7 +94,10 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     if cfg.DEPTH.IS_ON:
         depth_cls_score = return_dict['depth_cls_score']
         depth_cls_preds = depth_cls_score.max(dim=1)[1]
-        extra_return_dict['depth_map'] =  depth_cls_preds.data.cpu().numpy().squeeze()
+        depth_map = depth_cls_preds.data.cpu().numpy().squeeze() # 0 to 63
+        depth_map = depth_map.astype(np.float)
+        depth_map = depth_map*255/cfg.DEPTH.NUM_CLASSES
+        extra_return_dict['depth_map'] = depth_map
 
     if cfg.NORMAL.IS_ON:
         normal_cls_score = return_dict['normal_cls_score']
