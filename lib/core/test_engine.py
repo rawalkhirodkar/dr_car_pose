@@ -235,6 +235,8 @@ def test_net(
     all_boxes, all_segms, all_keyps = empty_results(num_classes, num_images)
     timers = defaultdict(Timer)
     for i, entry in enumerate(roidb):
+        if i > 50:
+            break
         if cfg.TEST.PRECOMPUTED_PROPOSALS:
             # The roidb may contain ground-truth rois (for example, if the roidb
             # comes from the training or val split). We only want to evaluate
@@ -250,7 +252,9 @@ def test_net(
             box_proposals = None
 
         im = cv2.imread(entry['image'])
-        cls_boxes_i, cls_segms_i, cls_keyps_i = im_detect_all(model, im, box_proposals, timers)
+
+        cls_boxes_i, cls_attributes_i, cls_segms_i, \
+        cls_keyps_i, extra_return_dict = im_detect_all(model, im, box_proposals, timers)
 
         extend_results(i, all_boxes, cls_boxes_i)
         if cls_segms_i is not None:

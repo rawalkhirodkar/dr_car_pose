@@ -45,6 +45,7 @@ from utils.logging import send_email
 import datasets.cityscapes_json_dataset_evaluator as cs_json_dataset_evaluator
 import datasets.json_dataset_evaluator as json_dataset_evaluator
 import datasets.voc_dataset_evaluator as voc_dataset_evaluator
+import datasets.virat_dataset_evaluator as virat_dataset_evaluator
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,13 @@ def evaluate_all(
     """Evaluate "all" tasks, where "all" includes box detection, instance
     segmentation, and keypoint detection.
     """
+    if dataset.name.find('virat') > -1:
+        all_results = evaluate_boxes(
+            dataset, all_boxes, output_dir, use_matlab=use_matlab
+        )
+        logger.info('Evaluating bounding boxes is done!')
+        return all_results
+
     all_results = evaluate_boxes(
         dataset, all_boxes, output_dir, use_matlab=use_matlab
     )
@@ -92,6 +100,11 @@ def evaluate_boxes(dataset, all_boxes, output_dir, use_matlab=False):
             dataset, all_boxes, output_dir, use_matlab=use_matlab
         )
         box_results = _voc_eval_to_box_results(voc_eval)
+    elif _use_virat_evaluator(dataset):
+        virat_eval = virat_dataset_evaluator.evaluate_boxes(
+            dataset, all_boxes, output_dir, use_salt=not_comp, cleanup=not_comp
+        )
+        box_results = _virat_eval_to_box_results(virat_eval)
     else:
         raise NotImplementedError(
             'No evaluator for dataset: {}'.format(dataset.name)
@@ -256,6 +269,10 @@ def _use_voc_evaluator(dataset):
     """Check if the dataset uses the PASCAL VOC dataset evaluator."""
     return dataset.name[:4] == 'voc_'
 
+def _use_virat_evaluator(dataset):
+    """Check if the dataset uses the Cityscapes dataset evaluator."""
+    return dataset.name.find('virat') > -1
+
 
 # Indices in the stats array for COCO boxes and masks
 COCO_AP = 0
@@ -310,6 +327,17 @@ def _coco_eval_to_keypoint_results(coco_eval):
         res['keypoint']['APl'] = s[COCO_KPS_APL]
     return res
 
+def _virat_eval_to_box_results(virat_eval):
+    res = _empty_box_results()
+    if virat_eval is not None:
+        s = virat_eval.stats
+        res['box']['AP'] = s[COCO_AP]
+        res['box']['AP50'] = s[COCO_AP50]
+        res['box']['AP75'] = s[COCO_AP75]
+        res['box']['APs'] = s[COCO_APS]
+        res['box']['APm'] = s[COCO_APM]
+        res['box']['APl'] = s[COCO_APL]
+    return res
 
 def _voc_eval_to_box_results(voc_eval):
     # Not supported (return empty results)

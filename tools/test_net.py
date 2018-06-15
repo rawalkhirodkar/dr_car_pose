@@ -13,6 +13,7 @@ import _init_paths  # pylint: disable=unused-import
 from core.config import cfg, merge_cfg_from_file, merge_cfg_from_list, assert_and_infer_cfg
 from core.test_engine import run_inference
 import utils.logging
+from virat_config import set_virat_configs
 
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
 # thread safe and causes unwanted GPU memory allocations.
@@ -25,6 +26,9 @@ def parse_args():
     parser.add_argument(
         '--dataset',
         help='training dataset')
+    parser.add_argument(
+        '--test_dataset',
+        help='testing dataset')
     parser.add_argument(
         '--cfg', dest='cfg_file', required=True,
         help='optional config file')
@@ -87,12 +91,22 @@ if __name__ == '__main__':
     if args.set_cfgs is not None:
         merge_cfg_from_list(args.set_cfgs)
 
-    if args.dataset == "coco2017":
-        cfg.TEST.DATASETS = ('coco_2017_val',)
+    if args.dataset.startswith("coco"):
+        set_virat_configs()
         cfg.MODEL.NUM_CLASSES = 81
-    elif args.dataset == "keypoints_coco2017":
-        cfg.TEST.DATASETS = ('keypoints_coco_2017_val',)
-        cfg.MODEL.NUM_CLASSES = 2
+        if args.test_dataset.startswith("virat1"):
+            cfg.TEST.DATASETS = ('virat1_real_test',)
+        if args.test_dataset.startswith("virat2"):
+            cfg.TEST.DATASETS = ('virat2_real_test',)
+            # cfg.TEST.DATASETS = ('coco_2017_val',)
+    # ----------------------------------------------
+    elif args.test_dataset.startswith("virat1"):
+        set_virat_configs()
+        cfg.TEST.DATASETS = ('virat1_real_test',)
+    # ----------------------------------------------
+    elif args.test_dataset.startswith("virat2"):
+        set_virat_configs()
+        cfg.TEST.DATASETS = ('virat2_real_test',)
     else:  # For subprocess call
         assert cfg.TEST.DATASETS, 'cfg.TEST.DATASETS shouldn\'t be empty'
     assert_and_infer_cfg()
