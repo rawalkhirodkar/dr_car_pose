@@ -91,20 +91,15 @@ if __name__ == '__main__':
     if args.set_cfgs is not None:
         merge_cfg_from_list(args.set_cfgs)
 
-    if args.dataset.startswith("coco"):
-        set_virat_configs()
+    if args.dataset == "coco2017":
         cfg.MODEL.NUM_CLASSES = 81
-        if args.test_dataset.startswith("virat1"):
-            cfg.TEST.DATASETS = ('virat1_real_test',)
-        if args.test_dataset.startswith("virat2"):
-            cfg.TEST.DATASETS = ('virat2_real_test',)
-            # cfg.TEST.DATASETS = ('coco_2017_val',)
+        cfg.TEST.DATASETS = ('coco_2017_val',)
     # ----------------------------------------------
-    elif args.test_dataset.startswith("virat1"):
+    elif args.dataset == "virat1":
         set_virat_configs()
         cfg.TEST.DATASETS = ('virat1_real_test',)
     # ----------------------------------------------
-    elif args.test_dataset.startswith("virat2"):
+    elif args.dataset == "virat2":
         set_virat_configs()
         cfg.TEST.DATASETS = ('virat2_real_test',)
     else:  # For subprocess call

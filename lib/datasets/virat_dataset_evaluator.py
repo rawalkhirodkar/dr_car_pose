@@ -34,6 +34,14 @@ import utils.boxes as box_utils
 
 logger = logging.getLogger(__name__)
 
+# #---------------------------------------------
+# Only two useful classes.for BB
+# 1. Person
+# 2. Car
+
+# The files maps the predictions to these classes to evaluate.
+
+# #---------------------------------------------
 
 def evaluate_masks(
     json_dataset,
@@ -124,7 +132,7 @@ def _do_segmentation_eval(json_dataset, res_file, output_dir):
 
 
 def evaluate_boxes(
-    json_dataset, all_boxes, output_dir, use_salt=True, cleanup=False
+    json_dataset, test_json_dataset, all_boxes, output_dir, use_salt=True, cleanup=False
 ):
     res_file = os.path.join(
         output_dir, 'bbox_' + json_dataset.name + '_results'
@@ -132,7 +140,7 @@ def evaluate_boxes(
     if use_salt:
         res_file += '_{}'.format(str(uuid.uuid4()))
     res_file += '.json'
-    _write_coco_bbox_results_file(json_dataset, all_boxes, res_file)
+    _write_coco_bbox_results_file(json_dataset, test_json_dataset, all_boxes, res_file)
     # Only do evaluation on non-test sets (annotations are undisclosed on test)
     if json_dataset.name.find('test') == -1:
         coco_eval = _do_detection_eval(json_dataset, res_file, output_dir)
@@ -144,12 +152,13 @@ def evaluate_boxes(
     return coco_eval
 
 
-def _write_coco_bbox_results_file(json_dataset, all_boxes, res_file):
+def _write_coco_bbox_results_file(json_dataset, test_json_dataset, all_boxes, res_file):
     # [{"image_id": 42,
     #   "category_id": 18,
     #   "bbox": [258.15,41.29,348.26,243.78],
     #   "score": 0.236}, ...]
     results = []
+    import pdb; pdb.set_trace()
     for cls_ind, cls in enumerate(json_dataset.classes):
         if cls == '__background__':
             continue

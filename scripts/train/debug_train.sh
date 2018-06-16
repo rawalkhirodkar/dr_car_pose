@@ -75,7 +75,6 @@
 
 ##--------------------Train MaskRCNN--------------------------
 
-<<<<<<< HEAD
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_syn \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
@@ -83,8 +82,6 @@
 # 						--bs 4 \
 # 						--nw 0
 
-=======
->>>>>>> 811847ac5ac94105d29328365442999c2ad56a56
 
 # cd ..
 # CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_mix \
@@ -93,7 +90,6 @@
 # 						--bs 4 \
 # 						--nw 0
 
-<<<<<<< HEAD
 # cd ..
 # CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
@@ -110,7 +106,7 @@
 # 						--bs 2 \
 # 						--nw 0
 
-cd ..
+cd ../..
 CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 						--use_tfboard \
@@ -148,8 +144,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--use_tfboard \
 # 						--bs 2 \
 # 						--nw 0
-=======
-cd ..
+cd ../..
 CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset virat2_mix \
 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 						--use_tfboard \
@@ -174,7 +169,6 @@ CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset virat2_mix \
 # 						--bs 18 \
 # 						--nw 20 
 
->>>>>>> 811847ac5ac94105d29328365442999c2ad56a56
 ###################################################Resume Training#######################################################################################3
 
 

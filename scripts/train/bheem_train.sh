@@ -106,7 +106,7 @@
 # 						--bs 4 \
 # 						--nw 4
 
-cd ..
+cd ../..
 CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 						--use_tfboard \
