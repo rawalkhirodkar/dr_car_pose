@@ -91,9 +91,15 @@ if __name__ == '__main__':
     if args.set_cfgs is not None:
         merge_cfg_from_list(args.set_cfgs)
 
-    if args.dataset == "coco2017":
+    if args.dataset == "coco2017":         
         cfg.MODEL.NUM_CLASSES = 81
-        cfg.TEST.DATASETS = ('coco_2017_val',)
+
+        # dataset_name = 'coco_2017_val'
+        # dataset_name = 'virat1_real_test'
+        dataset_name = 'virat2_real_test'
+
+        args.dataset = dataset_name
+        cfg.TEST.DATASETS = (dataset_name,)
     # ----------------------------------------------
     elif args.dataset == "virat1":
         set_virat_configs()

@@ -90,7 +90,7 @@ def _write_coco_segms_results_file(
         'Writing segmentation results json to: {}'.format(
             os.path.abspath(res_file)))
     with open(res_file, 'w') as fid:
-        json.dump(results, fid)
+        json.dump(results, fid, indent=4)
 
 
 def _coco_segms_results_one_category(json_dataset, boxes, segms, cat_id):
