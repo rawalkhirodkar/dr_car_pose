@@ -85,6 +85,7 @@ if __name__ == '__main__':
         os.makedirs(args.output_dir)
 
     cfg.VIS = args.vis
+    cfg.VIS_TH = 0.5
 
     if args.cfg_file is not None:
         merge_cfg_from_file(args.cfg_file)
@@ -93,6 +94,7 @@ if __name__ == '__main__':
 
     if args.dataset == "coco2017":         
         cfg.MODEL.NUM_CLASSES = 81
+        cfg.TEST.FORCE_JSON_DATASET_EVAL = True
 
         # dataset_name = 'coco_2017_val'
         # dataset_name = 'virat1_real_test'

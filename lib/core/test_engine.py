@@ -231,10 +231,26 @@ def test_net(
     )
     model = initialize_model_from_cfg(args, gpu_id=gpu_id)
     num_images = len(roidb)
-    num_classes = cfg.MODEL.NUM_CLASSES
+
+    is_coco_model = False
+    if cfg.MODEL.NUM_CLASSES != len(dataset.classes):
+        num_classes = len(dataset.classes)
+        is_coco_model = True
+
+        coco_dataset = JsonDataset('coco_2017_val')
+        virat_cls_2_coco_cls = {}
+
+        for i, virat_class in enumerate(dataset.classes):
+            for j, coco_class in enumerate(coco_dataset.classes):
+                if virat_class == coco_class:
+                    virat_cls_2_coco_cls[virat_class] = j
+    else:
+        num_classes = cfg.MODEL.NUM_CLASSES
     all_boxes, all_segms, all_keyps = empty_results(num_classes, num_images)
     timers = defaultdict(Timer)
     for i, entry in enumerate(roidb):
+        if i > 30:
+            break
         if cfg.TEST.PRECOMPUTED_PROPOSALS:
             # The roidb may contain ground-truth rois (for example, if the roidb
             # comes from the training or val split). We only want to evaluate
@@ -250,7 +266,14 @@ def test_net(
             box_proposals = None
 
         im = cv2.imread(entry['image'])
-        cls_boxes_i, cls_attributes_i, cls_segms_i, cls_keyps_i, return_dict = im_detect_all(model, im, box_proposals, timers)
+        cls_boxes_i, cls_attributes_i, \
+        cls_segms_i, cls_keyps_i, return_dict = im_detect_all(model, im, box_proposals, timers)
+
+        # ----------------------------------------------------------
+        if is_coco_model == True:
+            cls_boxes_i, cls_attributes_i, cls_segms_i = coco2virat(dataset, virat_cls_2_coco_cls, 
+                                                            cls_boxes_i, cls_attributes_i, cls_segms_i)
+        # ----------------------------------------------------------
 
         extend_results(i, all_boxes, cls_boxes_i)
         if cls_segms_i is not None:
@@ -314,6 +337,22 @@ def test_net(
     logger.info('Wrote detections to: {}'.format(os.path.abspath(det_file)))
     return all_boxes, all_segms, all_keyps
 
+def coco2virat(dataset, virat_cls_2_coco_cls, cls_boxes, cls_attributes, cls_segms):
+    virat_cls_boxes = []
+    virat_cls_attributes = [] if cls_attributes is not None else None
+    virat_cls_segms = [] if cls_segms is not None else None
+
+    for virat_class in dataset.classes:
+        idx = virat_cls_2_coco_cls[virat_class]
+        virat_cls_boxes.append(cls_boxes[idx])
+
+        if virat_cls_attributes is not None:
+            virat_cls_attributes.append(cls_attributes[idx])
+        
+        if virat_cls_segms is not None:
+            virat_cls_segms.append(cls_segms[idx])
+
+    return virat_cls_boxes, virat_cls_attributes, virat_cls_segms
 
 def initialize_model_from_cfg(args, gpu_id=0):
     """Initialize a model from the global cfg. Loads test-time weights and
