@@ -233,7 +233,7 @@ DATASETS = {
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
-    'virat1_real_test': {
+    'virat1_real_val': {
         IM_DIR:
             _DATA_DIR + '/virat1_real/images/train2018',
         ANN_FN:
@@ -257,7 +257,7 @@ DATASETS = {
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
-    'virat2_real_test': {
+    'virat2_real_val': {
         IM_DIR:
             _DATA_DIR + '/virat2_real/images/train2018',
         ANN_FN:

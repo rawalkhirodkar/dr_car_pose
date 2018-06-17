@@ -168,6 +168,7 @@ def test_net_on_dataset(
 def multi_gpu_test_net_on_dataset(
         args, dataset_name, proposal_file, num_images, output_dir):
     """Multi-gpu inference on a dataset."""
+    dataset = JsonDataset(dataset_name)
     binary_dir = envu.get_runtime_dir()
     binary_ext = envu.get_py_bin_ext()
     binary = os.path.join(binary_dir, args.test_net_file + binary_ext)
@@ -186,15 +187,19 @@ def multi_gpu_test_net_on_dataset(
         args.load_ckpt, args.load_detectron, opts
     )
 
+    # this is trained on COCO but tested on VIRAT
+    if cfg.MODEL.NUM_CLASSES != len(dataset.classes):
+        num_classes = len(dataset.classes)
+
     # Collate the results from each subprocess
-    all_boxes = [[] for _ in range(cfg.MODEL.NUM_CLASSES)]
-    all_segms = [[] for _ in range(cfg.MODEL.NUM_CLASSES)]
-    all_keyps = [[] for _ in range(cfg.MODEL.NUM_CLASSES)]
+    all_boxes = [[] for _ in range(num_classes)]
+    all_segms = [[] for _ in range(num_classes)]
+    all_keyps = [[] for _ in range(num_classes)]
     for det_data in outputs:
         all_boxes_batch = det_data['all_boxes']
         all_segms_batch = det_data['all_segms']
         all_keyps_batch = det_data['all_keyps']
-        for cls_idx in range(1, cfg.MODEL.NUM_CLASSES):
+        for cls_idx in range(1, num_classes):
             all_boxes[cls_idx] += all_boxes_batch[cls_idx]
             all_segms[cls_idx] += all_segms_batch[cls_idx]
             all_keyps[cls_idx] += all_keyps_batch[cls_idx]
@@ -249,8 +254,6 @@ def test_net(
     all_boxes, all_segms, all_keyps = empty_results(num_classes, num_images)
     timers = defaultdict(Timer)
     for i, entry in enumerate(roidb):
-        if i > 30:
-            break
         if cfg.TEST.PRECOMPUTED_PROPOSALS:
             # The roidb may contain ground-truth rois (for example, if the roidb
             # comes from the training or val split). We only want to evaluate

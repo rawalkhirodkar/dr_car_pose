@@ -97,8 +97,8 @@ if __name__ == '__main__':
         cfg.TEST.FORCE_JSON_DATASET_EVAL = True
 
         # dataset_name = 'coco_2017_val'
-        # dataset_name = 'virat1_real_test'
-        dataset_name = 'virat2_real_test'
+        # dataset_name = 'virat1_real_val'
+        dataset_name = 'virat2_real_val'
 
         args.dataset = dataset_name
         cfg.TEST.DATASETS = (dataset_name,)
