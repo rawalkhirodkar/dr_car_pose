@@ -79,7 +79,7 @@ if __name__ == '__main__':
     if args.output_dir is None:
         ckpt_path = args.load_ckpt if args.load_ckpt else args.load_detectron
         args.output_dir = os.path.join(
-            os.path.dirname(os.path.dirname(ckpt_path)), 'test')
+            os.path.dirname(os.path.dirname(ckpt_path)), 'test', args.test_dataset)
         logger.info('Automatically set output directory to %s', args.output_dir)
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
@@ -92,16 +92,11 @@ if __name__ == '__main__':
     if args.set_cfgs is not None:
         merge_cfg_from_list(args.set_cfgs)
 
+    cfg.TEST.FORCE_JSON_DATASET_EVAL = True
     if args.dataset == "coco2017":         
         cfg.MODEL.NUM_CLASSES = 81
-        cfg.TEST.FORCE_JSON_DATASET_EVAL = True
-
-        # dataset_name = 'coco_2017_val'
-        # dataset_name = 'virat1_real_val'
-        dataset_name = 'virat2_real_val'
-
-        args.dataset = dataset_name
-        cfg.TEST.DATASETS = (dataset_name,)
+        args.dataset = args.test_dataset
+        cfg.TEST.DATASETS = (args.test_dataset,)
     # ----------------------------------------------
     elif args.dataset == "virat1":
         set_virat_configs()
