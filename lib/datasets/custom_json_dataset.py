@@ -428,10 +428,11 @@ class CustomJsonDataset(object):
             # --------some hack------------- 
             cls = self.json_category_id_to_contiguous_id[obj['category_id']]
             boxes[ix, :] = obj['clean_bbox']
-            gt_classes[ix] = cls #will be sedan or person
+            gt_classes[ix] = cls #will be person or car
             # --------------------------------------------------------
-            gt_colors[ix] = self.virat_class_info.get_color_id(obj['color'])
-            gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation'])
+            #ignore color and rotations for person
+            gt_colors[ix] = self.virat_class_info.get_color_id(obj['color']) if cls > 1 else -1 
+            gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation']) if cls > 1 else -1
             gt_x[ix] = self.virat_class_info.get_x_id(obj['x'])
             gt_y[ix] = self.virat_class_info.get_y_id(obj['y'])
             # --------------------------------------------------------

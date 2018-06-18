@@ -3,7 +3,7 @@ MODEL:
   CONV_BODY: FPN.fpn_ResNet101_conv5_body
   FASTER_RCNN: True
   MASK_ON: False
-  ATTRIBUTE_ON: False
+  ATTRIBUTE_ON: True
 # -------------------------------------
 DEPTH:
   IS_ON: False

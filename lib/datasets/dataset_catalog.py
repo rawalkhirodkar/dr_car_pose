@@ -219,57 +219,57 @@ DATASETS = {
     },
     'virat1_syn_train': {
         IM_DIR:
-            _DATA_DIR + '/virat1_syn/images/train2018',
+            _DATA_DIR + '/virat1/virat1_syn/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat1_syn/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat1/virat1_syn/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat1_real_train': {
         IM_DIR:
-            _DATA_DIR + '/virat1_real/images/train2018',
+            _DATA_DIR + '/virat1/virat1_real/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat1_real/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat1/virat1_real/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat1_real_val': {
         IM_DIR:
-            _DATA_DIR + '/virat1_real/images/train2018',
+            _DATA_DIR + '/virat1/virat1_real/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat1_real/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat1/virat1_real/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat2_syn_train': {
         IM_DIR:
-            _DATA_DIR + '/virat2_syn/images/train2018',
+            _DATA_DIR + '/virat2/virat2_syn/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat2_syn/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat2/virat2_syn/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat2_real_train': {
         IM_DIR:
-            _DATA_DIR + '/virat2_real/images/train2018',
+            _DATA_DIR + '/virat2/virat2_real/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat2_real/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat2/virat2_real/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat2_real_val': {
         IM_DIR:
-            _DATA_DIR + '/virat2_real/images/train2018',
+            _DATA_DIR + '/virat2/virat2_real/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat2_real/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat2/virat2_real/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
     'virat2_mix_train': {
         IM_DIR:
-            _DATA_DIR + '/virat2_mix/images/train2018',
+            _DATA_DIR + '/virat2/virat2_mix/images/train2018',
         ANN_FN:
-            _DATA_DIR + '/virat2_mix/annotations/instances_train2018.json',
+            _DATA_DIR + '/virat2/virat2_mix/annotations/instances_train2018.json',
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     }

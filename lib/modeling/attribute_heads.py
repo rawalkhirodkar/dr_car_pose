@@ -75,8 +75,8 @@ def attribute_losses(cls_score,
                      color_label_int32, rotation_label_int32):
     # --------------------------------------------
 
-    valid_inds = (color_label_int32 >= 0)
-    assert(np.all(valid_inds == (rotation_label_int32 >= 0)) == True)
+    valid_inds = ((color_label_int32 >= 0) * (labels_int32 > 1)) #no color and rotation for person
+    assert(np.all(valid_inds == ( (rotation_label_int32 >= 0) * (labels_int32 > 1)) ) == True)
     
     #chop off negative ROIs
     color_label_int32 = color_label_int32[valid_inds]

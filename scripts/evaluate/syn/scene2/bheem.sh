@@ -1,9 +1,5 @@
 
-##########################SCENE1#########################################
-
-
 ##########################SCENE2#########################################
-
 
 
 
@@ -31,13 +27,13 @@
 
 
 
-# ###Virat evaluate multi gpu
-# cd ../..
-# CUDA_VISIBLE_DEVICES=1,2 python tools/test_net.py --dataset virat2 \
-# 						--test_data virat2_real_val \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/virat2_syn/mask_rcnn_101/Jun17-23-01-31_bheem_step/ckpt/model_step17999.pth \
+###Virat evaluate multi gpu
+cd ../..
+CUDA_VISIBLE_DEVICES=1,2 python tools/test_net.py --dataset virat2 \
+						--test_data virat2_real_val \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+						--multi-gpu-testing \
+						--load_ckpt Outputs/virat2_syn/mask_rcnn_101/Jun17-23-01-31_bheem_step/ckpt/model_step4999.pth \
 
 # --------------------------------------------------
 # ---------Syn without Rotation, Color-------------
@@ -61,13 +57,13 @@
 
 
 
-###Virat evaluate multi gpu
-cd ../..
-CUDA_VISIBLE_DEVICES=1,2 python tools/test_net.py --dataset virat2 \
-						--test_data virat2_real_val \
-						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-						--multi-gpu-testing \
-						--load_ckpt Outputs/virat2_syn/mask_rcnn_101/Jun18-15-18-09_bheem_step/ckpt/model_step4719.pth \
+# ###Virat evaluate multi gpu
+# cd ../..
+# CUDA_VISIBLE_DEVICES=1,2 python tools/test_net.py --dataset virat2 \
+# 						--test_data virat2_real_val \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 						--multi-gpu-testing \
+# 						--load_ckpt Outputs/virat2_syn/mask_rcnn_101/Jun18-15-18-09_bheem_step/ckpt/model_step4719.pth \
 
 
 

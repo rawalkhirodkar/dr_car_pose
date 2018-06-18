@@ -3,10 +3,7 @@ from core.config import cfg
 # ----------------------------------------------------------------------
 def set_virat_configs():
     cfg.MODEL.CLIP_GRADIENT = True
-
-    # cfg.MODEL.ATTRIBUTE_ON = True #default
-    cfg.MODEL.ATTRIBUTE_ON = False
-
+    
     # cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
     cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False #default
 

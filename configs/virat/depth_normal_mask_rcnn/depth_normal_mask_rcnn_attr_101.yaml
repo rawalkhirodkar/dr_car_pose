@@ -2,18 +2,18 @@ MODEL:
   TYPE: generalized_rcnn
   CONV_BODY: FPN.fpn_ResNet101_conv5_body
   FASTER_RCNN: True
-  MASK_ON: False
-  ATTRIBUTE_ON: False
+  MASK_ON: True
+  ATTRIBUTE_ON: True
 # -------------------------------------
 DEPTH:
-  IS_ON: False
+  IS_ON: True
   LOSS_WEIGHT: 1.0 #has to be a float
-  SOFT_LABEL_ON: False
+  SOFT_LABEL_ON: True
 # -------------------------------------
 NORMAL: 
-  IS_ON: False
+  IS_ON: True
   LOSS_WEIGHT: 1.0 #has to be a float
-  SOFT_LABEL_ON: False
+  SOFT_LABEL_ON: True
 # ---------------------------------------
 RESNETS:
   IMAGENET_PRETRAINED_WEIGHTS: 'data/pretrained_model/resnet101_caffe.pth'
