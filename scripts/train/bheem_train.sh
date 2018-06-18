@@ -90,11 +90,18 @@
 # 						--bs 4 \
 # 						--nw 4
 
+cd ../..
+CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_syn \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+						--use_tfboard \
+						--bs 4 \
+						--nw 4
+
 # cd ..
-# CUDA_VISIBLE_DEVICES=0,1,2 python tools/train_net_step.py --dataset virat2_mix \
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 # 						--use_tfboard \
-# 						--bs 12 \
+# 						--bs 4 \
 # 						--nw 4
 
 ##--------------------Train MaskRCNN + Depth--------------------------
@@ -106,12 +113,12 @@
 # 						--bs 4 \
 # 						--nw 4
 
-cd ../..
-CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
-						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
-						--use_tfboard \
-						--bs 4 \
-						--nw 4
+# cd ../..
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_mix \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+# 						--nw 4
 
 ##--------------------Train MaskRCNN + Normal--------------------------
 

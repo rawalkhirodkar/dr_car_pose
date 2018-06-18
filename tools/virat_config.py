@@ -4,13 +4,14 @@ from core.config import cfg
 def set_virat_configs():
     cfg.MODEL.CLIP_GRADIENT = True
 
-    cfg.MODEL.ATTRIBUTE_ON = True
-    # cfg.MODEL.ATTRIBUTE_ON = False
+    # cfg.MODEL.ATTRIBUTE_ON = True #default
+    cfg.MODEL.ATTRIBUTE_ON = False
 
     # cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
-    cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False
+    cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False #default
 
-    cfg.MODEL.NUM_CLASSES = 3 #background, sedan, suv
+    # cfg.MODEL.NUM_CLASSES = 3 #background, sedan, suv
+    cfg.MODEL.NUM_CLASSES = 3 #background, person, car
 
     cfg.COLOR.NUM_CLASSES = 6 #(yellow for person)
     cfg.COLOR.LOSS_WEIGHT = 0.5 # 1 is defualt

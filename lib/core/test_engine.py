@@ -190,7 +190,8 @@ def multi_gpu_test_net_on_dataset(
     # this is trained on COCO but tested on VIRAT
     if cfg.MODEL.NUM_CLASSES != len(dataset.classes):
         num_classes = len(dataset.classes)
-
+    else:
+        num_classes = cfg.MODEL.NUM_CLASSES
     # Collate the results from each subprocess
     all_boxes = [[] for _ in range(num_classes)]
     all_segms = [[] for _ in range(num_classes)]

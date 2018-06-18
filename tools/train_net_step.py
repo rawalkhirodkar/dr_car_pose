@@ -144,6 +144,10 @@ def main():
     print('Called with args:')
     print(args)
 
+    cfg_from_file(args.cfg_file)
+    if args.set_cfgs is not None:
+        cfg_from_list(args.set_cfgs)
+
     if not torch.cuda.is_available():
         sys.exit("Need a CUDA device to run the code.")
 
@@ -182,10 +186,6 @@ def main():
     # ------------------------------------------------
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))
-
-    cfg_from_file(args.cfg_file)
-    if args.set_cfgs is not None:
-        cfg_from_list(args.set_cfgs)
 
     ### Adaptively adjust some configs ###
     original_batch_size = cfg.NUM_GPUS * cfg.TRAIN.IMS_PER_BATCH

@@ -96,6 +96,12 @@ def main():
     assert args.image_dir or args.images
     assert bool(args.image_dir) ^ bool(args.images)
 
+    print('load cfg from file: {}'.format(args.cfg_file))
+    cfg_from_file(args.cfg_file)
+
+    if args.set_cfgs is not None:
+        cfg_from_list(args.set_cfgs)
+
     if args.dataset.startswith("coco"):
         dataset = datasets.get_coco_dataset()
         cfg.MODEL.NUM_CLASSES = len(dataset.classes)
@@ -114,12 +120,6 @@ def main():
     # -----------------------------------------------
     else:
         raise ValueError('Unexpected dataset name: {}'.format(args.dataset))
-
-    print('load cfg from file: {}'.format(args.cfg_file))
-    cfg_from_file(args.cfg_file)
-
-    if args.set_cfgs is not None:
-        cfg_from_list(args.set_cfgs)
 
     assert bool(args.load_ckpt) ^ bool(args.load_detectron), \
         'Exactly one of --load_ckpt and --load_detectron should be specified.'

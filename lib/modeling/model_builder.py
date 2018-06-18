@@ -96,7 +96,6 @@ class Generalized_RCNN(nn.Module):
 
         # -----------------------------------------------------------------------------
         # Attribute Branch
-        #Depth prediction Network
         if cfg.MODEL.ATTRIBUTE_ON:
             self.AttributeNet = attribute_heads.attribute_outputs(self.Box_Head.dim_out)
         # -----------------------------------------------------------------------------
