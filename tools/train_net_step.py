@@ -415,7 +415,6 @@ def main():
                 lr = optimizer.param_groups[0]['lr']
                 assert lr == lr_new
                 decay_steps_ind += 1
-
             training_stats.IterTic()
             optimizer.zero_grad()
             for inner_iter in range(args.iter_size):
@@ -447,7 +446,6 @@ def main():
             # ---------------------------------------------------------            
             optimizer.step()
             training_stats.IterToc()
-
             training_stats.LogIterStats(step, lr)
 
             if (step+1) % CHECKPOINT_PERIOD == 0:

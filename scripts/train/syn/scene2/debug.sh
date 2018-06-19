@@ -56,7 +56,7 @@ cd ../../../..
 
 # --------------------------with attributes------------------------------
 
-# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
+# CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat2_syn \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \

@@ -78,14 +78,15 @@ def attribute_losses(cls_score,
     valid_inds = ((color_label_int32 >= 0) * (labels_int32 > 1)) #no color and rotation for person
     assert(np.all(valid_inds == ( (rotation_label_int32 >= 0) * (labels_int32 > 1)) ) == True)
 
+    device_id = color_cls_score.get_device()
+
     if valid_inds.sum() == 0:
-        return color_cls_score.sum()*0.0, 0.0, rotation_cls_score.sum()*0.0, 0.0
+        return color_cls_score.sum()*0.0, torch.tensor(0.0).cuda(device_id), rotation_cls_score.sum()*0.0, torch.tensor(0.0).cuda(device_id)
     
     #chop off negative ROIs
     color_label_int32 = color_label_int32[valid_inds]
     rotation_label_int32 = rotation_label_int32[valid_inds]
 
-    device_id = color_cls_score.get_device()
     valid_inds = Variable(torch.from_numpy(valid_inds.astype(int))).cuda(device_id)
     valid_inds = torch.nonzero(valid_inds).view(-1)
     color_cls_score = color_cls_score[valid_inds]
@@ -105,7 +106,6 @@ def attribute_losses(cls_score,
     rotation_accuracy_cls = rotation_cls_preds.eq(rotation_rois_label).float().mean(dim=0)
 
     # --------------------------------------------
-
     return  color_loss_cls, color_accuracy_cls,\
             rotation_loss_cls, rotation_accuracy_cls
 
