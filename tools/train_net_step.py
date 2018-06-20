@@ -171,6 +171,10 @@ def main():
         cfg.TRAIN.DATASETS = ('virat1_real_train',)
         set_virat_configs()
     
+    elif args.dataset == "virat1_mix":
+        cfg.TRAIN.DATASETS = ('virat1_mix_train',)
+        set_virat_configs()
+    
     elif args.dataset == "virat2_syn":
         cfg.TRAIN.DATASETS = ('virat2_syn_train',)
         set_virat_configs()
