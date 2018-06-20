@@ -91,11 +91,11 @@ cd ../../../..
 
 # --------------------------with attributes------------------------------
 
-# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat1_mix \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-# 						--nw 0
+CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat1_mix \
+						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
+						--use_tfboard \
+						--bs 2 \
+						--nw 4
 
 # CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_mix \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
