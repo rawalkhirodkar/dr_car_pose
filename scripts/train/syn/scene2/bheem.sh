@@ -64,11 +64,11 @@ cd ../../../..
 # 						--bs 2 \
 # 						--nw 0
 
-CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_syn \
-						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
-						--use_tfboard \
-						--bs 4 \
-						--nw 4
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_syn \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+# 						--nw 4
 
 # --------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -97,11 +97,11 @@ CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_syn \
 # 						--bs 2 \
 # 						--nw 0
 
-# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat2_syn \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-# 						--nw 4
+CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat2_syn \
+						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
+						--use_tfboard \
+						--bs 4 \
+						--nw 4
 
 
 ###################################################Resume Training#######################################################################################3

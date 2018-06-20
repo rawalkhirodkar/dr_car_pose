@@ -368,6 +368,25 @@ class Generalized_RCNN(nn.Module):
         return_dict['metrics']['accuracy_cls'] = accuracy_cls
 
         # --------------------------------------------------------------------------------------------------
+        # as we are using coco, we activate the mask loss
+        if cfg.MODEL.MASK_ON:
+            if getattr(self.Mask_Head, 'SHARE_RES5', False):
+                mask_feat = self.Mask_Head(res5_feat, rpn_ret,
+                                           roi_has_mask_int32=rpn_ret['roi_has_mask_int32'])
+            else:
+                mask_feat = self.Mask_Head(blob_conv, rpn_ret)
+            mask_pred = self.Mask_Outs(mask_feat)
+            # return_dict['mask_pred'] = mask_pred
+            # mask loss
+            loss_mask = mask_rcnn_heads.mask_rcnn_losses(mask_pred, rpn_ret['masks_int32'])
+            # handle nan loss
+            is_nan = int(loss_mask != loss_mask) #1 if nan
+            if(is_nan == 1):
+                print("Mask NaN logged!")
+                loss_mask = loss_mask*0
+            return_dict['losses']['loss_mask'] = loss_mask
+        # --------------------------------------------------------------------------------------------------
+
         # zero some losses, uncomment if needed
         # return_dict['losses']['loss_cls'] = torch.tensor(0.0).cuda(device_id)
         # return_dict['metrics']['accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
@@ -383,9 +402,6 @@ class Generalized_RCNN(nn.Module):
             return_dict['losses']['normal_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         
-        if cfg.MODEL.MASK_ON:
-            return_dict['losses']['loss_mask'] = torch.tensor(0.0).cuda(device_id)
-
         if cfg.MODEL.ATTRIBUTE_ON:
             return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
