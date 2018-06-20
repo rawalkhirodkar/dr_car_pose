@@ -36,6 +36,7 @@ from core.config import cfg
 from core.test import im_detect_all
 from datasets import task_evaluation
 from datasets.json_dataset import JsonDataset
+import datasets.dummy_datasets as datasets
 from modeling import model_builder
 import nn as mynn
 from utils.detectron_weight_helper import load_detectron_weight
@@ -235,6 +236,13 @@ def test_net(
     roidb, dataset, start_ind, end_ind, total_num_images = get_roidb_and_dataset(
         dataset_name, proposal_file, ind_range
     )
+
+    if cfg.VIS:
+        if dataset_name.startswith('virat'):
+            dummy_dataset = datasets.get_virat_dataset(name=dataset_name)
+        else:
+            dummy_dataset = dataset
+
     model = initialize_model_from_cfg(args, gpu_id=gpu_id)
     num_images = len(roidb)
 
@@ -320,8 +328,11 @@ def test_net(
                 keypoints=cls_keyps_i,
                 thresh=cfg.VIS_TH,
                 box_alpha=0.8,
-                dataset=dataset,
-                show_class=True
+                dataset=dummy_dataset,
+                show_class=True,
+                depth_map=return_dict['depth_map'],
+                normal_map=return_dict['normal_map'],
+                attributes=cls_attributes_i
             )
 
     cfg_yaml = yaml.dump(cfg)

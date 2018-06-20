@@ -24,6 +24,8 @@ from __future__ import unicode_literals
 
 from utils.collections import AttrDict
 from datasets.custom_json_dataset import ViratClassInfo
+from datasets.custom_json_dataset import CustomJsonDataset
+
 
 import os
 import pickle
@@ -51,34 +53,8 @@ def get_coco_dataset():
     ds.classes = {i: name for i, name in enumerate(classes)}
     return ds
 # ------------------------------------------------------------------------------
-def get_virat1_dataset(name='virat1_mix'):
-    """A dummy COCO dataset that includes only the 'classes' field."""
-    ds = AttrDict()
 
-    virat_data_info = ViratClassInfo()
-
-    # classes = [
-    #     '__background__', 'sedan', 'suv', 'truck', 'person'
-    # ]
-    classes = [
-        '__background__', 'sedan', 'suv', 'sedan', 'person'
-    ]
-    
-    rotation_classes = virat_data_info.rotations
-    color_classes = virat_data_info.colors
-    x_classes = virat_data_info.x
-    y_classes = virat_data_info.y
-
-    ds.classes = {i: name for i, name in enumerate(classes)}
-    ds.color_classes = {i: name for i, name in enumerate(color_classes)}
-    ds.rotation_classes = {i: float(name) for i, name in enumerate(rotation_classes)}
-    ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
-    ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
-    
-    return ds
-# ------------------------------------------------------------------------------
-
-def get_virat2_dataset(name='virat2_mix'):
+def get_virat_dataset(name='virat2_mix'):
     """A dummy COCO dataset that includes only the 'classes' field."""
     ds = AttrDict()
 
@@ -86,9 +62,9 @@ def get_virat2_dataset(name='virat2_mix'):
     # classes = [
     #     '__background__', 'sedan', 'suv', 'truck', 'person'
     # ]
-    classes = [
-        '__background__', 'sedan', 'suv', 'truck', 'person'
-    ]
+    temp = CustomJsonDataset(name)
+
+    classes = temp.classes
     
     rotation_classes = virat_data_info.rotations
     color_classes = virat_data_info.colors
@@ -101,7 +77,12 @@ def get_virat2_dataset(name='virat2_mix'):
     ds.x_classes = {i: float(name) for i, name in enumerate(x_classes)}
     ds.y_classes = {i: float(name) for i, name in enumerate(y_classes)}
 
-    lookup_table_dir = DATASETS[name+'_train'][IM_DIR].replace('images', 'lookuptables')
+    if name.startswith('virat1'):
+        name = 'virat1_mix'
+    elif name.startswith('virat2'):
+        name = 'virat2_mix'
+
+    lookup_table_dir = DATASETS[name+'_train'][IM_DIR].replace('virat2_mix/images', 'lookuptables')
 
     assert os.path.exists(lookup_table_dir), \
             'LookupTable directory \'{}\' not found'.format(lookup_table_dir)
