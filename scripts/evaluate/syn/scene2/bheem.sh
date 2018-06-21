@@ -73,12 +73,12 @@ cd ../../../..
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 # 						--load_ckpt Outputs/virat2_syn/mask_rcnn_attr_101/baseline_Jun19-01-15-08_bheem_step/ckpt/model_step9999.pth \
 
-# ###------multi gpu evaluate------
-# CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
-# 						--test_data virat2_real_val \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/virat2_syn/mask_rcnn_attr_101/baseline_Jun19-01-15-08_bheem_step/ckpt/model_step9999.pth \
+###------multi gpu evaluate------
+CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
+						--test_data virat2_real_val \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
+						--multi-gpu-testing \
+						--load_ckpt Outputs/virat2_syn/mask_rcnn_attr_101/baseline_Jun19-01-15-08_bheem_step/ckpt/model_step29999.pth \
 
 
 # # --------------------------------------------------------------------------------------------------------------------------------
@@ -114,9 +114,16 @@ cd ../../../..
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--load_ckpt Outputs/virat2_syn/depth_mask_rcnn_attr_101/baseline_Jun19-17-04-52_bheem_step/ckpt/model_step9999.pth \
 
-##------multi gpu evaluate------
-CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
-						--test_data virat2_real_val \
-						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
-						--multi-gpu-testing \
-						--load_ckpt Outputs/virat2_syn/depth_mask_rcnn_attr_101/baseline_Jun19-17-04-52_bheem_step/ckpt/model_step9999.pth \
+# ##------multi gpu evaluate------
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
+# 						--test_data virat2_real_val \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
+# 						--multi-gpu-testing \
+# 						--load_ckpt Outputs/virat2_syn/depth_mask_rcnn_attr_101/baseline_Jun19-17-04-52_bheem_step/ckpt/model_step9999.pth \
+
+# ##------multi gpu evaluate------
+# CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
+# 						--test_data virat2_real_val \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
+# 						--multi-gpu-testing \
+# 						--load_ckpt Outputs/virat2_syn/depth_mask_rcnn_attr_101/baseline_Jun19-17-04-52_bheem_step/ckpt/model_step11528.pth \

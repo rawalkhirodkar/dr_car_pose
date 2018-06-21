@@ -78,8 +78,9 @@ if __name__ == '__main__':
         'Exactly one of --load_ckpt and --load_detectron should be specified.'
     if args.output_dir is None:
         ckpt_path = args.load_ckpt if args.load_ckpt else args.load_detectron
+        ckpt_num = ckpt_path.replace('.pth','').replace('model_step', '').split('/')[-1]
         args.output_dir = os.path.join(
-            os.path.dirname(os.path.dirname(ckpt_path)), 'test', args.test_dataset)
+            os.path.dirname(os.path.dirname(ckpt_path)), 'test', ckpt_num)
         logger.info('Automatically set output directory to %s', args.output_dir)
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)

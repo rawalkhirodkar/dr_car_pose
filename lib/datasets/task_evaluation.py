@@ -59,14 +59,15 @@ def evaluate_all(
         dataset, all_boxes, output_dir, use_matlab=use_matlab
     )
     logger.info('Evaluating bounding boxes is done!')
-    if cfg.MODEL.MASK_ON:
-        results = evaluate_masks(dataset, all_boxes, all_segms, output_dir)
-        all_results[dataset.name].update(results[dataset.name])
-        logger.info('Evaluating segmentations is done!')
-    if cfg.MODEL.KEYPOINTS_ON:
-        results = evaluate_keypoints(dataset, all_boxes, all_keyps, output_dir)
-        all_results[dataset.name].update(results[dataset.name])
-        logger.info('Evaluating keypoints is done!')
+    if not dataset.name.startswith('virat'):
+        if cfg.MODEL.MASK_ON:
+            results = evaluate_masks(dataset, all_boxes, all_segms, output_dir)
+            all_results[dataset.name].update(results[dataset.name])
+            logger.info('Evaluating segmentations is done!')
+        if cfg.MODEL.KEYPOINTS_ON:
+            results = evaluate_keypoints(dataset, all_boxes, all_keyps, output_dir)
+            all_results[dataset.name].update(results[dataset.name])
+            logger.info('Evaluating keypoints is done!')
     return all_results
 
 
