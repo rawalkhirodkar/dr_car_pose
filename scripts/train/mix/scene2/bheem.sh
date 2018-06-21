@@ -12,6 +12,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 						--use_tfboard \
 						--bs 2 \
+						--iter_size 4 \
 						--nw 4
 
 
@@ -19,6 +20,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 
@@ -28,6 +30,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 
@@ -35,6 +38,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -47,6 +51,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 
@@ -54,6 +59,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 # --------------------------with attributes------------------------------
@@ -62,12 +68,14 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -80,6 +88,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 
@@ -87,6 +96,7 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 # --------------------------with attributes------------------------------
@@ -95,12 +105,14 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
+						# --iter_size 4 \
 # 						--nw 4
 
 
@@ -113,4 +125,5 @@ CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
 # 						--resume \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0

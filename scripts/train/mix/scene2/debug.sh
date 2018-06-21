@@ -12,6 +12,7 @@ cd ../../../..
 # 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # --------------------------with attributes------------------------------
@@ -20,6 +21,7 @@ cd ../../../..
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -32,6 +34,7 @@ cd ../../../..
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # --------------------------with attributes------------------------------
@@ -40,6 +43,7 @@ cd ../../../..
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -52,6 +56,7 @@ cd ../../../..
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 # --------------------------with attributes------------------------------
@@ -60,6 +65,7 @@ cd ../../../..
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
 
 ###################################################Resume Training#######################################################################################3
@@ -71,4 +77,5 @@ cd ../../../..
 # 						--resume \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0

@@ -1,7 +1,7 @@
 #per GPU 2 images recommended to fill the whole model
 
 cd ../../../..
-################################################### SCENE2, Syn #######################################################################################3
+################################################### SCENE1, Syn #######################################################################################3
 # --------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------
 ##------------------------------------------------------Train RCNN-----------------------------------------------------------
@@ -12,7 +12,17 @@ cd ../../../..
 # 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
+
 
 # --------------------------with attributes------------------------------
 
@@ -20,7 +30,16 @@ cd ../../../..
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
 
 # --------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -32,7 +51,16 @@ cd ../../../..
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+
+# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
 
 # --------------------------with attributes------------------------------
 
@@ -40,7 +68,15 @@ cd ../../../..
 # 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
 
 # --------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------
@@ -52,7 +88,16 @@ cd ../../../..
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+
+# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
 
 # --------------------------with attributes------------------------------
 
@@ -60,7 +105,16 @@ cd ../../../..
 # 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
+
+# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
+# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+						# --iter_size 4 \
+# 						--nw 4
+
 
 ###################################################Resume Training#######################################################################################3
 
@@ -71,4 +125,5 @@ cd ../../../..
 # 						--resume \
 # 						--use_tfboard \
 # 						--bs 2 \
+						# --iter_size 4 \
 # 						--nw 0
