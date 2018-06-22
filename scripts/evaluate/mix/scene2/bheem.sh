@@ -20,7 +20,7 @@ CUDA_VISIBLE_DEVICES=0,1,2 python tools/test_net.py --dataset virat2 \
 						--test_data virat2_real_val \
 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 						--multi-gpu-testing \
-						--load_ckpt Outputs/virat2_mix/rcnn_101/baseline_Jun20-02-19-45_bheem_step/ckpt/model_step9999.pth \
+						--load_ckpt Outputs/virat2_mix/rcnn_101/baseline_Jun20-02-19-45_bheem_step/ckpt/model_step15999.pth \
 
 
 # # --------------------------with attributes------------------------------
