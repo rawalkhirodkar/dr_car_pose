@@ -47,7 +47,7 @@ cd ../../../..
 # --------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------
 
-CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_mix \
+CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat2_mix \
 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
 						--use_tfboard \
 						--bs 2 \
