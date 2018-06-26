@@ -88,10 +88,13 @@ class ViratClassInfo():
         self.y_range = MAX_VAL - MIN_VAL
         
         # ----------------------------
-        assert(len(self.colors) == cfg.COLOR.NUM_CLASSES)
-        assert(len(self.rotations) == cfg.ROTATION.NUM_CLASSES)
-        assert(len(self.x) == cfg.X.NUM_CLASSES)
-        assert(len(self.y) == cfg.Y.NUM_CLASSES)
+        if cfg.COLOR.NUM_CLASSES != -1:
+            assert(len(self.colors) == cfg.COLOR.NUM_CLASSES)
+            assert(len(self.rotations) == cfg.ROTATION.NUM_CLASSES)
+            assert(len(self.x) == cfg.X.NUM_CLASSES)
+            assert(len(self.y) == cfg.Y.NUM_CLASSES)
+        else:
+            print("Attributes num classes set to -1")
         # ------------------------------
 
         return
