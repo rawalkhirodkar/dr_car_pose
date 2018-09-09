@@ -265,7 +265,7 @@ class Generalized_RCNN(nn.Module):
         cls_score, bbox_pred = self.Box_Outs(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
         if cfg.MODEL.ATTRIBUTE_ON:
-            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
+            rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)
 
         # ------------------------------------------------------------------------------------------------------------------
         # rpn loss
@@ -294,17 +294,14 @@ class Generalized_RCNN(nn.Module):
 
         if cfg.MODEL.ATTRIBUTE_ON:
             # attribute loss
-            color_loss_cls, color_accuracy_cls,\
             rotation_loss_cls, rotation_accuracy_cls = attribute_heads.attribute_losses(
                 cls_score,
-                color_cls_score, rotation_cls_score,
+                rotation_cls_score,
                 rpn_ret['labels_int32'],
-                rpn_ret['color_labels_int32'], rpn_ret['rotation_labels_int32'])
+                rpn_ret['rotation_labels_int32'])
 
-            return_dict['losses']['color_loss_cls'] = color_loss_cls
             return_dict['losses']['rotation_loss_cls'] = rotation_loss_cls
             
-            return_dict['metrics']['color_accuracy_cls'] = color_accuracy_cls
             return_dict['metrics']['rotation_accuracy_cls'] = rotation_accuracy_cls
         # --------------------------------------------------------------------------
 

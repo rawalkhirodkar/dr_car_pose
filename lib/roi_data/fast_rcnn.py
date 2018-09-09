@@ -44,10 +44,7 @@ def get_fast_rcnn_blob_names(is_training=True):
         # foreground classes plus background
         blob_names += ['labels_int32']
         # ------------------------------------------
-        blob_names += ['color_labels_int32']
         blob_names += ['rotation_labels_int32']
-        blob_names += ['x_labels_int32']
-        blob_names += ['y_labels_int32']
         # ------------------------------------------
     if is_training:
         # bbox_targets blob: R bounding-box regression targets with 4
@@ -174,22 +171,10 @@ def _sample_rois(roidb, im_scale, batch_idx):
     gt_inds = np.where(roidb['gt_classes'] > 0)[0]
     gt_assignments = gt_inds[roidb['box_to_gt_ind_map'][keep_inds]]
 
-    gt_colors = roidb['gt_colors'][gt_inds]
     gt_rotations = roidb['gt_rotations'][gt_inds]
-    gt_x = roidb['gt_x'][gt_inds]
-    gt_y = roidb['gt_y'][gt_inds]
-
-    sampled_color_labels = gt_colors[gt_assignments]
-    sampled_color_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
 
     sampled_rotation_labels = gt_rotations[gt_assignments]
     sampled_rotation_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
-
-    sampled_x_labels = gt_x[gt_assignments]
-    sampled_x_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
-
-    sampled_y_labels = gt_y[gt_assignments]
-    sampled_y_labels[fg_rois_per_this_image:] = -1  # Label bg RoIs with class -1
     # -----------------------------------------------------------
 
     if 'bbox_targets' not in roidb:
@@ -226,10 +211,7 @@ def _sample_rois(roidb, im_scale, batch_idx):
         bbox_targets=bbox_targets,
         bbox_inside_weights=bbox_inside_weights,
         bbox_outside_weights=bbox_outside_weights,
-        color_labels_int32=sampled_color_labels.astype(np.int32, copy=False),
-        rotation_labels_int32=sampled_rotation_labels.astype(np.int32, copy=False),
-        x_labels_int32=sampled_x_labels.astype(np.int32, copy=False),
-        y_labels_int32=sampled_y_labels.astype(np.int32, copy=False)
+        rotation_labels_int32=sampled_rotation_labels.astype(np.int32, copy=False)
         )
     # -----------------------------------------------------------------
 

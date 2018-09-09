@@ -233,8 +233,8 @@ class CustomJsonDataset(object):
         """
         #add new attributes to the end
         keys = ['boxes', 'segms', 'gt_classes', 'seg_areas', 'gt_overlaps',
-                'is_crowd', 'box_to_gt_ind_map', 'gt_colors', 'gt_rotations',
-                'gt_x', 'gt_y', 'gt_depth', 'gt_normal', 'gt_seg', 'gt_is_real']
+                'is_crowd', 'box_to_gt_ind_map', 'gt_rotations',
+                'gt_is_real']
         if self.keypoints is not None:
             keys += ['gt_keypoints', 'has_visible_keypoints']
         return keys
@@ -324,15 +324,7 @@ class CustomJsonDataset(object):
         entry['segms'] = []
         entry['gt_classes'] = np.empty((0), dtype=np.int32)
         # ------------------------------------------------------
-        entry['gt_colors'] = np.empty((0), dtype=np.int32)
         entry['gt_rotations'] = np.empty((0), dtype=np.int32)
-        entry['gt_x'] = np.empty((0), dtype=np.int32)
-        entry['gt_y'] = np.empty((0), dtype=np.int32)
-
-        entry['gt_depth'] = np.empty((0), dtype=np.int32)
-        entry['gt_normal'] = np.empty((0), dtype=np.int32)
-        entry['gt_seg'] = np.empty((0), dtype=np.int32)
-        
         entry['gt_is_real'] = np.empty((0), dtype=np.int32) #0 or 1
         # ------------------------------------------------------        
         entry['seg_areas'] = np.empty((0), dtype=np.float32)
@@ -397,19 +389,7 @@ class CustomJsonDataset(object):
         boxes = np.zeros((num_valid_objs, 4), dtype=entry['boxes'].dtype)
         gt_classes = np.zeros((num_valid_objs), dtype=entry['gt_classes'].dtype)
         # ------------------------------------------------------------------------
-        gt_colors = np.zeros((num_valid_objs), dtype=entry['gt_colors'].dtype)
         gt_rotations = np.zeros((num_valid_objs), dtype=entry['gt_rotations'].dtype)
-        gt_x = np.zeros((num_valid_objs), dtype=entry['gt_x'].dtype)
-        gt_y = np.zeros((num_valid_objs), dtype=entry['gt_y'].dtype)
-
-        if(gt_is_real):
-            gt_depth = None
-            gt_normal = None
-            gt_seg = None
-        else:
-            gt_depth = self.virat_class_info.get_depth(entry['image'].replace("images", "depths")) #path to the depth file
-            gt_normal = self.virat_class_info.get_normal(entry['image'].replace("images", "normals")) #path to the normal file
-            gt_seg = self.virat_class_info.get_normal(entry['image'].replace("images", "segs")) #path to the normal file
         # ------------------------------------------------------------------------
         gt_overlaps = np.zeros(
             (num_valid_objs, self.num_classes),
@@ -431,13 +411,10 @@ class CustomJsonDataset(object):
             # --------some hack------------- 
             cls = self.json_category_id_to_contiguous_id[obj['category_id']]
             boxes[ix, :] = obj['clean_bbox']
-            gt_classes[ix] = cls #will be person or car
+            gt_classes[ix] = cls #will be car
             # --------------------------------------------------------
-            #ignore color and rotations for person
-            gt_colors[ix] = self.virat_class_info.get_color_id(obj['color']) if cls > 1 else -1 
-            gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation']) if cls > 1 else -1
-            gt_x[ix] = self.virat_class_info.get_x_id(obj['x'])
-            gt_y[ix] = self.virat_class_info.get_y_id(obj['y'])
+            assert(cls == 1)
+            gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation'])
             # --------------------------------------------------------
             seg_areas[ix] = obj['area']
             is_crowd[ix] = obj['iscrowd']
@@ -459,14 +436,7 @@ class CustomJsonDataset(object):
         #     entry['boxes'], boxes.astype(np.int).astype(np.float), axis=0)
         entry['gt_classes'] = np.append(entry['gt_classes'], gt_classes)
         # --------------------------------------------------------------
-        entry['gt_colors'] = np.append(entry['gt_colors'], gt_colors)
         entry['gt_rotations'] = np.append(entry['gt_rotations'], gt_rotations)
-        entry['gt_x'] = np.append(entry['gt_x'], gt_x)
-        entry['gt_y'] = np.append(entry['gt_y'], gt_y)
-
-        entry['gt_depth'] = gt_depth
-        entry['gt_normal'] = gt_normal
-        entry['gt_seg'] = gt_seg
         entry['gt_is_real'] = gt_is_real
         # --------------------------------------------------------------
         entry['seg_areas'] = np.append(entry['seg_areas'], seg_areas)
@@ -500,18 +470,10 @@ class CustomJsonDataset(object):
             values = [cached_entry[key] for key in self.valid_cached_keys] #note the order of the keys matter
             boxes, segms, gt_classes, seg_areas, \
             gt_overlaps, is_crowd, box_to_gt_ind_map, \
-            gt_colors, gt_rotations, gt_x, gt_y,  \
-            gt_depth, gt_normal, gt_seg, gt_is_real = values[:4+3+4+4] #the order is described in the indentation
+            gt_rotations, gt_is_real = values[:4+3+2] #the order is described in the indentation
 
             if(gt_is_real):
                 real_images += 1
-                gt_depth = None
-                gt_normal = None
-                gt_seg = None
-            else:
-                gt_depth = cv2.resize(gt_depth.astype(np.uint8), (cfg.DEPTH.WIDTH, cfg.DEPTH.HEIGHT))
-                gt_normal = cv2.resize(gt_normal.astype(np.uint8), (cfg.NORMAL.WIDTH, cfg.NORMAL.HEIGHT))
-                gt_seg = cv2.resize(gt_seg.astype(np.uint8), (cfg.DEPTH.WIDTH, cfg.DEPTH.HEIGHT))
             # ----------------------------------------------------------------
             if self.keypoints is not None:
                 gt_keypoints, has_visible_keypoints = values[7:]
@@ -528,18 +490,9 @@ class CustomJsonDataset(object):
                 entry['box_to_gt_ind_map'], box_to_gt_ind_map
             )
             # ----------------------------------------------------------------
-            entry['gt_colors'] = np.append(entry['gt_colors'], gt_colors)
             entry['gt_rotations'] = np.append(entry['gt_rotations'], gt_rotations)
-            entry['gt_x'] = np.append(entry['gt_x'], gt_x)
-            entry['gt_y'] = np.append(entry['gt_y'], gt_y)
-
-            entry['gt_depth'] = gt_depth
-            entry['gt_normal'] = gt_normal
-            entry['gt_seg'] = gt_seg
             entry['gt_is_real'] = gt_is_real
 
-            # entry['gt_color_overlaps'] = scipy.sparse.csr_matrix(gt_color_overlaps)
-            # entry['gt_rotation_overlaps'] = scipy.sparse.csr_matrix(gt_rotation_overlaps)
             # ----------------------------------------------------------------
 
             if self.keypoints is not None:
@@ -699,26 +652,10 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
         #initialize as -1 for background classes
         # this is poor signal, initialise as 0!
         initial_val = -1 #initialisation for proposals
-        entry['gt_colors'] = np.append(
-            entry['gt_colors'],
-            np.zeros((num_boxes), dtype=entry['gt_colors'].dtype) + initial_val
-        )
-
         entry['gt_rotations'] = np.append(
             entry['gt_rotations'],
             np.zeros((num_boxes), dtype=entry['gt_rotations'].dtype) + initial_val
         )
-
-        entry['gt_x'] = np.append(
-            entry['gt_x'],
-            np.zeros((num_boxes), dtype=entry['gt_x'].dtype) + initial_val
-        )
-
-        entry['gt_y'] = np.append(
-            entry['gt_y'],
-            np.zeros((num_boxes), dtype=entry['gt_y'].dtype) + initial_val
-        )
-
         # --------------------------------------------------------
 
         entry['seg_areas'] = np.append(

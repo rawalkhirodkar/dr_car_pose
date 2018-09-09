@@ -74,14 +74,11 @@ def add_rpn_blobs(blobs, im_scales, roidb):
         # gt_boxes[:, 1:5] = gt_rois
         # gt_boxes[:, 5] = entry['gt_classes'][gt_inds]
 
-        gt_boxes = blob_utils.zeros((len(gt_inds), 6+4)) #colors, rotations, x, y
+        gt_boxes = blob_utils.zeros((len(gt_inds), 6+1)) #rotations
         gt_boxes[:, 0] = im_i  # batch inds
         gt_boxes[:, 1:5] = gt_rois
         gt_boxes[:, 5] = entry['gt_classes'][gt_inds]
-        gt_boxes[:, 5+1] = entry['gt_colors'][gt_inds]
-        gt_boxes[:, 5+2] = entry['gt_rotations'][gt_inds]
-        gt_boxes[:, 5+3] = entry['gt_x'][gt_inds]
-        gt_boxes[:, 5+4] = entry['gt_y'][gt_inds]
+        gt_boxes[:, 5+1] = entry['gt_rotations'][gt_inds]
         # -------------------------------------------------------
         im_info = np.array([[im_height, im_width, scale]], dtype=np.float32)
         blobs['im_info'].append(im_info)
@@ -116,7 +113,7 @@ def add_rpn_blobs(blobs, im_scales, roidb):
     valid_keys = [
         'has_visible_keypoints', 'boxes', 'segms', 'seg_areas', 'gt_classes',
         'gt_overlaps', 'is_crowd', 'box_to_gt_ind_map', 'gt_keypoints',
-        'gt_colors', 'gt_rotations', 'gt_x', 'gt_y', 'gt_depth', 'gt_normal',
+        'gt_rotations',
         'gt_is_real', 'image'
     ]
     # -------------------------------------------------------------------------
