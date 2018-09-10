@@ -7,8 +7,7 @@ def set_virat_configs():
     # cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = True
     cfg.MODEL.CLS_AGNOSTIC_BBOX_REG = False #default
 
-    # cfg.MODEL.NUM_CLASSES = 3 #background, sedan, suv
-    cfg.MODEL.NUM_CLASSES = 3 #background, person, car
+    cfg.MODEL.NUM_CLASSES = 2 #background, car
 
     cfg.COLOR.NUM_CLASSES = 6 #(yellow for person)
     cfg.COLOR.LOSS_WEIGHT = 0.5 # 1 is defualt

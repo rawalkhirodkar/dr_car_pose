@@ -247,19 +247,20 @@ def test_net(
     num_images = len(roidb)
 
     is_coco_model = False
-    if cfg.MODEL.NUM_CLASSES != len(dataset.classes):
-        num_classes = len(dataset.classes)
-        is_coco_model = True
+    # if cfg.MODEL.NUM_CLASSES != len(dataset.classes):
+    #     num_classes = len(dataset.classes)
+    #     is_coco_model = True
 
-        coco_dataset = JsonDataset('coco_2017_val')
-        virat_cls_2_coco_cls = {}
+    #     coco_dataset = JsonDataset('coco_2017_val')
+    #     virat_cls_2_coco_cls = {}
 
-        for i, virat_class in enumerate(dataset.classes):
-            for j, coco_class in enumerate(coco_dataset.classes):
-                if virat_class == coco_class:
-                    virat_cls_2_coco_cls[virat_class] = j
-    else:
-        num_classes = cfg.MODEL.NUM_CLASSES
+    #     for i, virat_class in enumerate(dataset.classes):
+    #         for j, coco_class in enumerate(coco_dataset.classes):
+    #             if virat_class == coco_class:
+    #                 virat_cls_2_coco_cls[virat_class] = j
+    # else:
+    #     num_classes = cfg.MODEL.NUM_CLASSES
+    num_classes = cfg.MODEL.NUM_CLASSES
     all_boxes, all_segms, all_keyps = empty_results(num_classes, num_images)
     timers = defaultdict(Timer)
     for i, entry in enumerate(roidb):

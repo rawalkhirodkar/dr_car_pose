@@ -62,8 +62,10 @@ def get_virat_dataset(name='virat2_mix'):
     # classes = [
     #     '__background__', 'sedan', 'suv', 'truck', 'person'
     # ]
-    temp = CustomJsonDataset(name+'_train')
+    if not (name.endswith('train') or name.endswith('val')):
+        name = name+'_train'
 
+    temp = CustomJsonDataset(name)
     classes = temp.classes
     
     rotation_classes = virat_data_info.rotations
