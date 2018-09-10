@@ -443,11 +443,8 @@ class Generalized_RCNN(nn.Module):
         return_dict['blob_conv'] = blob_conv
         # -------------------------------------------------------
         if cfg.MODEL.ATTRIBUTE_ON:
-            color_cls_score, rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
-            return_dict['color_cls_score'] = color_cls_score
+            rotation_cls_score = self.AttributeNet(box_feat) #fast_rcnn_heads.fast_rcnn_outputs(self.Box_Head.dim_out)    
             return_dict['rotation_cls_score'] = rotation_cls_score
-
-        
 
         return return_dict
 

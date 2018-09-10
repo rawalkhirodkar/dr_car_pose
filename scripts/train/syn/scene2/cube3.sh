@@ -12,20 +12,20 @@ cd ../../../..
 # 						--nw 0
 
 
-# #---------------------- with pose-----------------------------------
-# CUDA_VISIBLE_DEVICES=0,3 python tools/train_net_step.py --dataset virat2_syn \
+#---------------------- with pose-----------------------------------
+CUDA_VISIBLE_DEVICES=3,4 python tools/train_net_step.py --dataset virat2_syn \
+						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+						--use_tfboard \
+						--bs 4 \
+						--iter_size 4 \
+						--nw 4
+
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
 # 						--iter_size 4 \
 # 						--nw 0
-
-CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
-						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--use_tfboard \
-						--bs 4 \
-						--iter_size 4 \
-						--nw 0
 
 
 

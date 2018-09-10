@@ -62,7 +62,7 @@ def get_virat_dataset(name='virat2_mix'):
     # classes = [
     #     '__background__', 'sedan', 'suv', 'truck', 'person'
     # ]
-    temp = CustomJsonDataset(name)
+    temp = CustomJsonDataset(name+'_train')
 
     classes = temp.classes
     
@@ -84,11 +84,11 @@ def get_virat_dataset(name='virat2_mix'):
 
     lookup_table_dir = DATASETS[name+'_train'][IM_DIR].replace('virat2_mix/images', 'lookuptables')
 
-    assert os.path.exists(lookup_table_dir), \
-            'LookupTable directory \'{}\' not found'.format(lookup_table_dir)
+    # assert os.path.exists(lookup_table_dir), \
+    #         'LookupTable directory \'{}\' not found'.format(lookup_table_dir)
 
-    with open(os.path.join(lookup_table_dir, 'sedan.p'), "rb") as f:
-        ds.lookup_table = pickle.load(f)
+    # with open(os.path.join(lookup_table_dir, 'sedan.p'), "rb") as f:
+    #     ds.lookup_table = pickle.load(f)
 
     return ds
 # ------------------------------------------------------------------------------

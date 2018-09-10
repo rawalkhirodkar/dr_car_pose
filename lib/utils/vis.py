@@ -164,23 +164,17 @@ def vis_one_image(
 
         if attributes is not None:
             class_label = classes[i] - 1 #remove the background
-            color_label = attributes[i][0]; color = dataset.color_classes[attributes[i][0]]
-            rotation = dataset.rotation_classes[attributes[i][1]]
+            rotation = dataset.rotation_classes[attributes[i][0]]
             
             center_x = ((bbox[0] + bbox[2])/2.0)
             center_y = ((bbox[1] + bbox[3])/2.0)
             center_x = center_x/im.shape[1] #normalize in 0 to 1
             center_y = center_y/im.shape[0] #normalize in 0 to 1
 
-            x, y = find_x_y_3d(center_x, center_y, dataset.lookup_table)
-
-            print('{} x:{} y:{} rotation:{}'.format(color, x, y, rotation))
-            write_string += ' {} x:{} y:{} rot:{}'.format(color, x, y, rotation)
+            print('rotation:{}'.format(rotation))
+            write_string += 'rot:{}'.format(rotation)
             object_log = {}
             object_log['class'] = dataset.classes[classes[i]]
-            object_log['color'] = color
-            object_log['3d_x'] = x
-            object_log['3d_y'] = y
             object_log['rotation'] = rotation
             object_log['bbox'] =  {'xmin':float(bbox[0]), 'ymin':float(bbox[1]), 'xmax':float(bbox[2]), 'ymax':float(bbox[3])}
 
