@@ -1,119 +1,32 @@
 #per GPU 2 images recommended to fill the whole model
 
 cd ../../../..
-################################################### SCENE1, Syn #######################################################################################3
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-##------------------------------------------------------Train RCNN-----------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-
-# CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
-# 						--nw 0
 
 
-# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
+
+# CUDA_VISIBLE_DEVICES=0,3 python tools/train_net_step.py --dataset virat1_syn \
 # 						--cfg configs/virat/rcnn/rcnn_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
-
-
-# --------------------------with attributes------------------------------
-
-# CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
+# 						--iter_size 4 \
 # 						--nw 0
 
 
-# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
-
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-##------------------------------------------------------Train MaskRCNN-----------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-
-# CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
-# 						--nw 0
-
-
-# CUDA_VISIBLE_DEVICES=1,2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
-
-# --------------------------with attributes------------------------------
+#---------------------- with pose-----------------------------------
+CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset virat1_syn \
+						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+						--use_tfboard \
+						--bs 4 \
+						--iter_size 4 \
+						--nw 4
 
 # CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
-# 						--nw 0
-
-# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
-
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-##------------------------------------------------------Train MaskRCNN + Depth-----------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------------------------------------------------------------
-
-# CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
+# 						--iter_size 4 \
 # 						--nw 0
 
-
-# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
-
-# --------------------------with attributes------------------------------
-
-# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 2 \
-						# --iter_size 4 \
-# 						--nw 0
-
-# CUDA_VISIBLE_DEVICES=0,2 python tools/train_net_step.py --dataset virat1_syn \
-# 						--cfg configs/virat/depth_mask_rcnn/depth_mask_rcnn_attr_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-						# --iter_size 4 \
-# 						--nw 4
 
 
 ###################################################Resume Training#######################################################################################3
