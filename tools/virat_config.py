@@ -13,7 +13,7 @@ def set_virat_configs():
     cfg.COLOR.LOSS_WEIGHT = 0.5 # 1 is defualt
 
     cfg.ROTATION.NUM_CLASSES = int( (360-0)/10 )
-    cfg.ROTATION.LOSS_WEIGHT = 2.0 # 1 is defualt
+    cfg.ROTATION.LOSS_WEIGHT = 1.0 # 1 is defualt
 
     cfg.X.NUM_CLASSES = int( (1 - (-1))/0.1 )
     cfg.X.LOSS_WEIGHT = 1.0 # 1 is defualt

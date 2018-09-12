@@ -305,4 +305,21 @@ DATASETS = {
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
+
+    'car_coco_train': {
+        IM_DIR:
+            _DATA_DIR + '/coco/car_coco/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/coco/car_coco/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
+    'car_coco_val': {
+        IM_DIR:
+            _DATA_DIR + '/coco/car_coco/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/coco/car_coco/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
 }

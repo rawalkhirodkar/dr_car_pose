@@ -106,6 +106,10 @@ if __name__ == '__main__':
     elif args.dataset == "virat2":
         set_virat_configs()
         cfg.TEST.DATASETS = ('virat2_real_val',)
+    # ----------------------------------------------
+    elif args.dataset == "epfl":
+        set_virat_configs()
+        cfg.TEST.DATASETS = ('epfl_real_val',)
     else:  # For subprocess call
         assert cfg.TEST.DATASETS, 'cfg.TEST.DATASETS shouldn\'t be empty'
     assert_and_infer_cfg()

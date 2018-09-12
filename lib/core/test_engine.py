@@ -238,7 +238,7 @@ def test_net(
     )
 
     if cfg.VIS:
-        if dataset_name.startswith('virat'):
+        if dataset_name.startswith('virat') or dataset_name.startswith('epfl'):
             dummy_dataset = datasets.get_virat_dataset(name=dataset_name)
         else:
             dummy_dataset = dataset
