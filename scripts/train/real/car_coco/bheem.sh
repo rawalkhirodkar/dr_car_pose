@@ -13,7 +13,7 @@ cd ../../../..
 
 
 #---------------------- with pose-----------------------------------
-CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset car_coco \
+CUDA_VISIBLE_DEVICES=2,3 python tools/train_net_step.py --dataset car_coco \
 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 						--use_tfboard \
 						--bs 4 \

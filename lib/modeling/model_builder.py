@@ -400,10 +400,8 @@ class Generalized_RCNN(nn.Module):
             return_dict['metrics']['normal_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         
         if cfg.MODEL.ATTRIBUTE_ON:
-            return_dict['losses']['color_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['losses']['rotation_loss_cls'] = torch.tensor(0.0).cuda(device_id)
             
-            return_dict['metrics']['color_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
             return_dict['metrics']['rotation_accuracy_cls'] = torch.tensor(0.0).cuda(device_id)
         # # ------------------------------------------------------------
 
