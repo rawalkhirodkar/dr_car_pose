@@ -4,27 +4,17 @@ cd ../../../..
 
 
 
-# CUDA_VISIBLE_DEVICES=0,3 python tools/train_net_step.py --dataset virat2_syn \
-# 						--cfg configs/virat/rcnn/rcnn_101.yaml \
-# 						--use_tfboard \
-# 						--bs 4 \
-# 						--iter_size 4 \
-# 						--nw 0
-
-
-#---------------------- with pose-----------------------------------
-# CUDA_VISIBLE_DEVICES=3,4 python tools/train_net_step.py --dataset virat2_syn \
+# #---------------------- with pose-----------------------------------
+# CUDA_VISIBLE_DEVICES=0,1 python tools/train_net_step.py --dataset epfl_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
 # 						--iter_size 4 \
-# 						--load_ckpt Outputs/car_coco/rcnn_attr_101/Sep12-16-11-36_klab-server2_step/ckpt/model_step6000.pth \
 # 						--nw 4
-
 
 ###################################################Finetune Checkpoint#######################################################################################3
 
-CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
+CUDA_VISIBLE_DEVICES=0 python tools/train_net_step.py --dataset epfl_syn \
 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 						--use_tfboard \
 						--bs 4 \

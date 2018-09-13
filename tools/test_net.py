@@ -80,7 +80,7 @@ if __name__ == '__main__':
         ckpt_path = args.load_ckpt if args.load_ckpt else args.load_detectron
         ckpt_num = ckpt_path.replace('.pth','').replace('model_step', '').split('/')[-1]
         args.output_dir = os.path.join(
-            os.path.dirname(os.path.dirname(ckpt_path)), 'test', ckpt_num)
+            os.path.dirname(os.path.dirname(ckpt_path)), 'test', ckpt_num, args.test_dataset)
         logger.info('Automatically set output directory to %s', args.output_dir)
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
