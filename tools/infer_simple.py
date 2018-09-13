@@ -120,6 +120,10 @@ def main():
         set_virat_configs()
         dataset = datasets.get_virat_dataset(name=args.dataset)
     # -----------------------------------------------
+    elif args.dataset.startswith("car_coco"):
+        set_virat_configs()
+        dataset = datasets.get_virat_dataset(name=args.dataset)
+    # -----------------------------------------------
     else:
         raise ValueError('Unexpected dataset name: {}'.format(args.dataset))
 
@@ -173,7 +177,7 @@ def main():
             cls_segms,
             cls_keyps,
             dataset=dataset,
-            box_alpha=0.3,
+            box_alpha=0.6,
             show_class=True,
             thresh=cfg.TEST.VISUALIZE_THRESH,
             kp_thresh=2,
