@@ -200,6 +200,15 @@ def main():
     elif args.dataset == "car_coco":
         cfg.TRAIN.DATASETS = ('car_coco_train',)
         set_virat_configs()
+
+    elif args.dataset == "uadetrac1_syn":
+        cfg.TRAIN.DATASETS = ('uadetrac1_syn_train',)
+        set_virat_configs()
+        #other classes num set in the custom_json_dataset file
+
+    elif args.dataset == "uadetrac1_real":
+        cfg.TRAIN.DATASETS = ('uadetrac1_real_train',)
+        set_virat_configs()
     # ------------------------------------------------
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))
