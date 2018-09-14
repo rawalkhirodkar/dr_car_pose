@@ -37,6 +37,5 @@ CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset virat2 \
 						--test_data virat2_real_val \
 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 						--multi-gpu-testing \
-						--vis \
 						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep13-01-44-07_klab-server2_step/ckpt/model_step11558.pth\
 
