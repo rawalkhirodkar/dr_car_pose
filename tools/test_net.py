@@ -111,6 +111,14 @@ if __name__ == '__main__':
         set_virat_configs()
         cfg.TEST.DATASETS = ('epfl_real_val',)
     # ----------------------------------------------
+    elif args.dataset == "uadetrac1":
+        set_virat_configs()
+        cfg.TEST.DATASETS = ('uadetrac1_real_val',)
+    # ----------------------------------------------
+    elif args.dataset == "uadetrac2":
+        set_virat_configs()
+        cfg.TEST.DATASETS = ('uadetrac2_real_val',)
+    # ----------------------------------------------
     elif args.dataset == "car_coco":
         set_virat_configs()
         cfg.TEST.DATASETS = (args.test_dataset,)

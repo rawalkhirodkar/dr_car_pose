@@ -24,12 +24,12 @@ cd ../../../..
 # 						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep13-01-43-56_klab-server2_step/ckpt/model_step9000.pth\
 
 
-##------multi gpu evaluate------
-CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset virat1 \
-						--test_data virat1_real_val \
-						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--multi-gpu-testing \
-						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep13-01-43-56_klab-server2_step/ckpt/model_step12265.pth\
+# ##------multi gpu evaluate------
+# CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset virat1 \
+# 						--test_data virat1_real_val \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+# 						--multi-gpu-testing \
+# 						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep13-01-43-56_klab-server2_step/ckpt/model_step12265.pth\
 
 # ##------multi gpu evaluate------
 # CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset virat1 \
@@ -37,3 +37,23 @@ CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset virat1 \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--multi-gpu-testing \
 # 						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep13-01-43-56_klab-server2_step/ckpt/model_step9000.pth\
+
+
+###################################### from Scratch ################################################
+
+##------single gpu visualize------
+CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset virat1 \
+						--test_data virat1_real_val \
+						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+						--vis \
+						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep14-02-47-17_klab-server2_step/ckpt/model_step15562.pth\
+
+
+
+
+# ##------multi gpu evaluate------
+# CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/test_net.py --dataset virat1 \
+# 						--test_data virat1_real_val \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+# 						--multi-gpu-testing \
+# 						--load_ckpt Outputs/virat1_syn/rcnn_attr_101/Sep14-02-47-17_klab-server2_step/ckpt/model_step15562.pth\

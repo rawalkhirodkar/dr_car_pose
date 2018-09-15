@@ -32,38 +32,10 @@ cd ../../../..
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep08-21-34-54_cube3_step/ckpt/model_step15101.pth
 
-# ##------multi gpu evaluate------
-# CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset epfl \
-# 						--test_data epfl_real_val \
-# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--vis \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/epfl_syn/rcnn_attr_101/Sep13-01-44-52_klab-server2_step/ckpt/model_step12326.pth\
-
-
-# ##------multi gpu evaluate------
-# CUDA_VISIBLE_DEVICES=0,2,3 python tools/test_net.py --dataset epfl \
-# 						--test_data epfl_real_val \
-# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/epfl_syn/rcnn_attr_101/Sep13-01-44-52_klab-server2_step/ckpt/model_step12326.pth\
-
-
-
-###################################### from Scratch ###########################################################################
-
-##------single gpu visualize ------
-CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset epfl \
-						--test_data epfl_real_val \
+##------multi gpu evaluate------
+CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/test_net.py --dataset virat2 \
+						--test_data virat2_real_val \
 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--vis \
-						--load_ckpt Outputs/epfl_syn/rcnn_attr_101/Sep14-02-50-07_klab-server2_step/ckpt/model_step14509.pth\
+						--multi-gpu-testing \
+						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep09-22-54-01_cube3_step/ckpt/model_step16994.pth\
 
-
-
-# ##------multi gpu evaluate ------
-# CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/test_net.py --dataset epfl \
-# 						--test_data epfl_real_val \
-# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/epfl_syn/rcnn_attr_101/Sep14-02-50-07_klab-server2_step/ckpt/model_step14509.pth\
