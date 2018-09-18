@@ -59,6 +59,7 @@ def evaluate_all(
         dataset, all_boxes, output_dir, use_matlab=use_matlab
     )
     logger.info('Evaluating bounding boxes is done!')
+
     if not dataset.name.startswith('virat'):
         if cfg.MODEL.MASK_ON:
             results = evaluate_masks(dataset, all_boxes, all_segms, output_dir)
@@ -70,7 +71,38 @@ def evaluate_all(
             logger.info('Evaluating keypoints is done!')
     return all_results
 
+# -------------------------------------------------------------------------------------
+def evaluate_pose(dataset, all_boxes, output_dir, use_matlab=False):
+    """Evaluate bounding box detection."""
+    logger.info('Evaluating detections')
+    not_comp = not cfg.TEST.COMPETITION_MODE
+    if _use_json_dataset_evaluator(dataset):
+        coco_eval = json_dataset_evaluator.evaluate_pose(
+            dataset, all_boxes, output_dir, use_salt=not_comp, cleanup=not_comp
+        )
+        box_results = _coco_eval_to_box_results(coco_eval)
+    elif _use_cityscapes_evaluator(dataset):
+        logger.warn('Cityscapes bbox evaluated using COCO metrics/conversions')
+        coco_eval = json_dataset_evaluator.evaluate_boxes(
+            dataset, all_boxes, output_dir, use_salt=not_comp, cleanup=not_comp
+        )
+        box_results = _coco_eval_to_box_results(coco_eval)
+    elif _use_voc_evaluator(dataset):
+        # For VOC, always use salt and always cleanup because results are
+        # written to the shared VOCdevkit results directory
+        voc_eval = voc_dataset_evaluator.evaluate_boxes(
+            dataset, all_boxes, output_dir, use_matlab=use_matlab
+        )
+        box_results = _voc_eval_to_box_results(voc_eval)
+    else:
+        raise NotImplementedError(
+            'No evaluator for dataset: {}'.format(dataset.name)
+        )
+    return OrderedDict([(dataset.name, box_results)])
 
+
+
+# -------------------------------------------------------------------------------------
 def evaluate_boxes(dataset, all_boxes, output_dir, use_matlab=False):
     """Evaluate bounding box detection."""
     logger.info('Evaluating detections')
@@ -99,7 +131,7 @@ def evaluate_boxes(dataset, all_boxes, output_dir, use_matlab=False):
         )
     return OrderedDict([(dataset.name, box_results)])
 
-
+# -------------------------------------------------------------------------------------
 def evaluate_masks(dataset, all_boxes, all_segms, output_dir):
     """Evaluate instance segmentation."""
     logger.info('Evaluating segmentations')
@@ -130,7 +162,7 @@ def evaluate_masks(dataset, all_boxes, all_segms, output_dir):
         )
     return OrderedDict([(dataset.name, mask_results)])
 
-
+# -------------------------------------------------------------------------------------
 def evaluate_keypoints(dataset, all_boxes, all_keyps, output_dir):
     """Evaluate human keypoint detection (i.e., 2D pose estimation)."""
     logger.info('Evaluating detections')

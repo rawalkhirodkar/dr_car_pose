@@ -191,6 +191,7 @@ def _coco_bbox_results_one_category(json_dataset, boxes, cat_id):
 def _do_detection_eval(json_dataset, res_file, output_dir):
     coco_dt = json_dataset.COCO.loadRes(str(res_file))
     coco_eval = COCOeval(json_dataset.COCO, coco_dt, 'bbox')
+    import pdb; pdb.set_trace()
     coco_eval.evaluate()
     coco_eval.accumulate()
     _log_detection_eval_metrics(json_dataset, coco_eval)
@@ -261,6 +262,97 @@ def _log_detection_eval_metrics(json_dataset, coco_eval):
     coco_eval.summarize()
 
 
+
+# -----------------------------------------------------------------------------
+def evaluate_pose(
+    json_dataset, roidb, thresholds=None, area='all', limit=None
+):
+    """Evaluate detection proposal recall metrics. This function is a much
+    faster alternative to the official COCO API recall evaluation code. However,
+    it produces slightly different results.
+    """
+    # Record max overlap value for each gt box
+    # Return vector of overlap values
+    areas = {
+        'all': 0,
+        'small': 1,
+        'medium': 2,
+        'large': 3,
+        '96-128': 4,
+        '128-256': 5,
+        '256-512': 6,
+        '512-inf': 7}
+    area_ranges = [
+        [0**2, 1e5**2],    # all
+        [0**2, 32**2],     # small
+        [32**2, 96**2],    # medium
+        [96**2, 1e5**2],   # large
+        [96**2, 128**2],   # 96-128
+        [128**2, 256**2],  # 128-256
+        [256**2, 512**2],  # 256-512
+        [512**2, 1e5**2]]  # 512-inf
+    assert area in areas, 'Unknown area range: {}'.format(area)
+    area_range = area_ranges[areas[area]]
+    gt_overlaps = np.zeros(0)
+    num_pos = 0
+
+    import pdb; pdb.set_trace()
+
+
+    for entry in roidb:
+        gt_inds = np.where(
+            (entry['gt_classes'] > 0) & (entry['is_crowd'] == 0))[0]
+        gt_boxes = entry['boxes'][gt_inds, :]
+        gt_areas = entry['seg_areas'][gt_inds]
+        valid_gt_inds = np.where(
+            (gt_areas >= area_range[0]) & (gt_areas <= area_range[1]))[0]
+        gt_boxes = gt_boxes[valid_gt_inds, :]
+        num_pos += len(valid_gt_inds)
+        non_gt_inds = np.where(entry['gt_classes'] == 0)[0]
+        boxes = entry['boxes'][non_gt_inds, :]
+        if boxes.shape[0] == 0:
+            continue
+        if limit is not None and boxes.shape[0] > limit:
+            boxes = boxes[:limit, :]
+        overlaps = box_utils.bbox_overlaps(
+            boxes.astype(dtype=np.float32, copy=False),
+            gt_boxes.astype(dtype=np.float32, copy=False))
+        _gt_overlaps = np.zeros((gt_boxes.shape[0]))
+        for j in range(min(boxes.shape[0], gt_boxes.shape[0])):
+            # find which proposal box maximally covers each gt box
+            argmax_overlaps = overlaps.argmax(axis=0)
+            # and get the iou amount of coverage for each gt box
+            max_overlaps = overlaps.max(axis=0)
+            # find which gt box is 'best' covered (i.e. 'best' = most iou)
+            gt_ind = max_overlaps.argmax()
+            gt_ovr = max_overlaps.max()
+            assert gt_ovr >= 0
+            # find the proposal box that covers the best covered gt box
+            box_ind = argmax_overlaps[gt_ind]
+            # record the iou coverage of this gt box
+            _gt_overlaps[j] = overlaps[box_ind, gt_ind]
+            assert _gt_overlaps[j] == gt_ovr
+            # mark the proposal box and the gt box as used
+            overlaps[box_ind, :] = -1
+            overlaps[:, gt_ind] = -1
+        # append recorded iou coverage level
+        gt_overlaps = np.hstack((gt_overlaps, _gt_overlaps))
+
+    gt_overlaps = np.sort(gt_overlaps)
+    if thresholds is None:
+        step = 0.05
+        thresholds = np.arange(0.5, 0.95 + 1e-5, step)
+    recalls = np.zeros_like(thresholds)
+    # compute recall for each iou threshold
+    for i, t in enumerate(thresholds):
+        recalls[i] = (gt_overlaps >= t).sum() / float(num_pos)
+    # ar = 2 * np.trapz(recalls, thresholds)
+    ar = recalls.mean()
+    return {'ar': ar, 'recalls': recalls, 'thresholds': thresholds,
+            'gt_overlaps': gt_overlaps, 'num_pos': num_pos}
+
+
+# ------------------------------------------------------------------------------
 def evaluate_box_proposals(
     json_dataset, roidb, thresholds=None, area='all', limit=None
 ):

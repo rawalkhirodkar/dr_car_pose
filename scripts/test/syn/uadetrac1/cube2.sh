@@ -24,12 +24,12 @@ cd ../../../..
 # 						--vis \
 # 						--load_ckpt Outputs/uadetrac1_syn/rcnn_attr_101/Sep14-02-45-37_klab-server2_step/ckpt/model_step11104.pth\
 
-#------single gpu visualize------
-CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset uadetrac1 \
-						--test_data uadetrac1_real_val \
-						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--vis \
-						--load_ckpt Outputs/uadetrac1_syn/rcnn_attr_101/Sep15-00-00-27_klab-server2_step/ckpt/model_step15000.pth\
+# #------single gpu visualize------
+# CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset uadetrac1 \
+# 						--test_data uadetrac1_real_val \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+# 						--vis \
+# 						--load_ckpt Outputs/uadetrac1_syn/rcnn_attr_101/Sep15-00-00-27_klab-server2_step/ckpt/model_step15000.pth\
 
 
 
@@ -42,16 +42,11 @@ CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset uadetrac1 \
 
 
 
-#################################### from Scratch #########################################
+# #################################### from Scratch #########################################
 
 
-# ##------multi gpu evaluate------
-# CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/test_net.py --dataset virat2 \
-# 						--test_data virat2_real_val \
+# CUDA_VISIBLE_DEVICES=3 python tools/infer_simple.py --dataset uadetrac1_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--multi-gpu-testing \
-# 						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep14-02-48-47_klab-server2_step/ckpt/model_step15316.pth\
-
-
-
-
+# 						--load_ckpt Outputs/uadetrac1_syn/rcnn_attr_101/Sep15-00-00-27_klab-server2_step/ckpt/model_step15000.pth\
+# 						--image_dir data/kitti/images/\
+# 						--output_dir results/kitti/uadetrac1/real_visualise

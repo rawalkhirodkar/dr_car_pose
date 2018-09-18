@@ -120,6 +120,10 @@ def main():
         set_virat_configs()
         dataset = datasets.get_virat_dataset(name=args.dataset)
     # -----------------------------------------------
+    elif args.dataset.startswith("uadetrac"):
+        set_virat_configs()
+        dataset = datasets.get_virat_dataset(name=args.dataset)
+    # -----------------------------------------------
     elif args.dataset.startswith("car_coco"):
         set_virat_configs()
         dataset = datasets.get_virat_dataset(name=args.dataset)
