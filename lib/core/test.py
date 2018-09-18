@@ -320,7 +320,7 @@ def box_results_with_nms_and_limit(scores, boxes, attributes_dict):  # NOTE: sup
     cls_attributes = None
 
     if cfg.MODEL.ATTRIBUTE_ON:
-        attributes_labels = np.zeros((scores.shape[0], 4)).astype(np.uint8, copy=False) #315 x 4
+        attributes_labels = np.zeros((scores.shape[0], 1)).astype(np.uint8, copy=False) #315 x 4
         attributes_labels[:, 0] = attributes_dict['rotation_labels']
         cls_attributes = [[] for _ in range(num_classes)]
 

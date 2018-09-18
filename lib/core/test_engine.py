@@ -36,6 +36,8 @@ from core.config import cfg
 from core.test import im_detect_all
 from datasets import task_evaluation
 from datasets.json_dataset import JsonDataset
+from datasets.custom_json_dataset import CustomJsonDataset
+
 import datasets.dummy_datasets as datasets
 from modeling import model_builder
 import nn as mynn
@@ -146,30 +148,41 @@ def test_net_on_dataset(
         multi_gpu=False,
         gpu_id=0):
     """Run inference on a dataset."""
-    dataset = JsonDataset(dataset_name)
+
+    # ----------------------------------
+    # dataset = JsonDataset(dataset_name)
+    dataset = CustomJsonDataset(dataset_name)
+    
+    # ----------------------------------
+
     test_timer = Timer()
     test_timer.tic()
     if multi_gpu:
         num_images = len(dataset.get_roidb())
-        all_boxes, all_segms, all_keyps = multi_gpu_test_net_on_dataset(
+        all_boxes, all_segms, all_keyps, all_rotations = multi_gpu_test_net_on_dataset(
             args, dataset_name, proposal_file, num_images, output_dir
         )
     else:
-        all_boxes, all_segms, all_keyps = test_net(
+        all_boxes, all_segms, all_keyps, all_rotations = test_net(
             args, dataset_name, proposal_file, output_dir, gpu_id=gpu_id
         )
     test_timer.toc()
     logger.info('Total inference time: {:.3f}s'.format(test_timer.average_time))
     results = task_evaluation.evaluate_all(
-        dataset, all_boxes, all_segms, all_keyps, output_dir
+        dataset, all_boxes, all_segms, all_keyps, all_rotations, output_dir
     )
     return results
 
-
+#cannot do rotations evaluations on multi gpu
 def multi_gpu_test_net_on_dataset(
         args, dataset_name, proposal_file, num_images, output_dir):
     """Multi-gpu inference on a dataset."""
-    dataset = JsonDataset(dataset_name)
+    
+    # ------------------------------------
+    # dataset = JsonDataset(dataset_name)
+    dataset = CustomJsonDataset(dataset_name)
+    # ------------------------------------
+
     binary_dir = envu.get_runtime_dir()
     binary_ext = envu.get_py_bin_ext()
     binary = os.path.join(binary_dir, args.test_net_file + binary_ext)
@@ -197,14 +210,21 @@ def multi_gpu_test_net_on_dataset(
     all_boxes = [[] for _ in range(num_classes)]
     all_segms = [[] for _ in range(num_classes)]
     all_keyps = [[] for _ in range(num_classes)]
+    # ----------------------------------------------
+    all_rotations = [[] for _ in range(num_classes)]
+    # ----------------------------------------------
+
     for det_data in outputs:
         all_boxes_batch = det_data['all_boxes']
         all_segms_batch = det_data['all_segms']
         all_keyps_batch = det_data['all_keyps']
+        # ---------------------------------------
+
         for cls_idx in range(1, num_classes):
             all_boxes[cls_idx] += all_boxes_batch[cls_idx]
             all_segms[cls_idx] += all_segms_batch[cls_idx]
             all_keyps[cls_idx] += all_keyps_batch[cls_idx]
+
     det_file = os.path.join(output_dir, 'detections.pkl')
     cfg_yaml = yaml.dump(cfg)
     save_object(
@@ -217,7 +237,7 @@ def multi_gpu_test_net_on_dataset(
     )
     logger.info('Wrote detections to: {}'.format(os.path.abspath(det_file)))
 
-    return all_boxes, all_segms, all_keyps
+    return all_boxes, all_segms, all_keyps, all_rotations
 
 
 def test_net(
@@ -261,12 +281,9 @@ def test_net(
     # else:
     #     num_classes = cfg.MODEL.NUM_CLASSES
     num_classes = cfg.MODEL.NUM_CLASSES
-    all_boxes, all_segms, all_keyps = empty_results(num_classes, num_images)
+    all_boxes, all_segms, all_keyps, all_rotations = empty_results(num_classes, num_images)
     timers = defaultdict(Timer)
     for i, entry in enumerate(roidb):
-
-        if i > 20:
-            break
 
         if cfg.TEST.PRECOMPUTED_PROPOSALS:
             # The roidb may contain ground-truth rois (for example, if the roidb
@@ -286,6 +303,7 @@ def test_net(
         cls_boxes_i, cls_attributes_i, \
         cls_segms_i, cls_keyps_i, return_dict = im_detect_all(model, im, box_proposals, timers)
 
+
         # ----------------------------------------------------------
         if is_coco_model == True:
             cls_boxes_i, cls_attributes_i, cls_segms_i = coco2virat(dataset, virat_cls_2_coco_cls, 
@@ -297,6 +315,8 @@ def test_net(
             extend_results(i, all_segms, cls_segms_i)
         if cls_keyps_i is not None:
             extend_results(i, all_keyps, cls_keyps_i)
+        if cls_attributes_i is not None:
+            extend_results(i, all_rotations, cls_attributes_i)
 
         if i % 10 == 0:  # Reduce log file size
             ave_total_time = np.sum([t.average_time for t in timers.values()])
@@ -355,7 +375,7 @@ def test_net(
         ), det_file
     )
     logger.info('Wrote detections to: {}'.format(os.path.abspath(det_file)))
-    return all_boxes, all_segms, all_keyps
+    return all_boxes, all_segms, all_keyps, all_rotations
 
 def coco2virat(dataset, virat_cls_2_coco_cls, cls_boxes, cls_attributes, cls_segms):
     virat_cls_boxes = []
@@ -403,7 +423,13 @@ def get_roidb_and_dataset(dataset_name, proposal_file, ind_range):
     """Get the roidb for the dataset specified in the global cfg. Optionally
     restrict it to a range of indices if ind_range is a pair of integers.
     """
-    dataset = JsonDataset(dataset_name)
+
+    # -----------------------------------------------
+    # dataset = JsonDataset(dataset_name)
+    dataset = CustomJsonDataset(dataset_name)
+
+    # -----------------------------------------------
+
     if cfg.TEST.PRECOMPUTED_PROPOSALS:
         assert proposal_file, 'No proposal file given'
         roidb = dataset.get_roidb(
@@ -444,7 +470,12 @@ def empty_results(num_classes, num_images):
     all_boxes = [[[] for _ in range(num_images)] for _ in range(num_classes)]
     all_segms = [[[] for _ in range(num_images)] for _ in range(num_classes)]
     all_keyps = [[[] for _ in range(num_images)] for _ in range(num_classes)]
-    return all_boxes, all_segms, all_keyps
+    
+    # ------------------------------------------------------------------------------------
+    all_rotations = [[[] for _ in range(num_images)] for _ in range(num_classes)]
+    # ------------------------------------------------------------------------------------
+
+    return all_boxes, all_segms, all_keyps, all_rotations
 
 
 def extend_results(index, all_res, im_res):

@@ -191,7 +191,6 @@ def _coco_bbox_results_one_category(json_dataset, boxes, cat_id):
 def _do_detection_eval(json_dataset, res_file, output_dir):
     coco_dt = json_dataset.COCO.loadRes(str(res_file))
     coco_eval = COCOeval(json_dataset.COCO, coco_dt, 'bbox')
-    import pdb; pdb.set_trace()
     coco_eval.evaluate()
     coco_eval.accumulate()
     _log_detection_eval_metrics(json_dataset, coco_eval)
@@ -265,7 +264,7 @@ def _log_detection_eval_metrics(json_dataset, coco_eval):
 
 # -----------------------------------------------------------------------------
 def evaluate_pose(
-    json_dataset, roidb, thresholds=None, area='all', limit=None
+    dataset, all_boxes, all_rotations, output_dir, area='all', limit=None
 ):
     """Evaluate detection proposal recall metrics. This function is a much
     faster alternative to the official COCO API recall evaluation code. However,
@@ -273,6 +272,9 @@ def evaluate_pose(
     """
     # Record max overlap value for each gt box
     # Return vector of overlap values
+    
+    roidb = dataset.get_roidb()
+
     areas = {
         'all': 0,
         'small': 1,
@@ -294,31 +296,54 @@ def evaluate_pose(
     assert area in areas, 'Unknown area range: {}'.format(area)
     area_range = area_ranges[areas[area]]
     gt_overlaps = np.zeros(0)
+    gt_rotation_error = np.zeros(0)
+
     num_pos = 0
 
-    import pdb; pdb.set_trace()
 
+    step_angle = 360.0/cfg.ROTATION.NUM_CLASSES # should be 10
 
-    for entry in roidb:
+    for i, entry in enumerate(roidb):
+        dataset._add_gt_annotations(entry)
+
         gt_inds = np.where(
             (entry['gt_classes'] > 0) & (entry['is_crowd'] == 0))[0]
         gt_boxes = entry['boxes'][gt_inds, :]
         gt_areas = entry['seg_areas'][gt_inds]
+        gt_rotations = entry['gt_rotations'][gt_inds]
+
+
         valid_gt_inds = np.where(
             (gt_areas >= area_range[0]) & (gt_areas <= area_range[1]))[0]
+        
+
         gt_boxes = gt_boxes[valid_gt_inds, :]
+        gt_rotations = gt_rotations[valid_gt_inds]
+
         num_pos += len(valid_gt_inds)
-        non_gt_inds = np.where(entry['gt_classes'] == 0)[0]
-        boxes = entry['boxes'][non_gt_inds, :]
-        if boxes.shape[0] == 0:
+
+        predicted_boxes = all_boxes[1][i] #1 is for the car class
+
+        #image can be skipped at times
+        if len(predicted_boxes) == 0:
             continue
-        if limit is not None and boxes.shape[0] > limit:
-            boxes = boxes[:limit, :]
+
+        if predicted_boxes.shape[0] == 0:
+            continue
+
+        predicted_boxes = predicted_boxes[:,0:4]        #drop the last score column
+        predicted_rotations = all_rotations[1][i]
+
+        
+        #this is of size num_predictions x num_gt
         overlaps = box_utils.bbox_overlaps(
-            boxes.astype(dtype=np.float32, copy=False),
+            predicted_boxes.astype(dtype=np.float32, copy=False),
             gt_boxes.astype(dtype=np.float32, copy=False))
+
         _gt_overlaps = np.zeros((gt_boxes.shape[0]))
-        for j in range(min(boxes.shape[0], gt_boxes.shape[0])):
+        _rotation_error = np.zeros((gt_boxes.shape[0]))
+
+        for j in range(min(predicted_boxes.shape[0], gt_boxes.shape[0])):
             # find which proposal box maximally covers each gt box
             argmax_overlaps = overlaps.argmax(axis=0)
             # and get the iou amount of coverage for each gt box
@@ -327,28 +352,38 @@ def evaluate_pose(
             gt_ind = max_overlaps.argmax()
             gt_ovr = max_overlaps.max()
             assert gt_ovr >= 0
-            # find the proposal box that covers the best covered gt box
+            # find the predicted box that covers the best covered gt box
             box_ind = argmax_overlaps[gt_ind]
             # record the iou coverage of this gt box
             _gt_overlaps[j] = overlaps[box_ind, gt_ind]
             assert _gt_overlaps[j] == gt_ovr
+            
+            predicted_angle = predicted_rotations[box_ind][0] * step_angle + step_angle/2
+            gt_angle = gt_rotations[gt_ind] * step_angle + step_angle/2
+
+            phi_diff = np.abs(predicted_angle - gt_angle)%360
+
+            if phi_diff > 180:
+                _rotation_error[j] = 360 - phi_diff
+            else:
+                _rotation_error[j] = phi_diff
+
             # mark the proposal box and the gt box as used
             overlaps[box_ind, :] = -1
             overlaps[:, gt_ind] = -1
-        # append recorded iou coverage level
-        gt_overlaps = np.hstack((gt_overlaps, _gt_overlaps))
 
-    gt_overlaps = np.sort(gt_overlaps)
-    if thresholds is None:
-        step = 0.05
-        thresholds = np.arange(0.5, 0.95 + 1e-5, step)
-    recalls = np.zeros_like(thresholds)
-    # compute recall for each iou threshold
-    for i, t in enumerate(thresholds):
-        recalls[i] = (gt_overlaps >= t).sum() / float(num_pos)
-    # ar = 2 * np.trapz(recalls, thresholds)
-    ar = recalls.mean()
-    return {'ar': ar, 'recalls': recalls, 'thresholds': thresholds,
+
+        gt_overlaps = np.hstack((gt_overlaps, _gt_overlaps))
+        gt_rotation_error = np.hstack((gt_rotation_error, _rotation_error))
+
+    iou_thresh = 0.5
+    valid_overlap = gt_overlaps > iou_thresh
+
+    mean_rotation_error = (gt_rotation_error[valid_overlap].sum()*1.0)/(valid_overlap.sum()*1.0)
+
+    print(' Mean error angle:{} at iou:{}'.format(mean_rotation_error, iou_thresh))
+
+    return {'gt_rotation_error': gt_rotation_error,
             'gt_overlaps': gt_overlaps, 'num_pos': num_pos}
 
 

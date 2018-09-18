@@ -43,22 +43,21 @@ cd ../../../..
 
 #################################### from Scratch #########################################
 
-##------single gpu visualize------
-CUDA_VISIBLE_DEVICES=0 python tools/test_net.py --dataset virat2 \
-						--test_data virat2_real_val \
-						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--vis \
-						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep14-02-48-47_klab-server2_step/ckpt/model_step15316.pth\
-
-
-
-
-# ##------multi gpu evaluate------
-# CUDA_VISIBLE_DEVICES=0,1,2,3 python tools/test_net.py --dataset virat2 \
+# ##------single gpu visualize------
+# CUDA_VISIBLE_DEVICES=3 python tools/test_net.py --dataset virat2 \
 # 						--test_data virat2_real_val \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-# 						--multi-gpu-testing \
 # 						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep14-02-48-47_klab-server2_step/ckpt/model_step15316.pth\
+
+
+
+
+##------multi gpu evaluate------
+CUDA_VISIBLE_DEVICES=1,2,3 python tools/test_net.py --dataset virat2 \
+						--test_data virat2_real_val \
+						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+						--multi-gpu-testing \
+						--load_ckpt Outputs/virat2_syn/rcnn_attr_101/Sep14-02-48-47_klab-server2_step/ckpt/model_step15316.pth\
 
 
 

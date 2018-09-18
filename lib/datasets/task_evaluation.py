@@ -50,13 +50,18 @@ logger = logging.getLogger(__name__)
 
 
 def evaluate_all(
-    dataset, all_boxes, all_segms, all_keyps, output_dir, use_matlab=False
+    dataset, all_boxes, all_segms, all_keyps, all_rotations, output_dir, use_matlab=False
 ):
     """Evaluate "all" tasks, where "all" includes box detection, instance
     segmentation, and keypoint detection.
     """
     all_results = evaluate_boxes(
         dataset, all_boxes, output_dir, use_matlab=use_matlab
+    )
+    logger.info('Evaluating bounding boxes is done!')
+
+    pose_results = evaluate_pose(
+        dataset, all_boxes, all_rotations, output_dir, use_matlab=use_matlab
     )
     logger.info('Evaluating bounding boxes is done!')
 
@@ -72,33 +77,14 @@ def evaluate_all(
     return all_results
 
 # -------------------------------------------------------------------------------------
-def evaluate_pose(dataset, all_boxes, output_dir, use_matlab=False):
+def evaluate_pose(dataset, all_boxes, all_rotations, output_dir, use_matlab=False):
     """Evaluate bounding box detection."""
-    logger.info('Evaluating detections')
-    not_comp = not cfg.TEST.COMPETITION_MODE
-    if _use_json_dataset_evaluator(dataset):
-        coco_eval = json_dataset_evaluator.evaluate_pose(
-            dataset, all_boxes, output_dir, use_salt=not_comp, cleanup=not_comp
-        )
-        box_results = _coco_eval_to_box_results(coco_eval)
-    elif _use_cityscapes_evaluator(dataset):
-        logger.warn('Cityscapes bbox evaluated using COCO metrics/conversions')
-        coco_eval = json_dataset_evaluator.evaluate_boxes(
-            dataset, all_boxes, output_dir, use_salt=not_comp, cleanup=not_comp
-        )
-        box_results = _coco_eval_to_box_results(coco_eval)
-    elif _use_voc_evaluator(dataset):
-        # For VOC, always use salt and always cleanup because results are
-        # written to the shared VOCdevkit results directory
-        voc_eval = voc_dataset_evaluator.evaluate_boxes(
-            dataset, all_boxes, output_dir, use_matlab=use_matlab
-        )
-        box_results = _voc_eval_to_box_results(voc_eval)
-    else:
-        raise NotImplementedError(
-            'No evaluator for dataset: {}'.format(dataset.name)
-        )
-    return OrderedDict([(dataset.name, box_results)])
+    logger.info('Evaluating rotations')
+    rotation_results = json_dataset_evaluator.evaluate_pose(dataset, all_boxes, all_rotations, output_dir)
+
+    logger.info('Evaluating rotations is done!')
+
+    return OrderedDict([(dataset.name, rotation_results)])
 
 
 
