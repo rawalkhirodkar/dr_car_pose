@@ -12,13 +12,13 @@ cd ../../../..
 # 						--nw 0
 
 
-#---------------------- with pose-----------------------------------
-CUDA_VISIBLE_DEVICES=2,3 python tools/train_net_step.py --dataset car_coco \
-						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
-						--use_tfboard \
-						--bs 4 \
-						--iter_size 4 \
-						--nw 4
+# #---------------------- with pose-----------------------------------
+# CUDA_VISIBLE_DEVICES=2,3 python tools/train_net_step.py --dataset car_coco \
+# 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
+# 						--use_tfboard \
+# 						--bs 4 \
+# 						--iter_size 4 \
+# 						--nw 4
 
 # CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset virat2_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
@@ -40,3 +40,17 @@ CUDA_VISIBLE_DEVICES=2,3 python tools/train_net_step.py --dataset car_coco \
 # 						--bs 2 \
 						# --iter_size 4 \
 # 						--nw 0
+
+
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+##------single gpu visualize------
+CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset car_coco \
+						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
+						--use_tfboard \
+						--bs 4 \
+						--iter_size 4 \
+						--nw 4
