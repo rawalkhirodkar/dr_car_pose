@@ -13,7 +13,7 @@ cd ../../../..
 
 
 # ###---------------------- with pose-----------------------------------
-# CUDA_VISIBLE_DEVICES=3 python tools/train_net_step.py --dataset uadetrac1_syn \
+# CUDA_VISIBLE_DEVICES=3 python tools/train_net_step.py --dataset uadetrac2_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
@@ -23,7 +23,7 @@ cd ../../../..
 
 # ###################################################Finetune Checkpoint#######################################################################################3
 
-# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset uadetrac1_syn \
+# CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset uadetrac2_syn \
 # 						--cfg configs/virat/rcnn/rcnn_attr_101.yaml \
 # 						--use_tfboard \
 # 						--bs 4 \
@@ -45,7 +45,7 @@ cd ../../../..
 						# --iter_size 4 \
 # 						--nw 0
 
-CUDA_VISIBLE_DEVICES=1 python tools/train_net_step.py --dataset uadetrac1_syn \
+CUDA_VISIBLE_DEVICES=2 python tools/train_net_step.py --dataset uadetrac2_syn \
 						--cfg configs/virat/mask_rcnn/mask_rcnn_attr_101.yaml \
 						--use_tfboard \
 						--bs 4 \

@@ -346,4 +346,28 @@ DATASETS = {
         DEVKIT_DIR:
             _DATA_DIR + '/VOC2012/VOCdevkit2012'
     },
+    'uadetrac2_syn_train': {
+        IM_DIR:
+            _DATA_DIR + '/uadetrac2/uadetrac2_syn/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/uadetrac2/uadetrac2_syn/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
+    'uadetrac2_real_train': {
+        IM_DIR:
+            _DATA_DIR + '/uadetrac2/uadetrac2_real/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/uadetrac2/uadetrac2_real/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
+    'uadetrac2_real_val': {
+        IM_DIR:
+            _DATA_DIR + '/uadetrac2/uadetrac2_real/images/train2018',
+        ANN_FN:
+            _DATA_DIR + '/uadetrac2/uadetrac2_real/annotations/instances_train2018.json',
+        DEVKIT_DIR:
+            _DATA_DIR + '/VOC2012/VOCdevkit2012'
+    },
 }
