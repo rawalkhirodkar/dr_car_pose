@@ -196,8 +196,8 @@ def vis_one_image(
             continue
 
         class_label = classes[i] - 1 #remove the background
-        color_label = attributes[i][0]; color = dataset.color_classes[attributes[i][0]]
-        rotation = dataset.rotation_classes[attributes[i][1]]
+        color_label = 0; color = 'black'
+        rotation = dataset.rotation_classes[attributes[i][0]]
         center_x = ((bbox[0] + bbox[2])/2.0)
         center_y = ((bbox[1] + bbox[3])/2.0)
         center_x = center_x/im.shape[1] #normalize in 0 to 1

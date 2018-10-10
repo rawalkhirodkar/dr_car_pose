@@ -325,6 +325,7 @@ class CustomJsonDataset(object):
         entry['gt_classes'] = np.empty((0), dtype=np.int32)
         # ------------------------------------------------------
         entry['gt_rotations'] = np.empty((0), dtype=np.int32)
+        entry['raw_rotations'] = np.empty((0), dtype=np.float32)
         entry['gt_is_real'] = np.empty((0), dtype=np.int32) #0 or 1
         # ------------------------------------------------------        
         entry['seg_areas'] = np.empty((0), dtype=np.float32)
@@ -390,6 +391,7 @@ class CustomJsonDataset(object):
         gt_classes = np.zeros((num_valid_objs), dtype=entry['gt_classes'].dtype)
         # ------------------------------------------------------------------------
         gt_rotations = np.zeros((num_valid_objs), dtype=entry['gt_rotations'].dtype)
+        raw_rotations = np.zeros((num_valid_objs), dtype=entry['gt_rotations'].dtype)
         # ------------------------------------------------------------------------
         gt_overlaps = np.zeros(
             (num_valid_objs, self.num_classes),
@@ -415,6 +417,8 @@ class CustomJsonDataset(object):
             # --------------------------------------------------------
             assert(cls == 1)
             gt_rotations[ix] = self.virat_class_info.get_rotation_id(obj['rotation'])
+            raw_rotations[ix] = obj['rotation']
+
             # --------------------------------------------------------
             seg_areas[ix] = obj['area']
             is_crowd[ix] = obj['iscrowd']
@@ -437,6 +441,7 @@ class CustomJsonDataset(object):
         entry['gt_classes'] = np.append(entry['gt_classes'], gt_classes)
         # --------------------------------------------------------------
         entry['gt_rotations'] = np.append(entry['gt_rotations'], gt_rotations)
+        entry['raw_rotations'] = np.append(entry['raw_rotations'], raw_rotations)
         entry['gt_is_real'] = gt_is_real
         # --------------------------------------------------------------
         entry['seg_areas'] = np.append(entry['seg_areas'], seg_areas)
@@ -470,7 +475,8 @@ class CustomJsonDataset(object):
             values = [cached_entry[key] for key in self.valid_cached_keys] #note the order of the keys matter
             boxes, segms, gt_classes, seg_areas, \
             gt_overlaps, is_crowd, box_to_gt_ind_map, \
-            gt_rotations, gt_is_real = values[:4+3+2] #the order is described in the indentation
+            gt_rotations, gt_is_real, \
+            raw_rotations = values[:4+3+2+1] #the order is described in the indentation
 
             if(gt_is_real):
                 real_images += 1
@@ -491,6 +497,7 @@ class CustomJsonDataset(object):
             )
             # ----------------------------------------------------------------
             entry['gt_rotations'] = np.append(entry['gt_rotations'], gt_rotations)
+            entry['raw_rotations'] = np.append(entry['raw_rotations'], raw_rotations)
             entry['gt_is_real'] = gt_is_real
 
             # ----------------------------------------------------------------
@@ -655,6 +662,12 @@ def _merge_proposal_boxes_into_roidb(roidb, box_list):
         entry['gt_rotations'] = np.append(
             entry['gt_rotations'],
             np.zeros((num_boxes), dtype=entry['gt_rotations'].dtype) + initial_val
+        )
+
+        initial_val = -1 #initialisation for proposals
+        entry['raw_rotations'] = np.append(
+            entry['raw_rotations'],
+            np.zeros((num_boxes), dtype=entry['raw_rotations'].dtype) + initial_val
         )
         # --------------------------------------------------------
 

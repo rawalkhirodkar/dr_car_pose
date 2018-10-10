@@ -297,6 +297,7 @@ def evaluate_pose(
     area_range = area_ranges[areas[area]]
     gt_overlaps = np.zeros(0)
     gt_rotation_error = np.zeros(0)
+    gt_rotation_acc = np.zeros(0)
 
     num_pos = 0
 
@@ -311,6 +312,7 @@ def evaluate_pose(
         gt_boxes = entry['boxes'][gt_inds, :]
         gt_areas = entry['seg_areas'][gt_inds]
         gt_rotations = entry['gt_rotations'][gt_inds]
+        raw_rotations = entry['raw_rotations'][gt_inds]
 
 
         valid_gt_inds = np.where(
@@ -342,6 +344,7 @@ def evaluate_pose(
 
         _gt_overlaps = np.zeros((gt_boxes.shape[0]))
         _rotation_error = np.zeros((gt_boxes.shape[0]))
+        _rotation_acc = np.zeros((gt_boxes.shape[0]))
 
         for j in range(min(predicted_boxes.shape[0], gt_boxes.shape[0])):
             # find which proposal box maximally covers each gt box
@@ -359,7 +362,8 @@ def evaluate_pose(
             assert _gt_overlaps[j] == gt_ovr
             
             predicted_angle = predicted_rotations[box_ind][0] * step_angle + step_angle/2
-            gt_angle = gt_rotations[gt_ind] * step_angle + step_angle/2
+            # gt_angle = gt_rotations[gt_ind] * step_angle + step_angle/2
+            gt_angle = raw_rotations[gt_ind]
 
             phi_diff = np.abs(predicted_angle - gt_angle)%360
 
@@ -368,6 +372,11 @@ def evaluate_pose(
             else:
                 _rotation_error[j] = phi_diff
 
+            if gt_rotations[gt_ind] == predicted_rotations[box_ind][0]:
+                _rotation_acc[j] = 1.0
+            else:
+                _rotation_acc[j] = 0.0
+
             # mark the proposal box and the gt box as used
             overlaps[box_ind, :] = -1
             overlaps[:, gt_ind] = -1
@@ -375,13 +384,20 @@ def evaluate_pose(
 
         gt_overlaps = np.hstack((gt_overlaps, _gt_overlaps))
         gt_rotation_error = np.hstack((gt_rotation_error, _rotation_error))
+        gt_rotation_acc = np.hstack((gt_rotation_acc, _rotation_acc))
 
     iou_thresh = 0.5
     valid_overlap = gt_overlaps > iou_thresh
 
-    mean_rotation_error = (gt_rotation_error[valid_overlap].sum()*1.0)/(valid_overlap.sum()*1.0)
+    
 
-    print(' Mean error angle:{} at iou:{}'.format(mean_rotation_error, iou_thresh))
+    mean_rotation_error = (gt_rotation_error[valid_overlap].sum()*1.0)/(valid_overlap.sum()*1.0)
+    rotation_acc = (gt_rotation_acc[valid_overlap].sum()*1.0)/(valid_overlap.sum()*1.0)
+    
+    median_rotation_error = np.median(gt_rotation_error[valid_overlap])
+
+
+    print(' Mean error angle:{}, Median error angle:{} Rotation Acc:{} at iou:{}'.format(mean_rotation_error, median_rotation_error, rotation_acc, iou_thresh))
 
     return {'gt_rotation_error': gt_rotation_error,
             'gt_overlaps': gt_overlaps, 'num_pos': num_pos}

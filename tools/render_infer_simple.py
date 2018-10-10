@@ -111,11 +111,11 @@ def main():
     # -----------------------------------------------
     elif args.dataset.startswith("virat1"):
         set_virat_configs()
-        dataset = datasets.get_virat1_dataset(name=args.dataset)
+        dataset = datasets.get_virat_dataset(name=args.dataset)
     # ------------------------------------------------
     elif args.dataset.startswith("virat2"):
         set_virat_configs()
-        dataset = datasets.get_virat2_dataset(name=args.dataset)
+        dataset = datasets.get_virat_dataset(name=args.dataset)
 
     # -----------------------------------------------
     else:

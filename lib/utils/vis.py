@@ -172,7 +172,7 @@ def vis_one_image(
             center_y = center_y/im.shape[0] #normalize in 0 to 1
 
             print('rotation:{}'.format(rotation))
-            write_string += 'rot:{}'.format(rotation)
+            # write_string += 'rot:{}'.format(rotation)
             object_log = {}
             object_log['class'] = dataset.classes[classes[i]]
             object_log['rotation'] = rotation
